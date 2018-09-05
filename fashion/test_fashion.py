@@ -6,11 +6,17 @@ from torch.utils.data import DataLoader
 
 from fashion import FashionMNISTDataset
 from fashion import Standardize, ToTensor
-from fashion import TESTFILE
-from fashion import MEANFILE, STDFILE
+from fashion import make_file_paths
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--data-dir', default='', type=str, help='data dir')
+parser.add_argument('--show', default=False, action='store_true',
+                    help='show images')
 
 
-def show_imgs(dset, show=False, figname='test_imgs.pdf'):
+def show_imgs(dset, figname='test_imgs.pdf'):
     fig = plt.figure()
     for i in range(len(dset)):
         sample = dset[i]
@@ -26,30 +32,29 @@ def show_imgs(dset, show=False, figname='test_imgs.pdf'):
         ))
         plt.pause(0.001)
         if i == 3:
-            if show:
-                plt.show()
-            else:
-                plt.savefig(figname, bbox_inches='tight')
-                plt.close()
+            plt.savefig(figname, bbox_inches='tight')
+            plt.close()
             break
 
 
-if __name__ == '__main__':
-    fashion_testset = FashionMNISTDataset(TESTFILE)
-    show_imgs(fashion_testset)
+def main(data_dir, show):
 
-    standardizer = Standardize(mean_file=MEANFILE, std_file=STDFILE)
-    standardized_testset = FashionMNISTDataset(TESTFILE, standardizer)
-    show_imgs(standardized_testset, figname='std_test_imgs.pdf')
+    testfile, trainfile, meanfile, stdfile = make_file_paths(data_dir)
+
+    fashion_testset = FashionMNISTDataset(testfile)
+    if show:
+        show_imgs(fashion_testset)
+
+    standardizer = Standardize(mean_file=meanfile, std_file=stdfile)
+    standardized_testset = FashionMNISTDataset(testfile, standardizer)
+    if show:
+        show_imgs(standardized_testset, figname='std_test_imgs.pdf')
 
     trnsfrms = transforms.Compose([
         standardizer, ToTensor()
     ])
-    # trnsfrms = transforms.Compose([
-    #     ToTensor()
-    # ])
 
-    transformed_testset = FashionMNISTDataset(TESTFILE, trnsfrms)
+    transformed_testset = FashionMNISTDataset(testfile, trnsfrms)
     for i in range(len(transformed_testset)):
         sample = transformed_testset[i]
         print(i, sample['image'].size(), sample['label'].size())
@@ -71,3 +76,8 @@ if __name__ == '__main__':
         )
         if i_batch % 10 == 9:
             print(sample_batched['label'])
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+    main(**vars(args))

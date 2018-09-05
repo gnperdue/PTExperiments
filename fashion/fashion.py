@@ -1,5 +1,4 @@
 import torch
-import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,7 +7,6 @@ from torch.utils.data import Dataset, DataLoader
 
 import numpy as np
 import h5py
-import matplotlib.pyplot as plt
 
 import os
 import argparse
@@ -16,27 +14,25 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', default=32, type=int, help='batch size')
 parser.add_argument('--num-epochs', default=1, type=int, help='num. epochs')
-
-TESTFILE = os.path.join(
-    os.environ['HOME'], 'Dropbox/Data/RandomData/hdf5/fashion_test.hdf5'
-)
-TRAINFILE = os.path.join(
-    os.environ['HOME'], 'Dropbox/Data/RandomData/hdf5/fashion_train.hdf5'
-)
-MEANFILE = os.path.join(
-    os.environ['HOME'], 'Dropbox/Data/RandomData/hdf5/fashion_mean.npy'
-)
-STDFILE = os.path.join(
-    os.environ['HOME'], 'Dropbox/Data/RandomData/hdf5/fashion_stddev.npy'
-)
+parser.add_argument('--data-dir', default='', type=str, help='data dir')
+parser.add_argument('--model-dir', default='fashion', type=str,
+                    help='model dir')
 
 
-def make_means():
-    f = h5py.File(TRAINFILE, 'r')
+def make_file_paths(data_dir):
+    testfile = os.path.join(data_dir, 'fashion_test.hdf5')
+    trainfile = os.path.join(data_dir, 'fashion_train.hdf5')
+    meanfile = os.path.join(data_dir, 'fashion_mean.npy')
+    stdfile = os.path.join(data_dir, 'fashion_stddev.npy')
+    return testfile, trainfile, meanfile, stdfile
+
+
+def make_means(trainfile, meanfile, stdfile):
+    f = h5py.File(trainfile, 'r')
     m = np.mean(f['fashion/images'], axis=0)
     s = np.std(f['fashion/images'], axis=0)
-    np.save(MEANFILE, m)
-    np.save(STDFILE, s)
+    np.save(meanfile, m)
+    np.save(stdfile, s)
     f.close()
 
 
@@ -102,33 +98,42 @@ class Net(nn.Module):
 
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 6, 5)
+        self.conv1 = nn.Conv2d(1, 32, 3)
+        self.conv2 = nn.Conv2d(32, 64, 3)
         self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 4 * 4, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+        self.dropout1 = nn.Dropout(0.25)
+        self.dropout2 = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(64 * 12 * 12, 128)
+        self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 4 * 4)
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
+        x = self.dropout1(self.pool(x))
+        x = x.view(-1, 64 * 12 * 12)
         x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
+        x = self.dropout2(x)
+        x = self.fc2(x)
         return x
 
 
+def count_parameters(model):
+    '''https://discuss.pytorch.org/t/how-do-i-check-the-number-of-parameters-of-a-model/4325/8'''
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
 def main(
-    batch_size, num_epochs
+    batch_size, num_epochs, data_dir, model_dir
 ):
-    standardizer = Standardize(mean_file=MEANFILE, std_file=STDFILE)
+    testfile, trainfile, meanfile, stdfile = make_file_paths(data_dir)
+
+    standardizer = Standardize(mean_file=meanfile, std_file=stdfile)
     trnsfrms = transforms.Compose([
         standardizer, ToTensor()
     ])
 
-    fashion_trainset = FashionMNISTDataset(TRAINFILE, trnsfrms)
-    fashion_testset = FashionMNISTDataset(TESTFILE, trnsfrms)
+    fashion_trainset = FashionMNISTDataset(trainfile, trnsfrms)
+    fashion_testset = FashionMNISTDataset(testfile, trnsfrms)
 
     train_dataloader = DataLoader(
         fashion_trainset, batch_size=batch_size, shuffle=True, num_workers=1
@@ -138,8 +143,10 @@ def main(
     )
 
     net = Net()
+    print(count_parameters(net))
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(device)
+    # return 0
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -150,8 +157,8 @@ def main(
 
         running_loss = 0.0
         for i, data in enumerate(train_dataloader, 0):
-            # if i > 10:
-            #     break
+            if i > 10:
+                break
             inputs, labels = data['image'], data['label']
             inputs, labels = inputs.to(device), labels.to(device)
 
@@ -176,8 +183,8 @@ def main(
     total = 0
     with torch.no_grad():
         for i, data in enumerate(test_dataloader, 0):
-            # if i > 40:
-            #     break
+            if i > 40:
+                break
             print('testing batch {}'.format(i))
             images, labels = data['image'], data['label']
             images, labels = images.to(device), labels.to(device)

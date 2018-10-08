@@ -11,86 +11,15 @@ import h5py
 import os
 import argparse
 
+from torch_fashion_data import make_data_loaders
+from torch_fashion_data import FashionMNISTDataset as fdset
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', default=32, type=int, help='batch size')
 parser.add_argument('--num-epochs', default=1, type=int, help='num. epochs')
 parser.add_argument('--data-dir', default='', type=str, help='data dir')
 parser.add_argument('--model-dir', default='fashion', type=str,
                     help='model dir')
-
-
-def make_file_paths(data_dir):
-    testfile = os.path.join(data_dir, 'fashion_test.hdf5')
-    trainfile = os.path.join(data_dir, 'fashion_train.hdf5')
-    meanfile = os.path.join(data_dir, 'fashion_mean.npy')
-    stdfile = os.path.join(data_dir, 'fashion_stddev.npy')
-    return testfile, trainfile, meanfile, stdfile
-
-
-def make_means(trainfile, meanfile, stdfile):
-    f = h5py.File(trainfile, 'r')
-    m = np.mean(f['fashion/images'], axis=0)
-    s = np.std(f['fashion/images'], axis=0)
-    np.save(meanfile, m)
-    np.save(stdfile, s)
-    f.close()
-
-
-class FashionMNISTDataset(Dataset):
-
-    label_names = [
-        'T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-        'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot'
-    ]
-
-    def __init__(self, hdf5_file, transform=None):
-        super(FashionMNISTDataset, self).__init__()
-        self._nlabels = 10
-        self._file = hdf5_file
-        self._f = h5py.File(self._file, 'r')
-        self.transform = transform
-
-    def __len__(self):
-        return len(self._f['fashion/labels'])
-
-    def __getitem__(self, idx):
-        image = self._f['fashion/images'][idx]
-        label = self._f['fashion/labels'][idx].reshape([-1])
-        oh_label = np.zeros((1, self._nlabels), dtype=np.uint8)
-        oh_label[0, label] = 1
-        oh_label = oh_label.reshape(self._nlabels,)
-        sample = {'image': image, 'label': oh_label}
-        if self.transform:
-            sample = self.transform(sample)
-        return sample
-
-
-class Standardize(object):
-    '''transform to shift images to unit variance and zero mean'''
-
-    def __init__(self, mean_file, std_file):
-        self.mean = np.load(mean_file)
-        self.std = np.load(mean_file)
-        assert (self.std == 0).any() == False, '0-values in std. dev.'
-
-    def __call__(self, sample):
-        img = (sample['image'] - self.mean) / self.std
-        return {'image': img, 'label': sample['label']}
-
-
-class ToTensor(object):
-    '''transform for moving fashion data to tensors'''
-
-    def __call__(self, sample):
-        '''CrossEntropyLoss does not expect a one-hot encoded vector'''
-        image, label = sample['image'], sample['label']
-        # torch.max(torch.from_numpy(label).type(torch.LongTensor))
-        return {
-            'image': torch.from_numpy(image).float(),
-            'label': torch.argmax(
-                torch.from_numpy(label).type(torch.LongTensor)
-            )
-        }
 
 
 class Net(nn.Module):
@@ -117,6 +46,20 @@ class Net(nn.Module):
         return x
 
 
+class WrapDataLoader(object):
+
+    def __init__(self, dl):
+        self.dl = dl
+
+    def __len__(self):
+        return len(self.dl)
+
+    def __iter__(self):
+        batches = iter(self.dl)
+        for data in batches:
+            yield data['image'], data['label']
+
+
 def count_parameters(model):
     '''https://discuss.pytorch.org/t/how-do-i-check-the-number-of-parameters-of-a-model/4325/8'''
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -125,21 +68,8 @@ def count_parameters(model):
 def main(
     batch_size, num_epochs, data_dir, model_dir
 ):
-    testfile, trainfile, meanfile, stdfile = make_file_paths(data_dir)
-
-    standardizer = Standardize(mean_file=meanfile, std_file=stdfile)
-    trnsfrms = transforms.Compose([
-        standardizer, ToTensor()
-    ])
-
-    fashion_trainset = FashionMNISTDataset(trainfile, trnsfrms)
-    fashion_testset = FashionMNISTDataset(testfile, trnsfrms)
-
-    train_dataloader = DataLoader(
-        fashion_trainset, batch_size=batch_size, shuffle=True, num_workers=1
-    )
-    test_dataloader = DataLoader(
-        fashion_testset, batch_size=batch_size, shuffle=True, num_workers=1
+    train_dataloader, test_dataloader = make_data_loaders(
+        data_dir, batch_size=64
     )
 
     net = Net()
@@ -156,10 +86,10 @@ def main(
         print('epch = {}'.format(epoch))
 
         running_loss = 0.0
-        for i, data in enumerate(train_dataloader, 0):
+        trndl = WrapDataLoader(train_dataloader)
+        for i, (inputs, labels) in enumerate(trndl, 0):
             if i > 10:
                 break
-            inputs, labels = data['image'], data['label']
             inputs, labels = inputs.to(device), labels.to(device)
 
             # zero the parameter gradients
@@ -194,13 +124,11 @@ def main(
             correct += (preds == labels).sum().item()
             if i % 10 == 9:
                 print('batch {} truth: '.format(i)
-                      + ' '.join('%5s' % FashionMNISTDataset.label_names[
-                          labels[j]
-                      ] for j in range(4)))
+                      + ' '.join('%5s' % fdset.label_names[labels[j]]
+                                 for j in range(4)))
                 print('         preds: '
-                      + ' '.join('%5s' % FashionMNISTDataset.label_names[
-                          preds[j]
-                      ] for j in range(4)))
+                      + ' '.join('%5s' % fdset.label_names[preds[j]]
+                                 for j in range(4)))
 
     print('accuracy of net on 10,000 test images: %d %%' % (
         100 * correct / total

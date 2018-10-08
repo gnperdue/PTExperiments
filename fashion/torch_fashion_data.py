@@ -65,6 +65,21 @@ class ToTensor(object):
         }
 
 
+class WrapDataLoader(object):
+    '''class to manage pulling returned dict apart'''
+
+    def __init__(self, dl):
+        self.dl = dl
+
+    def __len__(self):
+        return len(self.dl)
+
+    def __iter__(self):
+        batches = iter(self.dl)
+        for data in batches:
+            yield data['image'], data['label']
+
+
 def make_file_paths(data_dir):
     testfile = os.path.join(data_dir, 'fashion_test.hdf5')
     trainfile = os.path.join(data_dir, 'fashion_train.hdf5')
@@ -93,11 +108,11 @@ def make_data_loaders(data_dir, batch_size):
     fashion_trainset = FashionMNISTDataset(trainfile, trnsfrms)
     fashion_testset = FashionMNISTDataset(testfile, trnsfrms)
 
-    train_dataloader = DataLoader(
+    train_dataloader = WrapDataLoader(DataLoader(
         fashion_trainset, batch_size=batch_size, shuffle=True, num_workers=1
-    )
-    test_dataloader = DataLoader(
+    ))
+    test_dataloader = WrapDataLoader(DataLoader(
         fashion_testset, batch_size=batch_size, shuffle=True, num_workers=1
-    )
+    ))
 
     return train_dataloader, test_dataloader

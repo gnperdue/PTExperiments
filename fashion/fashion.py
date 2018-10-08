@@ -46,20 +46,6 @@ class Net(nn.Module):
         return x
 
 
-class WrapDataLoader(object):
-
-    def __init__(self, dl):
-        self.dl = dl
-
-    def __len__(self):
-        return len(self.dl)
-
-    def __iter__(self):
-        batches = iter(self.dl)
-        for data in batches:
-            yield data['image'], data['label']
-
-
 def count_parameters(model):
     '''https://discuss.pytorch.org/t/how-do-i-check-the-number-of-parameters-of-a-model/4325/8'''
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -86,8 +72,7 @@ def main(
         print('epch = {}'.format(epoch))
 
         running_loss = 0.0
-        trndl = WrapDataLoader(train_dataloader)
-        for i, (inputs, labels) in enumerate(trndl, 0):
+        for i, (inputs, labels) in enumerate(train_dataloader, 0):
             if i > 10:
                 break
             inputs, labels = inputs.to(device), labels.to(device)
@@ -112,11 +97,10 @@ def main(
     correct = 0
     total = 0
     with torch.no_grad():
-        for i, data in enumerate(test_dataloader, 0):
+        for i, (images, labels) in enumerate(test_dataloader, 0):
             if i > 40:
                 break
             print('testing batch {}'.format(i))
-            images, labels = data['image'], data['label']
             images, labels = images.to(device), labels.to(device)
             outputs = net(images)
             _, preds = torch.max(outputs.data, 1)

@@ -73,8 +73,6 @@ def main(
 
         running_loss = 0.0
         for i, (inputs, labels) in enumerate(train_dataloader, 0):
-            if i > 10:
-                break
             inputs, labels = inputs.to(device), labels.to(device)
 
             # zero the parameter gradients
@@ -92,6 +90,8 @@ def main(
                     epoch + 1, i + 1, running_loss / 10
                 ))
                 running_loss = 0.0
+
+    torch.save(net.state_dict(), './myfashionmodel.pth')
 
     # test
     correct = 0

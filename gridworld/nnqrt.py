@@ -4,6 +4,7 @@ import time
 
 from models import build_model as build_model_function
 from trainers import RLTrainer as Trainer
+from utils import get_logging_level
 
 import warnings
 # 'error' to stop on warns, 'ignore' to ignore silly matplotlib noise
@@ -20,6 +21,8 @@ parser.add_argument('--game-mode', default='random', type=str,
 parser.add_argument('--game-size', default=4, type=int, help='game size')
 parser.add_argument('--learning_rate', default=1e-3, type=float,
                     help='learning rate')
+parser.add_argument('--log-level', default='INFO', type=str,
+                    help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
 parser.add_argument('--num-epochs', default=100, type=int,
                     help='number of epochs')
 parser.add_argument('--saved-losses-path', default='losses.npy', type=str,
@@ -28,22 +31,25 @@ parser.add_argument('--saved-winpct-path', default='winpct.npy', type=str,
                     help='saved win percentages location')
 parser.add_argument('--target-network-update', default=500, type=int,
                     help='target network update period')
-
-logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
-    + str(int(time.time())) + '.txt'
-logging.basicConfig(
-    filename=logfilename, level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-LOGGER = logging.getLogger(__name__)
-LOGGER.info("Starting...")
-LOGGER.info(__file__)
+parser.add_argument('--verbose', default=False, action='store_true',
+                    help='print tdqm and other output')
 
 
 def main(
     batch_size, buffer, ckpt_path, gamma, game_mode, game_size, learning_rate,
-    num_epochs, saved_losses_path, saved_winpct_path, target_network_update
+    log_level, num_epochs, saved_losses_path, saved_winpct_path,
+    target_network_update, verbose
 ):
+    logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
+        + str(int(time.time())) + '.txt'
+    logging.basicConfig(
+        filename=logfilename, level=get_logging_level(log_level),
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    LOGGER = logging.getLogger(__name__)
+    LOGGER.info("Starting...")
+    LOGGER.info(__file__)
+
     # * create and configure a RLTrainer
     game_parameters = {}
     game_parameters['mode'] = game_mode
@@ -57,6 +63,7 @@ def main(
     train_parameters['saved_losses_path'] = saved_losses_path
     train_parameters['saved_winpct_path'] = saved_winpct_path
     train_parameters['target_network_update'] = target_network_update
+    train_parameters['verbose'] = verbose
     trainer = Trainer(game_parameters, train_parameters)
 
     # * train and validate

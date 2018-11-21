@@ -21,6 +21,7 @@ class RLTrainer(object):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu'
         )
+        LOGGER.info('Device = {}'.format(self.device))
         self.action_set = Game.action_set
         self.game_parameters = game_parameters
         self._configure(train_parameters)
@@ -48,7 +49,7 @@ class RLTrainer(object):
             'target_network_update', 500
         )
         self.verbose = train_d.get('verbose', False)
-        self._f = (lambda x: x) if self.verbose else tqdm
+        self._f = tqdm if self.verbose else (lambda x: x)
         # for visualizing training progress
         self.losses = []
         self.winpct = []
@@ -237,12 +238,10 @@ class RLTrainer(object):
                     loss.backward()
                     self.losses.append((step, loss.item()))
                     self.optimizer.step()
-                    # TODO - log losses
-                    if self.verbose:
-                        LOGGER.info(
-                            'epoch={:06d}, step={:08d}, loss={:04.8f}'.format(
-                                epoch, step, loss.item()
-                            ))
+                    LOGGER.debug(
+                        'epoch={:06d}, step={:08d}, loss={:04.8f}'.format(
+                            epoch, step, loss.item()
+                        ))
 
                 state = new_state
                 move_count, status = self._check_continue(reward, move_count)

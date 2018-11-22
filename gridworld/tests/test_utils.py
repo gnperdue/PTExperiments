@@ -5,7 +5,7 @@ Usage:
 '''
 import logging
 import unittest
-import utils
+import gridrl.utils as utils
 
 
 class TestUtils(unittest.TestCase):

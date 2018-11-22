@@ -2,9 +2,9 @@ import argparse
 import logging
 import time
 
-from models import build_model as build_model_function
-from trainers import RLTrainer as Trainer
-from utils import get_logging_level
+from gridrl.models import build_model as build_model_function
+from gridrl.trainers import RLTrainer as Trainer
+from gridrl.utils import get_logging_level
 
 import warnings
 # 'error' to stop on warns, 'ignore' to ignore silly matplotlib noise

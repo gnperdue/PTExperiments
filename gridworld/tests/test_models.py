@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 
-from models import build_model as build_model_function
+from gridrl.models import build_model as build_model_function
 
 
 class TestModels(unittest.TestCase):

@@ -5,8 +5,8 @@ Usage:
 '''
 import unittest
 
-from models import build_model as build_model_function
-import trainers
+from gridrl.models import build_model as build_model_function
+import gridrl.trainers as trainers
 
 
 class TestTrainers(unittest.TestCase):

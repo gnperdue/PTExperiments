@@ -9,7 +9,7 @@ import logging
 import time
 
 from tqdm import tqdm
-from Gridworld import Gridworld as Game
+from gridworld.gridworld import Gridworld as Game
 
 
 LOGGER = logging.getLogger(__name__)

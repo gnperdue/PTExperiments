@@ -2,9 +2,9 @@
 Gridworld game code originally from
     https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction
 '''
-from GridBoard import GridBoard
-from GridBoard import randPair
-from GridBoard import addTuple
+from gridworld.gridboard import GridBoard
+from gridworld.gridboard import randPair
+from gridworld.gridboard import addTuple
 
 
 class Gridworld(object):

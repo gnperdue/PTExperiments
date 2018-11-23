@@ -2,7 +2,7 @@ import argparse
 import logging
 import time
 
-from gridrl.models import build_basic_model as build_model_function
+from gridrl.models import build_basic_model
 from gridrl.trainers import RLTrainer as Trainer
 from gridrl.utils import get_logging_level
 
@@ -23,6 +23,8 @@ parser.add_argument('--learning_rate', default=1e-3, type=float,
                     help='learning rate')
 parser.add_argument('--log-level', default='INFO', type=str,
                     help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
+parser.add_argument('--make-plot', default=False, action='store_true',
+                    help='plot win percentages and losses')
 parser.add_argument('--num-epochs', default=100, type=int,
                     help='number of epochs')
 parser.add_argument('--saved-losses-path', default='losses.npy', type=str,
@@ -37,7 +39,7 @@ parser.add_argument('--verbose', default=False, action='store_true',
 
 def main(
     batch_size, buffer, ckpt_path, gamma, game_mode, game_size, learning_rate,
-    log_level, num_epochs, saved_losses_path, saved_winpct_path,
+    log_level, make_plot, num_epochs, saved_losses_path, saved_winpct_path,
     target_network_update, verbose
 ):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
@@ -67,9 +69,9 @@ def main(
     trainer = Trainer(game_parameters, train_parameters)
 
     # * train and validate
-    trainer.build_or_restore_model_and_optimizer(build_model_function)
+    trainer.build_or_restore_model_and_optimizer(build_basic_model)
     trainer.train_model_with_target_replay(num_epochs)
-    trainer.save_losses_and_winpct_plots()
+    trainer.save_losses_and_winpct_plots(make_plot)
 
 
 if __name__ == '__main__':

@@ -257,7 +257,7 @@ class RLTrainer(object):
         self.play_model(step_count=step)
         self._save_model(epoch, step)
 
-    def save_losses_and_winpct_plots(self):
+    def save_losses_and_winpct_plots(self, make_plot):
 
         def running_mean(x, N=500):
             cumsum = np.cumsum(np.insert(x, 0, 0))
@@ -274,20 +274,21 @@ class RLTrainer(object):
         nrunning_mean = 5
         running_loss = running_mean(loss_loss, N=nrunning_mean)
 
-        fig = plt.figure()
-        gs = plt.GridSpec(1, 2)
+        if make_plot:
+            fig = plt.figure()
+            gs = plt.GridSpec(1, 2)
 
-        ax1 = plt.subplot(gs[0])
-        ax1.scatter(wins_stps, wins_wins)
-        ax1.set_xlabel('Steps')
-        ax1.set_ylabel('Win percentage')
-        ax1.set_ylim(0., 1.)
-        ax2 = plt.subplot(gs[1])
-        ax2.scatter(loss_stps[nrunning_mean - 1:], running_loss)
-        ax2.set_xlabel('Steps')
-        ax2.set_ylabel('Running Loss')
-        ax2.set_ylim(0., 3.)
+            ax1 = plt.subplot(gs[0])
+            ax1.scatter(wins_stps, wins_wins)
+            ax1.set_xlabel('Steps')
+            ax1.set_ylabel('Win percentage')
+            ax1.set_ylim(0., 1.)
+            ax2 = plt.subplot(gs[1])
+            ax2.scatter(loss_stps[nrunning_mean - 1:], running_loss)
+            ax2.set_xlabel('Steps')
+            ax2.set_ylabel('Running Loss')
+            ax2.set_ylim(0., 3.)
 
-        fig.tight_layout()
-        figname = 'deepq_targrep_%d.pdf' % (time.time())
-        plt.savefig(figname, bbox_inches='tight')
+            fig.tight_layout()
+            figname = 'deepq_targrep_%d.pdf' % (time.time())
+            plt.savefig(figname, bbox_inches='tight')

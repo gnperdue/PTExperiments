@@ -36,7 +36,9 @@ class TestTrainers(unittest.TestCase):
         train_parameters['saved_winpct_path'] = self.saved_winpct_path
         train_parameters['target_network_update'] = self.target_network_update
         self.trainer = trainers.RLTrainer(game_parameters, train_parameters)
-        self.trainer.build_or_restore_model_and_optimizer(build_model_function)
+        self.trainer.build_or_restore_model_and_optimizer(
+            build_model_function, False
+        )
 
     def test_parameters(self):
         self.assertEqual(self.trainer.batch_size, self.batch_size)

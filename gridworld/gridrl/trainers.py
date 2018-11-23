@@ -10,6 +10,7 @@ import time
 
 from tqdm import tqdm
 from games.gridworld import Gridworld as Game
+from gridrl.utils import count_parameters
 
 
 LOGGER = logging.getLogger(__name__)
@@ -73,6 +74,9 @@ class RLTrainer(object):
         * conv - T/F - how to reshape game input
         '''
         self.model = build_model_function()
+        LOGGER.info('model has {} parameters'.format(
+            count_parameters(self.model)
+        ))
         self.conv = conv
         self.optimizer = torch.optim.Adam(self.model.parameters(),
                                           lr=self.learning_rate)
@@ -281,28 +285,34 @@ class RLTrainer(object):
         loss_arr = np.asarray(self.losses)
         np.save(self.saved_losses_path, loss_arr)
         np.save(self.saved_winpct_path, wins_arr)
-        wins_stps = wins_arr[:, 0]
-        wins_wins = wins_arr[:, 1]
-        loss_stps = loss_arr[:, 0]
-        loss_loss = loss_arr[:, 1]
-        nrunning_mean = 5
-        running_loss = running_mean(loss_loss, N=nrunning_mean)
 
         if make_plot:
-            fig = plt.figure()
-            gs = plt.GridSpec(1, 2)
 
-            ax1 = plt.subplot(gs[0])
-            ax1.scatter(wins_stps, wins_wins)
-            ax1.set_xlabel('Steps')
-            ax1.set_ylabel('Win percentage')
-            ax1.set_ylim(0., 1.)
-            ax2 = plt.subplot(gs[1])
-            ax2.scatter(loss_stps[nrunning_mean - 1:], running_loss)
-            ax2.set_xlabel('Steps')
-            ax2.set_ylabel('Running Loss')
-            ax2.set_ylim(0., 3.)
+            try:
+                wins_stps = wins_arr[:, 0]
+                wins_wins = wins_arr[:, 1]
+                loss_stps = loss_arr[:, 0]
+                loss_loss = loss_arr[:, 1]
+                nrunning_mean = 5
+                running_loss = running_mean(loss_loss, N=nrunning_mean)
 
-            fig.tight_layout()
-            figname = 'deepq_targrep_%d.pdf' % (time.time())
-            plt.savefig(figname, bbox_inches='tight')
+                fig = plt.figure()
+                gs = plt.GridSpec(1, 2)
+
+                ax1 = plt.subplot(gs[0])
+                ax1.scatter(wins_stps, wins_wins)
+                ax1.set_xlabel('Steps')
+                ax1.set_ylabel('Win percentage')
+                ax1.set_ylim(0., 1.)
+                ax2 = plt.subplot(gs[1])
+                ax2.scatter(loss_stps[nrunning_mean - 1:], running_loss)
+                ax2.set_xlabel('Steps')
+                ax2.set_ylabel('Running Loss')
+                ax2.set_ylim(0., 3.)
+
+                fig.tight_layout()
+                figname = 'deepq_targrep_%d.pdf' % (time.time())
+                plt.savefig(figname, bbox_inches='tight')
+            except IndexError as e:
+                LOGGER.error(e)
+                LOGGER.error('Empty loss/winpct arrays...')

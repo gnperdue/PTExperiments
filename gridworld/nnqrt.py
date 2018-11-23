@@ -3,6 +3,7 @@ import logging
 import time
 
 from gridrl.models import build_basic_model
+from gridrl.models import build_conv_model
 from gridrl.trainers import RLTrainer as Trainer
 from gridrl.utils import get_logging_level
 
@@ -15,6 +16,8 @@ parser.add_argument('--batch-size', default=100, type=int, help='batch size')
 parser.add_argument('--buffer', default=500, type=int, help='replay buffer')
 parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
+parser.add_argument('--conv', default=False, action='store_true',
+                    help='use a convolutional net')
 parser.add_argument('--gamma', default=0.95, type=float, help='discount')
 parser.add_argument('--game-mode', default='random', type=str,
                     help='initial board configuration')
@@ -38,9 +41,9 @@ parser.add_argument('--verbose', default=False, action='store_true',
 
 
 def main(
-    batch_size, buffer, ckpt_path, gamma, game_mode, game_size, learning_rate,
-    log_level, make_plot, num_epochs, saved_losses_path, saved_winpct_path,
-    target_network_update, verbose
+    batch_size, buffer, ckpt_path, conv, gamma, game_mode, game_size,
+    learning_rate, log_level, make_plot, num_epochs, saved_losses_path,
+    saved_winpct_path, target_network_update, verbose
 ):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
         + str(int(time.time())) + '.txt'
@@ -69,7 +72,10 @@ def main(
     trainer = Trainer(game_parameters, train_parameters)
 
     # * train and validate
-    trainer.build_or_restore_model_and_optimizer(build_basic_model)
+    if conv:
+        trainer.build_or_restore_model_and_optimizer(build_conv_model)
+    else:
+        trainer.build_or_restore_model_and_optimizer(build_basic_model)
     trainer.train_model_with_target_replay(num_epochs)
     trainer.save_losses_and_winpct_plots(make_plot)
 

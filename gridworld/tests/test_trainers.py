@@ -5,7 +5,7 @@ Usage:
 '''
 import unittest
 
-from gridrl.models import build_model as build_model_function
+from gridrl.models import build_basic_model as build_model_function
 import gridrl.trainers as trainers
 
 

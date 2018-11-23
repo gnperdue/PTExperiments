@@ -2,7 +2,7 @@ import argparse
 import logging
 import time
 
-from gridrl.models import build_model as build_model_function
+from gridrl.models import build_basic_model as build_model_function
 from gridrl.trainers import RLTrainer as Trainer
 from gridrl.utils import get_logging_level
 

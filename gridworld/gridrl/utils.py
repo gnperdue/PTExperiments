@@ -20,3 +20,8 @@ def get_logging_level(log_level):
         print('Unknown or unset logging level. Using INFO')
 
     return logging_level
+
+
+def count_parameters(model):
+    '''https://discuss.pytorch.org/t/how-do-i-check-the-number-of-parameters-of-a-model/4325/8'''
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)

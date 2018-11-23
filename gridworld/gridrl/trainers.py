@@ -23,7 +23,8 @@ class RLTrainer(object):
         )
         LOGGER.info('Device = {}'.format(self.device))
         self.action_set = Game.action_set
-        self.game_parameters = game_parameters
+        self.game_size = game_parameters['size']
+        self.game_mode = game_parameters['mode']
         self._configure(train_parameters)
 
     def _configure(self, train_d):
@@ -63,8 +64,16 @@ class RLTrainer(object):
         except FileNotFoundError:
             pass
 
-    def build_or_restore_model_and_optimizer(self, build_model_function):
+    def build_or_restore_model_and_optimizer(
+        self, build_model_function, conv
+    ):
+        '''
+        params:
+        * build_model_function - fn that returns the model to be used
+        * conv - T/F - how to reshape game input
+        '''
         self.model = build_model_function()
+        self.conv = conv
         self.optimizer = torch.optim.Adam(self.model.parameters(),
                                           lr=self.learning_rate)
         self.start_epoch = 0
@@ -95,8 +104,7 @@ class RLTrainer(object):
         self.target_model.to(self.device)
 
     def _new_game(self):
-        game = Game(size=self.game_parameters['size'],
-                    mode=self.game_parameters['mode'])
+        game = Game(size=self.game_size, mode=self.game_mode)
         return game
 
     def _game_move_for_reward(self, game, action):
@@ -110,9 +118,15 @@ class RLTrainer(object):
         return move_count, 1
 
     def _get_torch_state(self, game, noise_factor=100.0):
-        game_ndim = game.getDim()
-        state_ = game.board.render_np().reshape(1, game_ndim) + \
-            np.random.rand(1, game_ndim) / noise_factor
+        game_boardsz = game.board.size
+        if self.conv:
+            state_ = game.board.render_np() + \
+                np.random.rand(4, game_boardsz, game_boardsz) / noise_factor
+            state_ = state_.reshape(1, 4, game_boardsz, game_boardsz)
+        else:
+            full_game_size = 4 * game_boardsz * game_boardsz
+            state_ = game.board.render_np().reshape(1, full_game_size) + \
+                np.random.rand(1, full_game_size) / noise_factor
         state = Variable(torch.from_numpy(state_).float()).to(self.device)
         return state
 

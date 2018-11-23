@@ -73,9 +73,9 @@ def main(
 
     # * train and validate
     if conv:
-        trainer.build_or_restore_model_and_optimizer(build_conv_model)
+        trainer.build_or_restore_model_and_optimizer(build_conv_model, conv)
     else:
-        trainer.build_or_restore_model_and_optimizer(build_basic_model)
+        trainer.build_or_restore_model_and_optimizer(build_basic_model, conv)
     trainer.train_model_with_target_replay(num_epochs)
     trainer.save_losses_and_winpct_plots(make_plot)
 

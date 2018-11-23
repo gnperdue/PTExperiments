@@ -274,7 +274,7 @@ class RLTrainer(object):
         nrunning_mean = 5
         running_loss = running_mean(loss_loss, N=nrunning_mean)
 
-        fig = plt.figure(1)
+        fig = plt.figure()
         gs = plt.GridSpec(1, 2)
 
         ax1 = plt.subplot(gs[0])

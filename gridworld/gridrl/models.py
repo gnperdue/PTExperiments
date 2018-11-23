@@ -7,8 +7,8 @@ class ConvNet(nn.Module):
 
     def __init__(self):
         super(ConvNet, self).__init__()
-        self.conv1 = nn.Conv2d(4, 32, 2)
-        self.conv2 = nn.Conv2d(32, 64, 2)
+        self.conv1 = nn.Conv2d(4, 32, 2, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, 2, padding=1)
         self.adaptive_pool = nn.AdaptiveAvgPool2d(2)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)

@@ -89,13 +89,13 @@ class RLTrainer(object):
             self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
             self.start_epoch = checkpoint['epoch'] + 1
             self.start_step = checkpoint['step'] + 1
-            if epsilon is not None:
-                self.epsilon = epsilon
-            else:
-                self.epsilon = checkpoint['epsilon']
+            self.epsilon = checkpoint['epsilon']
             LOGGER.info('Loaded checkpoint from {}'.format(self.ckpt_path))
         except FileNotFoundError:
             LOGGER.info('No checkpoint found...')
+
+        if epsilon is not None:
+            self.epsilon = epsilon
 
         LOGGER.info('Model state dict:')
         for param_tensor in self.model.state_dict():

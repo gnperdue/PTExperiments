@@ -16,6 +16,7 @@ class TestTrainers(unittest.TestCase):
         self.batch_size = 100
         self.buffer = 500
         self.ckpt_path = 'test_ckpt.tar'
+        self.epsilon = 0.75
         self.gamma = 0.95
         self.learning_rate = 1e-3
         self.saved_losses_path = 'test_losses.npy'
@@ -37,13 +38,15 @@ class TestTrainers(unittest.TestCase):
         train_parameters['target_network_update'] = self.target_network_update
         self.trainer = trainers.RLTrainer(game_parameters, train_parameters)
         self.trainer.build_or_restore_model_and_optimizer(
-            build_model_function, False
+            build_model_function, False, self.epsilon
         )
+        self.trainer.save_losses_and_winpct_plots(False)
 
     def test_parameters(self):
         self.assertEqual(self.trainer.batch_size, self.batch_size)
         self.assertEqual(self.trainer.buffer, self.buffer)
         self.assertEqual(self.trainer.ckpt_path, self.ckpt_path)
+        self.assertEqual(self.trainer.epsilon, self.epsilon)
         self.assertEqual(self.trainer.gamma, self.gamma)
         self.assertEqual(self.trainer.learning_rate, self.learning_rate)
         self.assertEqual(self.trainer.saved_losses_path,

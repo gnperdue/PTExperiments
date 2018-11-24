@@ -18,6 +18,8 @@ parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
 parser.add_argument('--conv', default=False, action='store_true',
                     help='use a convolutional net')
+parser.add_argument('--epsilon', default=None, type=float,
+                    help='random action probability (use as reset)')
 parser.add_argument('--gamma', default=0.95, type=float, help='discount')
 parser.add_argument('--game-mode', default='random', type=str,
                     help='initial board configuration')
@@ -41,7 +43,7 @@ parser.add_argument('--target-network-update', default=500, type=int,
 
 
 def main(
-    batch_size, buffer, ckpt_path, conv, gamma, game_mode, game_size,
+    batch_size, buffer, ckpt_path, conv, epsilon, gamma, game_mode, game_size,
     learning_rate, log_level, make_plot, num_epochs, saved_losses_path,
     saved_winpct_path, show_progress, target_network_update
 ):
@@ -73,9 +75,13 @@ def main(
 
     # * train and validate
     if conv:
-        trainer.build_or_restore_model_and_optimizer(build_conv_model, conv)
+        trainer.build_or_restore_model_and_optimizer(
+            build_conv_model, conv, epsilon
+        )
     else:
-        trainer.build_or_restore_model_and_optimizer(build_basic_model, conv)
+        trainer.build_or_restore_model_and_optimizer(
+            build_basic_model, conv, epsilon
+        )
     trainer.train_model_with_target_replay(num_epochs)
     trainer.save_losses_and_winpct_plots(make_plot)
 

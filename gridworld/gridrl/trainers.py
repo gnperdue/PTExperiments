@@ -66,7 +66,7 @@ class RLTrainer(object):
             pass
 
     def build_or_restore_model_and_optimizer(
-        self, build_model_function, conv
+        self, build_model_function, conv, epsilon=None
     ):
         '''
         params:
@@ -89,7 +89,10 @@ class RLTrainer(object):
             self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
             self.start_epoch = checkpoint['epoch'] + 1
             self.start_step = checkpoint['step'] + 1
-            self.epsilon = checkpoint['epsilon']
+            if epsilon is not None:
+                self.epsilon = epsilon
+            else:
+                self.epsilon = checkpoint['epsilon']
             LOGGER.info('Loaded checkpoint from {}'.format(self.ckpt_path))
         except FileNotFoundError:
             LOGGER.info('No checkpoint found...')
@@ -223,8 +226,8 @@ class RLTrainer(object):
 
     def train_model_with_target_replay(self, epochs):
         LOGGER.info('Running training...')
-        LOGGER.info(' Start epoch = {}; start step = {}'.format(
-            self.start_epoch, self.start_step
+        LOGGER.info(' Start epoch = {}; start step = {}; epsilon = {}'.format(
+            self.start_epoch, self.start_step, self.epsilon
         ))
         replay, step, c_step = [], self.start_step, 0
         for epoch in self._f(

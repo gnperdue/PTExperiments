@@ -11,9 +11,10 @@ class ConvNet(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, 2, padding=1)
         self.adaptive_pool = nn.AdaptiveAvgPool2d(2)
         self.dropout1 = nn.Dropout(0.25)
-        self.dropout2 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.25)
         self.fc1 = nn.Linear(64 * 2 * 2, 128)
-        self.fc2 = nn.Linear(128, 4)
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, 4)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
@@ -23,6 +24,7 @@ class ConvNet(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.dropout2(x)
         x = self.fc2(x)
+        x = self.fc3(x)
         return x
 
 

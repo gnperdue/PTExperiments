@@ -50,8 +50,8 @@ class RLTrainer(object):
         self.target_network_update = train_d.get(
             'target_network_update', 500
         )
-        self.verbose = train_d.get('verbose', False)
-        self._f = tqdm if self.verbose else (lambda x: x)
+        self.show_progress = train_d.get('show_progress', False)
+        self._f = tqdm if self.show_progress else (lambda x: x)
         # for visualizing training progress
         self.losses = []
         self.winpct = []

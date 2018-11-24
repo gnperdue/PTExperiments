@@ -34,16 +34,16 @@ parser.add_argument('--saved-losses-path', default='losses.npy', type=str,
                     help='saved losses location')
 parser.add_argument('--saved-winpct-path', default='winpct.npy', type=str,
                     help='saved win percentages location')
+parser.add_argument('--show-progress', default=False, action='store_true',
+                    help='print tdqm and other output')
 parser.add_argument('--target-network-update', default=500, type=int,
                     help='target network update period')
-parser.add_argument('--verbose', default=False, action='store_true',
-                    help='print tdqm and other output')
 
 
 def main(
     batch_size, buffer, ckpt_path, conv, gamma, game_mode, game_size,
     learning_rate, log_level, make_plot, num_epochs, saved_losses_path,
-    saved_winpct_path, target_network_update, verbose
+    saved_winpct_path, show_progress, target_network_update
 ):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
         + str(int(time.time())) + '.txt'
@@ -68,7 +68,7 @@ def main(
     train_parameters['saved_losses_path'] = saved_losses_path
     train_parameters['saved_winpct_path'] = saved_winpct_path
     train_parameters['target_network_update'] = target_network_update
-    train_parameters['verbose'] = verbose
+    train_parameters['show_progress'] = show_progress
     trainer = Trainer(game_parameters, train_parameters)
 
     # * train and validate

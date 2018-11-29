@@ -7,6 +7,7 @@ import copy
 import random
 import logging
 import time
+import datetime
 
 from tqdm import tqdm
 from games.gridworld import Gridworld as Game
@@ -230,6 +231,7 @@ class RLTrainer(object):
             self.start_epoch, self.start_step, self.epsilon
         ))
         replay, step, c_step = [], self.start_step, 0
+        t0 = time.perf_counter()
         for epoch in self._f(
             range(self.start_epoch, self.start_epoch + epochs)
         ):
@@ -277,6 +279,10 @@ class RLTrainer(object):
         # Final save
         self.play_model(step_count=step)
         self._save_model(epoch, step)
+        t1 = time.perf_counter()
+        LOGGER.info('Total train time for {} epochs = {:04.3f}s = {}'.format(
+            epochs, t1 - t0, str(datetime.timedelta(seconds=t1-t0))
+        ))
 
     def save_losses_and_winpct_plots(self, make_plot):
 

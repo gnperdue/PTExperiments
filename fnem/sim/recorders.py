@@ -35,7 +35,7 @@ class MachineStateTextRecorder(object):
         '''
         with gzip.open(self.log_name + '.gz', 'rb') as f:
             content = f.readlines()
-            content = [x.strip() for x in content]
+            content = [x.decode('utf8').strip() for x in content]
         return content
 
     def close(self):
@@ -43,6 +43,6 @@ class MachineStateTextRecorder(object):
             with gzip.open(self.gzfile, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         if os.path.isfile(self.gzfile) and (os.stat(self.gzfile).st_size > 0):
-            os.remove(self.db_name)
+            os.remove(self.log_name)
         else:
             raise IOError('Compressed file not produced!')

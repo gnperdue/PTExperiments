@@ -4,6 +4,9 @@ import os
 
 
 class MachineStateTextRecorder(object):
+    '''
+    record time, machine setting, sensor values, true values
+    '''
 
     def __init__(self, log_base_name):
         self.log_name = log_base_name + '.csv'
@@ -15,13 +18,14 @@ class MachineStateTextRecorder(object):
             if os.path.isfile(f):
                 os.remove(f)
 
-    def write_data(self, t, measurements, targets):
+    def write_data(self, t, setting, measurements, targets):
         '''measurements are measured sensors, targets are true values'''
         try:
             with open(self.log_name, 'ab+') as f:
                 meas_string = ','.join([str(i) for i in measurements])
                 targ_string = ','.join([str(i) for i in targets])
-                msg = str(t) + ',' + meas_string + ',' + targ_string + '\n'
+                msg = str(t) + ',' + str(setting) + ',' + meas_string + \
+                    ',' + targ_string + '\n'
                 f.write(bytes(msg, 'utf8'))
             return True
         except Exception as e:

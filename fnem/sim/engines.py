@@ -27,11 +27,7 @@ class SimulationMachine(object):
         self._true_state = 0.0
         self._commands = commands or SimulationMachine.default_commands
         self._sensors = np.zeros(4, dtype=DTYPE)
-        if logger is None:
-            self._live_mode = True
-        else:
-            self._live_mode = False
-            self._logger = logger
+        self._logger = logger
 
     def update_machine(self, command):
         '''command is the index of the step change'''
@@ -43,6 +39,9 @@ class SimulationMachine(object):
         noise = self._noise_model.gen_noise(data)
         measured = data + noise
         self._sensors = measured
+        if self._logger is not None:
+            self._logger.write_data(self._data_generator.t, self._setting,
+                                    measured, data)
 
     def get_heat(self):
         return self._true_state - self._setting

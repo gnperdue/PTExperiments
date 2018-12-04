@@ -49,3 +49,7 @@ class SimpleRuleBased(object):
         diffs = np.abs(self._commands - delta)
         command = np.argmin(diffs)
         return command
+
+    def update_setting(self, command):
+        '''command is the index of the step change'''
+        self._setting = self._setting + self._commands[command]

@@ -38,12 +38,12 @@ class SimpleRuleBased(object):
         0->1, then from -ampl to ampl as t goes from 1->2
         '''
         t = self._time % 2
-        if t < 1.0:
+        if t < (self._period / 2.0):
             slope = -2.0 * self._amplitude
             intercept = self._amplitude
-        if t >= 1.0:
+        if t >= (self._period / 2.0):
             slope = 2.0 * self._amplitude
-            intercept = -self._amplitude
+            intercept = -3.0 * self._amplitude
         target = slope * t + intercept
         delta = target - self._setting
         diffs = np.abs(self._commands - delta)

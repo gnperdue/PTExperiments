@@ -57,3 +57,6 @@ class SimulationMachine(object):
 
     def get_sensor_values(self):
         return list(self._sensors)
+
+    def close_logger(self):
+        self._logger.close()

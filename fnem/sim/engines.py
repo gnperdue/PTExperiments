@@ -44,7 +44,7 @@ class SimulationMachine(object):
                                     measured, data)
 
     def get_heat(self):
-        return self._true_state - self._setting
+        return (self._true_state - self._setting) ** 2
 
     def get_time(self):
         return self._data_generator.t

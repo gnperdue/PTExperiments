@@ -28,8 +28,8 @@ class DataGenerator(object):
         return np.asarray(raw_vs, dtype=DTYPE)
 
     def step(self):
-        data = self._gen_point()
         self.t = self.t + self.time_step
+        data = self._gen_point()
         return data
 
 

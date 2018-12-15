@@ -11,6 +11,10 @@ N1AMP, N2AMP, N3AMP, N4AMP = 0.05, 0.04, 0.02, 0.01
 
 
 class DataGenerator(object):
+    '''
+    generate a set of oscillation patterns of different frequencies as function
+    of a discrete time-step - user must manually `step` the system with time.
+    '''
     amp = np.asarray([D1AMP, D2AMP, D3AMP, D4AMP], dtype=DTYPE)
     frq = np.pi * np.asarray([D1FRQ, D2FRQ, D3FRQ, D4FRQ], dtype=DTYPE)
 
@@ -34,6 +38,11 @@ class DataGenerator(object):
 
 
 class NoiseModel(object):
+    '''
+    generate a set of noise complimentary to the 'true' values from a
+    `DataGenerator` object. noise is a function of the true data values and
+    not a function of time.
+    '''
     default_noise_scale = [N1AMP, N2AMP, N3AMP, N4AMP]
 
     def __init__(self, drop_probability=0.0, noise_array=None):

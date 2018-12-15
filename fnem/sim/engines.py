@@ -5,13 +5,15 @@ from sim.data_model import DTYPE
 class SimulationMachine(object):
     '''
     intended operation:
-    1. update the machine setting
+    1. update the machine setting - use an action from the list of commands.
     2. step the machine
         a. step the data generator (generate data and advance the time)
         b. add noise
         c. update sensor values
         d. if logging, record machine state
     3. report the "heat" (difference between machine setting and true state)
+
+    when finished, call `close_logger()` to zip the log file.
     '''
     # default_commands = np.linspace(-0.5, 0.5, num=9, dtype=DTYPE)
     default_commands = np.array([-0.5, -0.375, -0.25, -0.125, 0.0,

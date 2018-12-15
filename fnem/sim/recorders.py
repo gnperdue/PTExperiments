@@ -5,7 +5,8 @@ import os
 
 class MachineStateTextRecorder(object):
     '''
-    record time, machine setting, sensor values, true values
+    record time, machine setting, sensor values, true values - log values to
+    a .csv file and gzip the file after calling `close()`.
     '''
 
     def __init__(self, log_base_name):
@@ -19,7 +20,12 @@ class MachineStateTextRecorder(object):
                 os.remove(f)
 
     def write_data(self, t, setting, measurements, targets):
-        '''measurements are measured sensors, targets are true values'''
+        '''
+        write t, the machine setting, the measurements and the targets (true
+        settings). measurements are affected by noise, targets are true values.
+        'heat' can be inferred as the difference between the sum of the true
+        values and the setting.
+        '''
         try:
             with open(self.log_name, 'ab+') as f:
                 meas_string = ','.join([str(i) for i in measurements])
@@ -34,7 +40,7 @@ class MachineStateTextRecorder(object):
 
     def read_data(self):
         '''
-        do not call this on large files
+        do not call this on large files (we just read it all).
         NOTE: we are assuming gzip compression has occurred!
         '''
         with gzip.open(self.log_name + '.gz', 'rb') as f:
@@ -43,6 +49,9 @@ class MachineStateTextRecorder(object):
         return content
 
     def close(self):
+        '''
+        zip the log file
+        '''
         with open(self.log_name, 'rb') as f_in:
             with gzip.open(self.gzfile, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)

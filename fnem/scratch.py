@@ -43,6 +43,8 @@ for i in range(2000):
     machine.update_machine(command)
     policy.update_setting(command)
 
+machine.close_logger()
+
 fig = plt.Figure(figsize=(10, 6))
 gs = plt.GridSpec(1, 4)
 ax1 = plt.subplot(gs[0])

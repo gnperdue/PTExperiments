@@ -1,3 +1,6 @@
+'''
+run _unit tests_ only, not functional tests...
+'''
 import unittest
 
 

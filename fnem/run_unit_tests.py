@@ -1,5 +1,5 @@
 '''
-run _unit tests_ only, not functional tests...
+run all the tests
 '''
 import unittest
 

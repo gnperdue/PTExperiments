@@ -72,8 +72,11 @@ def main(
             # trained.run(policy, batch_size, ckpt_path, num_steps)
             pass
         elif mode == 'TRAIN-HISTORICAL':
+            # here, don't train to result of actions, but difference between
+            # predicted action and historical action.
             pass
         elif mode == 'TRAIN-LIVE':
+            # here, "classical" RL training with a responsive system
             pass
         else:
             raise ValueError('Inappropriate mode ({}) for policy ({}).'.format(

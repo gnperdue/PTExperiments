@@ -5,3 +5,4 @@ losses.npy
 winpct.npy
 test*losses.npy
 test*winpct.npy
+.coverage

@@ -16,10 +16,10 @@ from sim.data_model import NoiseModel as Noise
 from sim.engines import SimulationMachine
 from policies.rule_based import SimpleRuleBased
 
-LOG_TEMPLATE = 'log_machinewithrule_%d'
-PLT_TEMPLATE = 'plt_machinewithrule_%d'
-REFERNECE_LOG = './reference_files/' + (LOG_TEMPLATE % 1544881179) + '.csv.gz'
-REFERENCE_PLT = './reference_files/' + (PLT_TEMPLATE % 1544881179) + '.pdf'
+from tests.common_defs import LOG_TEMPLATE
+from tests.common_defs import PLT_TEMPLATE
+from tests.common_defs import REFERNECE_LOG
+from tests.common_defs import REFERENCE_PLT
 
 
 class TestMachineWithRuleBased(unittest.TestCase):

@@ -1,11 +1,15 @@
 import unittest
 import trainers.trainers as trainers
 
+from tests.common_defs import REFERNECE_LOG
+
 
 class TestHistoricalTrainers(unittest.TestCase):
 
     def setUp(self):
-        self.trainer = trainers.HistoricalTrainer()
+        self.trainer = trainers.HistoricalTrainer(
+            training_file=REFERNECE_LOG
+        )
 
     def tearDown(self):
         pass

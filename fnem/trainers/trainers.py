@@ -8,11 +8,12 @@ LOGGER = logging.getLogger(__name__)
 class HistoricalTrainer(object):
     '''data source is a file to loop over'''
 
-    def __init__(self):
+    def __init__(self, training_file):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu'
         )
         LOGGER.info('Device = {}'.format(self.device))
+        self.training_data_file = training_file
 
     def build_or_restore_model_and_optimizer(self):
         pass

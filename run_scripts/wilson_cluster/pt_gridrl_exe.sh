@@ -11,7 +11,7 @@ cp ${BASEPATH}/gridrl/*.py ./gridrl/
 cp ${BASEPATH}/nnqrt.py .
 
 EXE="nnqrt.py"
-NUM_EPOCHS=5000
+NUM_EPOCHS=1000
 
 ARGS="--num-epochs ${NUM_EPOCHS}"
 #ARGS+=" --batch-size ${BATCH_SIZE}"

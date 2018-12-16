@@ -101,7 +101,10 @@ class TestMachineWithRuleBased(unittest.TestCase):
         plt.savefig(self.machine_plt, bbox_inches='tight')
         reference_plot_size = os.stat(REFERENCE_PLT).st_size
         new_plot_size = os.stat(self.machine_plt).st_size
-        self.assertEqual(reference_plot_size, new_plot_size)
+        relative_size = 100.0 * \
+            np.abs(reference_plot_size - new_plot_size) / \
+            reference_plot_size
+        self.assertTrue(relative_size < 5.0)
 
 
 if __name__ == '__main__':

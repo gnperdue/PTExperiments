@@ -3,7 +3,6 @@ Usage:
     python test_machine_recorder.py -v
     python test_machine_recorder.py
 '''
-import logging
 import unittest
 import numpy as np
 import sim.recorders as recorders

@@ -26,17 +26,13 @@ class MachineStateTextRecorder(object):
         'heat' can be inferred as the difference between the sum of the true
         values and the setting.
         '''
-        try:
-            with open(self.log_name, 'ab+') as f:
-                meas_string = ','.join([str(i) for i in measurements])
-                targ_string = ','.join([str(i) for i in targets])
-                msg = str(t) + ',' + str(setting) + ',' + meas_string + \
-                    ',' + targ_string + '\n'
-                f.write(bytes(msg, 'utf8'))
-            return True
-        except Exception as e:
-            raise e
-        return False
+        with open(self.log_name, 'ab+') as f:
+            meas_string = ','.join([str(i) for i in measurements])
+            targ_string = ','.join([str(i) for i in targets])
+            msg = str(t) + ',' + str(setting) + ',' + meas_string + \
+                ',' + targ_string + '\n'
+            f.write(bytes(msg, 'utf8'))
+        return True
 
     def read_data(self):
         '''

@@ -17,6 +17,11 @@ class TestMachineRecorder(unittest.TestCase):
     def tearDown(self):
         self.recorder.cleanup_files()
 
+    def test_bad_close(self):
+        self.recorder.cleanup_files()
+        with self.assertRaises(FileNotFoundError):
+            self.recorder.close()
+
     def test_writeread_data(self):
         # write a line of dummy data
         t0, set0 = 1.0, 7.0

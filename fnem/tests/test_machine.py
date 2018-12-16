@@ -16,6 +16,10 @@ from sim.data_model import NoiseModel as Noise
 from sim.engines import SimulationMachine
 from policies.rule_based import SimpleRuleBased
 
+import warnings
+# 'error' to stop on warns, 'ignore' to ignore silly matplotlib noise
+warnings.filterwarnings('ignore')
+
 LOG_TEMPLATE = 'log_machinewithrule_%d'
 PLT_TEMPLATE = 'plt_machinewithrule_%d'
 REFERNECE_LOG = './reference_files/' + (LOG_TEMPLATE % 1544881179) + '.csv.gz'
@@ -46,8 +50,12 @@ class TestMachineWithRuleBased(unittest.TestCase):
         pass
 
     def test_settings(self):
-        self.assertEqual(self.machine.get_setting(), 10.0)
-        # update machine by command, check setting
+        settings = [10.0, 9.5, 9.125, 8.875, 8.75,
+                    8.75, 8.875, 9.125, 9.5]
+        for i, s in enumerate(settings):
+            self.assertAlmostEqual(self.machine.get_setting(), s)
+            self.machine.update_machine(i)
+        self.assertAlmostEqual(self.machine.get_setting(), 10.0)
 
     def test_end_to_end_simplerulebased_run(self):
         m1 = []

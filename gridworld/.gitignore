@@ -3,3 +3,5 @@ deepq_targrep_*.pdf
 log_nnqrt*.txt
 losses.npy
 winpct.npy
+test*losses.npy
+test*winpct.npy

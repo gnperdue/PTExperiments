@@ -1,6 +1,28 @@
 import logging
+import policies.rule_based as rule_based
 
 LOGGER = logging.getLogger(__name__)
+
+
+def create_policy(policy, arguments_dict):
+    if policy == 'SimpleRuleBased':
+        # time=start, setting=10.0, amplitude=amplitude, period=period,
+        # commands_array=machine.get_commands()
+        policy_class = rule_based.SimpleRuleBased()
+        return policy_class
+    else:
+        raise ValueError('Unknown policy ({}).'.format(policy))
+
+
+def create_trainer(data_source, policy, mode):
+    if mode == 'RUN-TRAINED':
+        pass
+    elif mode == 'TRAIN-HISTORICAL':
+        pass
+    elif mode == 'TRAIN-LIVE':
+        pass
+    else:
+        raise ValueError('Unknown mode ({}).'.format(mode))
 
 
 def get_logging_level(log_level):

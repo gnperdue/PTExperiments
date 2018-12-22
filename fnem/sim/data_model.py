@@ -1,13 +1,9 @@
 import numpy as np
 
-
-# data amplitudes
-D1AMP, D2AMP, D3AMP, D4AMP = 10.0, 1.0, 0.5, 0.1
-# data update frequencies / pi
-D1FRQ, D2FRQ, D3FRQ, D4FRQ = 1.0, 0.1, 3.0, 10.0
-DTYPE = np.float32
-# noise amplitudes
-N1AMP, N2AMP, N3AMP, N4AMP = 0.05, 0.04, 0.02, 0.01
+from utils.common_defs import D1AMP, D2AMP, D3AMP, D4AMP
+from utils.common_defs import D1FRQ, D2FRQ, D3FRQ, D4FRQ
+from utils.common_defs import DTYPE
+from utils.common_defs import N1AMP, N2AMP, N3AMP, N4AMP
 
 
 class DataGenerator(object):

@@ -66,24 +66,15 @@ def main(
     LOGGER.info("Starting...")
     LOGGER.info(__file__)
 
-    if policy == 'SimpleRuleBased':
-        if mode == 'RUN-TRAINED':
-            # trainer.run_historical(policy, batch_size, ckpt_path, num_steps)
-            # trained.run(policy, batch_size, ckpt_path, num_steps)
-            pass
-        elif mode == 'TRAIN-HISTORICAL':
-            # here, don't train to result of actions, but difference between
-            # predicted action and historical action.
-            pass
-        elif mode == 'TRAIN-LIVE':
-            # here, "classical" RL training with a responsive system
-            pass
-        else:
-            raise ValueError('Inappropriate mode ({}) for policy ({}).'.format(
-                mode, policy
-            ))
-    else:
-        raise NotImplementedError
+    # TODO - add a method in utils to instantiate a policy
+    # Needs: time=start, setting=10.0, amplitude=amplitude, period=period,
+    # commands_array=machine.get_commands()
+
+    # TODO - add a method in utils  to instantiate a trainer
+    # TODO - add code to trainer classes so they understand the different modes
+    # trainer.build_or_restore_model_and_optimizer(...)
+    # trainer.train_model_with_target_replay(num_epochs)
+    # trainer.save_losses_and_winpct_plots(make_plot)
 
 
 if __name__ == '__main__':

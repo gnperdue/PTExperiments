@@ -18,7 +18,7 @@ class Trainer(object):
         self.training_data_file = None
 
     def build_or_restore_model_and_optimizer(self):
-        raise NotImplementedError
+        self.policy.build_or_restore_model_and_optimizer()
 
     def train_model_with_target_replay(self):
         raise NotImplementedError
@@ -34,10 +34,8 @@ class HistoricalTrainer(Trainer):
         super(HistoricalTrainer, self).__init__(policy=policy)
         self.training_data_file = training_file
 
-    def build_or_restore_model_and_optimizer(self):
-        pass
-
     def train_model_with_target_replay(self):
+        # loop over epochs, where an epoch is one pass over the historical data
         pass
 
     def save_performance_plots(self):
@@ -50,3 +48,8 @@ class LiveTrainer(Trainer):
     def __init__(self, policy, sim_machine):
         super(LiveTrainer, self).__init__(policy=policy)
         self.training_sim_machine = sim_machine
+
+    def train_model_with_target_replay(self):
+        # no concept of epochs with live data, run over machine steps as long
+        # as they are available or until we reach a max step value?
+        pass

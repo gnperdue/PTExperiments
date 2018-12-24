@@ -32,6 +32,8 @@ class TestUtils(unittest.TestCase):
                          utils.get_logging_level('critical'))
         self.assertEqual(logging.CRITICAL,
                          utils.get_logging_level('CRITICAL'))
+        self.assertEqual(logging.INFO,
+                         utils.get_logging_level('NoSuchLevel'))
 
     def test_create_policy(self):
         arguments_dict = {

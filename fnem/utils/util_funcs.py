@@ -9,8 +9,8 @@ def create_policy(policy, arguments_dict):
     if policy == 'SimpleRuleBased':
         start = arguments_dict.get('start', 0.0)
         setting = arguments_dict.get('setting', 10.0)
-        amplitude = arguments_dict.get('amplitude', 1.0)
-        period = arguments_dict.get('period', 1.0)
+        amplitude = arguments_dict.get('amplitude', 10.0)
+        period = arguments_dict.get('period', 2.0)
         commands_array = arguments_dict.get('commands_array', DEFAULT_COMMANDS)
         policy_class = rule_based.SimpleRuleBased(
             time=start, setting=setting, amplitude=amplitude, period=period,

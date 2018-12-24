@@ -7,6 +7,12 @@ import logging
 import unittest
 import utils.util_funcs as utils
 from utils.common_defs import DEFAULT_COMMANDS
+from tests.common_defs import REFERNECE_LOG
+
+TEST_RULEBASED_ARG_DICT = {
+    'start': 0.0, 'setting': 10.0, 'amplitude': 10.0, 'period': 2.0,
+    'commands_array': DEFAULT_COMMANDS
+}
 
 
 class TestUtils(unittest.TestCase):
@@ -36,11 +42,9 @@ class TestUtils(unittest.TestCase):
                          utils.get_logging_level('NoSuchLevel'))
 
     def test_create_policy(self):
-        arguments_dict = {
-            'start': 0.0, 'setting': 10.0, 'amplitude': 10.0, 'period': 2.0,
-            'commands_array': DEFAULT_COMMANDS
-        }
-        policy = utils.create_policy('SimpleRuleBased', arguments_dict)
+        policy = utils.create_policy(
+            'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
+        )
         state = [10.0, 1.0, 0.5, 0.1, 0.1]
         policy.set_state(state)
         self.assertEqual(policy._state, state[0:4])
@@ -52,7 +56,20 @@ class TestUtils(unittest.TestCase):
         self.assertIsNotNone(setting1 - setting0)
 
         with self.assertRaises(ValueError):
-            policy = utils.create_policy('NoSuchPolicy', arguments_dict)
+            policy = utils.create_policy(
+                'NoSuchPolicy', TEST_RULEBASED_ARG_DICT
+            )
+
+    def test_create_trainer(self):
+        data_source = REFERNECE_LOG
+        policy = utils.create_policy(
+            'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
+        )
+        mode = 'RUN-TRAINED'
+        trainer = utils.create_trainer(data_source, policy, mode)
+
+        with self.assertRaises(ValueError):
+            trainer = utils.create_trainer(data_source, policy, 'NoSuchMode')
 
 
 if __name__ == '__main__':

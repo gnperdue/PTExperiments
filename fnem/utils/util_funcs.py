@@ -1,4 +1,5 @@
 import logging
+import trainers
 import policies.rule_based as rule_based
 from utils.common_defs import DEFAULT_COMMANDS
 
@@ -22,14 +23,23 @@ def create_policy(policy, arguments_dict):
 
 
 def create_trainer(data_source, policy, mode):
+    '''
+    * data_source: either a file (for historical training) or a
+    simulation engine (for live training)
+    * policy: what learning algorithm is deployed (may be a static learner)
+    * mode: set whether we are running based on a historical policy (no
+    learning updates applied), training based on historical data, or
+    training based on "live" data
+    '''
     if mode == 'RUN-TRAINED':
-        pass
+        trainer = trainers.HistoricalTrainer(policy, data_source)
     elif mode == 'TRAIN-HISTORICAL':
         pass
     elif mode == 'TRAIN-LIVE':
         pass
     else:
         raise ValueError('Unknown mode ({}).'.format(mode))
+    return trainer
 
 
 def get_logging_level(log_level):

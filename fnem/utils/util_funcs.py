@@ -1,14 +1,21 @@
 import logging
 import policies.rule_based as rule_based
+from utils.common_defs import DEFAULT_COMMANDS
 
 LOGGER = logging.getLogger(__name__)
 
 
 def create_policy(policy, arguments_dict):
     if policy == 'SimpleRuleBased':
-        # time=start, setting=10.0, amplitude=amplitude, period=period,
-        # commands_array=machine.get_commands()
-        policy_class = rule_based.SimpleRuleBased()
+        start = arguments_dict.get('start', 0.0)
+        setting = arguments_dict.get('setting', 10.0)
+        amplitude = arguments_dict.get('amplitude', 1.0)
+        period = arguments_dict.get('period', 1.0)
+        commands_array = arguments_dict.get('commands_array', DEFAULT_COMMANDS)
+        policy_class = rule_based.SimpleRuleBased(
+            time=start, setting=setting, amplitude=amplitude, period=period,
+            commands_array=commands_array
+        )
         return policy_class
     else:
         raise ValueError('Unknown policy ({}).'.format(policy))

@@ -1,5 +1,5 @@
 import logging
-import trainers
+from trainers.trainers import HistoricalTrainer, LiveTrainer
 import policies.rule_based as rule_based
 from utils.common_defs import DEFAULT_COMMANDS
 
@@ -32,11 +32,11 @@ def create_trainer(data_source, policy, mode):
     training based on "live" data
     '''
     if mode == 'RUN-TRAINED':
-        trainer = trainers.HistoricalTrainer(policy, data_source)
+        trainer = HistoricalTrainer(policy, data_source)
     elif mode == 'TRAIN-HISTORICAL':
-        pass
+        trainer = HistoricalTrainer(policy, data_source)
     elif mode == 'TRAIN-LIVE':
-        pass
+        trainer = LiveTrainer(policy, data_source)
     else:
         raise ValueError('Unknown mode ({}).'.format(mode))
     return trainer

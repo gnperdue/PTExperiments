@@ -21,6 +21,7 @@ import sys
 # from sim.data_model import NoiseModel
 # from sim.recorders import MachineStateTextRecorder
 from utils.util_funcs import get_logging_level
+from utils.common_defs import RUN_MODES
 
 import warnings
 # 'error' to stop on warns, 'ignore' to ignore silly matplotlib noise
@@ -42,11 +43,6 @@ parser.add_argument('--policy', default='SimpleRuleBased', type=str,
                     help='policy class name')
 
 
-RUN_MODES = [
-    'RUN-TRAINED', 'TRAIN-HISTORICAL', 'TRAIN-LIVE'
-]
-
-
 def main(
     batch_size, ckpt_path, exp_replay_buffer, log_level, mode, num_steps,
     policy
@@ -66,12 +62,6 @@ def main(
     LOGGER.info("Starting...")
     LOGGER.info(__file__)
 
-    # TODO - add a method in utils to instantiate a policy
-    # Needs: time=start, setting=10.0, amplitude=amplitude, period=period,
-    # commands_array=machine.get_commands()
-
-    # TODO - add a method in utils  to instantiate a trainer
-    # TODO - add code to trainer classes so they understand the different modes
     # trainer.build_or_restore_model_and_optimizer(...)
     # trainer.train_model_with_target_replay(num_epochs)
     # trainer.save_losses_and_winpct_plots(make_plot)

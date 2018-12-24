@@ -1,5 +1,5 @@
 import numpy as np
-from sim.data_model import DTYPE
+from utils.common_defs import DTYPE
 
 
 class SimulationMachine(object):

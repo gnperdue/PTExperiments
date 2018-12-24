@@ -53,3 +53,7 @@ class SimpleRuleBased(object):
     def update_setting(self, command):
         '''command is the index of the step change'''
         self._setting = self._setting + self._commands[command]
+
+    def build_or_restore_model_and_optimizer(self):
+        '''function for API compatability only'''
+        pass

@@ -1,5 +1,6 @@
 import numpy as np
 from utils.common_defs import DTYPE
+from utils.common_defs import DEFAULT_COMMANDS
 
 
 class SimulationMachine(object):
@@ -15,27 +16,31 @@ class SimulationMachine(object):
 
     when finished, call `close_logger()` to zip the log file.
     '''
-    # default_commands = np.linspace(-0.5, 0.5, num=9, dtype=DTYPE)
-    default_commands = np.array([-0.5, -0.375, -0.25, -0.125, 0.0,
-                                 0.125, 0.25, 0.375, 0.5], dtype=DTYPE)
 
     def __init__(
-        self, setting, data_generator, noise_model, logger=None, commands=None
+        self, setting, data_generator, noise_model, logger=None, commands=None,
+        maxsteps=None
     ):
         self._data_generator = data_generator
         self._noise_model = noise_model
         self._setting = setting
         self._heat = 0.0
         self._true_state = 0.0
-        self._commands = commands or SimulationMachine.default_commands
+        self._commands = commands or DEFAULT_COMMANDS
         self._sensors = np.zeros(4, dtype=DTYPE)
         self._logger = logger
+        self._maxsteps = maxsteps
+        self._nsteps = 0
 
     def update_machine(self, command):
         '''command is the index of the step change'''
         self._setting = self._setting + self._commands[command]
 
     def step(self):
+        '''returns False if out of steps'''
+        if self._maxsteps:
+            if self._nsteps >= self._maxsteps:
+                return False
         data = self._data_generator.step()
         self._true_state = np.sum(data)
         noise = self._noise_model.gen_noise(data)
@@ -44,6 +49,8 @@ class SimulationMachine(object):
         if self._logger is not None:
             self._logger.write_data(self._data_generator.t, self._setting,
                                     measured, data)
+        self._nsteps += 1
+        return True
 
     def get_heat(self):
         return (self._true_state - self._setting) ** 2

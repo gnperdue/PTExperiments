@@ -33,6 +33,8 @@ parser.add_argument('--exp-replay-buffer', default=500, type=int,
                     help='replay buffer')
 parser.add_argument('--log-level', default='INFO', type=str,
                     help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
+parser.add_argument('--make-plot', default=False, action='store_true',
+                    help='plot win percentages and losses')
 parser.add_argument('--mode', default='RUN-TRAINED',
                     type=str, help='run mode')
 parser.add_argument('--num-epochs', default=1, type=int,
@@ -44,8 +46,8 @@ parser.add_argument('--policy', default='SimpleRuleBased', type=str,
 
 
 def main(
-    batch_size, ckpt_path, exp_replay_buffer, log_level, mode, num_epochs,
-    num_steps, policy
+    batch_size, ckpt_path, exp_replay_buffer, log_level, make_plot, mode,
+    num_epochs, num_steps, policy
 ):
     mode = mode.upper()
     if mode not in RUN_MODES:
@@ -70,10 +72,11 @@ def main(
                              num_steps)
     trainer.build_or_restore_model_and_optimizer()
     if 'TRAIN' in mode:
-        trainer.train_model_with_target_replay(num_epochs)
+        trainer.train_model_with_target_replay()
     else:
-        trainer.run_model(num_epochs)
-    # trainer.save_losses_and_winpct_plots(make_plot)
+        trainer.run_model()
+    if make_plot:
+        trainer.save_performance_plots()
 
 
 if __name__ == '__main__':

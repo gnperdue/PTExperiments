@@ -8,7 +8,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def create_default_arguments_dict(policy, mode):
-    if policy == 'SimpleRuleBased' and mode != RUN_MODES[2]:
+    if policy == 'SimpleRuleBased':
         d = {}
         d['start'] = 0.0
         d['setting'] = 10.0

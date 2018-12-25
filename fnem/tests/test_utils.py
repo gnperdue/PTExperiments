@@ -55,16 +55,11 @@ class TestUtils(unittest.TestCase):
             )
             self.assertIsNone(d)
 
-        for i in range(2):
+        for i in range(3):
             d = utils.create_default_arguments_dict(
                 'SimpleRuleBased', RUN_MODES[i]
             )
             test_d(d)
-
-        d = utils.create_default_arguments_dict(
-            'SimpleRuleBased', RUN_MODES[2]
-        )
-        self.assertIsNone(d)
 
     def test_create_policy(self):
         policy = utils.create_policy(

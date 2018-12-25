@@ -35,7 +35,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
         recorder = Recorder(self.machine_log)
         self.machine = SimulationMachine(
             setting=10.0, data_generator=dgen, noise_model=nosgen,
-            logger=recorder
+            logger=recorder, maxsteps=2000
         )
         self.policy = SimpleRuleBased(
             time=0.0, setting=10.0, amplitude=10.0, period=2.0,
@@ -62,21 +62,21 @@ class TestMachineWithRuleBased(unittest.TestCase):
         heat = []
         settings = []
         ts = []
-        for i in range(2000):
-            self.machine.step()
-            t = self.machine.get_time()
-            sensor_vals = self.machine.get_sensor_values()
-            ts.append(t)
-            for i, m in enumerate([m1, m2, m3, m4]):
-                m.append(sensor_vals[i])
-            totals.append(sum(sensor_vals))
-            settings.append(self.machine.get_setting())
-            heat.append(self.machine.get_heat())
-            state = sensor_vals + [t]
-            self.policy.set_state(state)
-            command = self.policy.compute_action()
-            self.machine.update_machine(command)
-            self.policy.update_setting(command)
+        for i in range(5000):
+            if self.machine.step():
+                t = self.machine.get_time()
+                sensor_vals = self.machine.get_sensor_values()
+                ts.append(t)
+                for i, m in enumerate([m1, m2, m3, m4]):
+                    m.append(sensor_vals[i])
+                totals.append(sum(sensor_vals))
+                settings.append(self.machine.get_setting())
+                heat.append(self.machine.get_heat())
+                state = sensor_vals + [t]
+                self.policy.set_state(state)
+                command = self.policy.compute_action()
+                self.machine.update_machine(command)
+                self.policy.update_setting(command)
 
         self.machine.close_logger()
         reference_log_size = os.stat(REFERNECE_LOG).st_size

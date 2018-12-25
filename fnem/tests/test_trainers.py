@@ -8,6 +8,10 @@ from policies.rule_based import SimpleRuleBased
 from utils.common_defs import DEFAULT_COMMANDS
 from tests.common_defs import REFERNECE_LOG
 
+TEST_TRAIN_ARGS_DICT = {
+    'num_epochs': 1, 'num_steps': 100
+}
+
 
 class TestBaseTrainers(unittest.TestCase):
 
@@ -39,7 +43,8 @@ class TestHistoricalTrainers(unittest.TestCase):
             commands_array=DEFAULT_COMMANDS
         )
         self.trainer = trainers.HistoricalTrainer(
-            policy=policy, training_file=REFERNECE_LOG
+            policy=policy, training_file=REFERNECE_LOG,
+            arguments_dict=TEST_TRAIN_ARGS_DICT
         )
 
     def tearDown(self):
@@ -48,6 +53,8 @@ class TestHistoricalTrainers(unittest.TestCase):
     def test_configuration(self):
         self.assertIsNotNone(self.trainer.device)
         self.assertIsNotNone(self.trainer.training_data_file)
+        self.assertIsNotNone(self.trainer.num_steps)
+        self.assertIsNotNone(self.trainer.num_epochs)
 
     def test_build_model_and_optimizer(self):
         self.assertIsNotNone(self.trainer)
@@ -68,7 +75,8 @@ class TestLiveTrainers(unittest.TestCase):
         )
 
         self.trainer = trainers.LiveTrainer(
-            policy=policy, sim_machine=machine
+            policy=policy, sim_machine=machine,
+            arguments_dict=TEST_TRAIN_ARGS_DICT
         )
 
     def tearDown(self):
@@ -77,6 +85,8 @@ class TestLiveTrainers(unittest.TestCase):
     def test_configuration(self):
         self.assertIsNotNone(self.trainer.device)
         self.assertIsNotNone(self.trainer.training_sim_machine)
+        self.assertIsNotNone(self.trainer.num_steps)
+        self.assertIsNone(self.trainer.num_epochs)
 
     def test_build_model_and_optimizer(self):
         pass

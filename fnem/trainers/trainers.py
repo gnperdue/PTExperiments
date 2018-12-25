@@ -30,9 +30,11 @@ class Trainer(object):
 class HistoricalTrainer(Trainer):
     '''data source is a file to loop over'''
 
-    def __init__(self, policy, training_file):
+    def __init__(self, policy, training_file, arguments_dict):
         super(HistoricalTrainer, self).__init__(policy=policy)
         self.training_data_file = training_file
+        self.num_epochs = arguments_dict['num_epochs']
+        self.num_steps = arguments_dict['num_steps']
 
     def train_model_with_target_replay(self):
         # loop over epochs, where an epoch is one pass over the historical data
@@ -45,9 +47,11 @@ class HistoricalTrainer(Trainer):
 class LiveTrainer(Trainer):
     '''data source is a sim machine we interrogate for steps and values'''
 
-    def __init__(self, policy, sim_machine):
+    def __init__(self, policy, sim_machine, arguments_dict):
         super(LiveTrainer, self).__init__(policy=policy)
         self.training_sim_machine = sim_machine
+        self.num_epochs = None
+        self.num_steps = arguments_dict['num_steps']
 
     def train_model_with_target_replay(self):
         # no concept of epochs with live data, run over machine steps as long

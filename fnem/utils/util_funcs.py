@@ -48,11 +48,11 @@ def create_trainer(data_source, policy, mode, num_epochs, num_steps):
     arguments_dict['num_epochs'] = num_epochs
     arguments_dict['num_steps'] = num_steps
     if mode == 'RUN-TRAINED':
-        trainer = HistoricalTrainer(policy, data_source)
+        trainer = HistoricalTrainer(policy, data_source, arguments_dict)
     elif mode == 'TRAIN-HISTORICAL':
-        trainer = HistoricalTrainer(policy, data_source)
+        trainer = HistoricalTrainer(policy, data_source, arguments_dict)
     elif mode == 'TRAIN-LIVE':
-        trainer = LiveTrainer(policy, data_source)
+        trainer = LiveTrainer(policy, data_source, arguments_dict)
     else:
         raise ValueError('Unknown mode ({}).'.format(mode))
     return trainer

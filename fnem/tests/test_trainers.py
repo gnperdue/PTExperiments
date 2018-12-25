@@ -24,8 +24,7 @@ class TestBaseTrainers(unittest.TestCase):
         self.assertIsNone(self.trainer.training_data_file)
 
     def test_basic_methods(self):
-        # with self.assertRaises(NotImplementedError):
-        #     self.trainer.build_or_restore_model_and_optimizer()
+        self.trainer.build_or_restore_model_and_optimizer()
         with self.assertRaises(NotImplementedError):
             self.trainer.train_model_with_target_replay()
         with self.assertRaises(NotImplementedError):

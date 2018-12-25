@@ -91,10 +91,12 @@ class TestUtils(unittest.TestCase):
             'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
         )
         mode = 'RUN-TRAINED'
-        trainer = utils.create_trainer(data_source, policy, mode)
+        trainer = utils.create_trainer(data_source, policy, mode, 1, 1)
 
         with self.assertRaises(ValueError):
-            trainer = utils.create_trainer(data_source, policy, 'NoSuchMode')
+            trainer = utils.create_trainer(
+                data_source, policy, 'NoSuchMode', 1, 1
+            )
 
 
 if __name__ == '__main__':

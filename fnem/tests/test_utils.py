@@ -8,6 +8,7 @@ import unittest
 import utils.util_funcs as utils
 from utils.common_defs import DEFAULT_COMMANDS
 from tests.common_defs import REFERNECE_LOG
+from utils.common_defs import RUN_MODES
 
 TEST_RULEBASED_ARG_DICT = {
     'start': 0.0, 'setting': 10.0, 'amplitude': 10.0, 'period': 2.0,
@@ -40,6 +41,30 @@ class TestUtils(unittest.TestCase):
                          utils.get_logging_level('CRITICAL'))
         self.assertEqual(logging.INFO,
                          utils.get_logging_level('NoSuchLevel'))
+
+    def test_create_default_arguments_dict(self):
+        def test_d(d):
+            keys = ['start', 'setting', 'amplitude', 'period',
+                    'commands_array']
+            for k in keys:
+                self.assertIsNotNone(d[k])
+
+        for i in range(3):
+            d = utils.create_default_arguments_dict(
+                'NoSuchPolicy', RUN_MODES[i]
+            )
+            self.assertIsNone(d)
+
+        for i in range(2):
+            d = utils.create_default_arguments_dict(
+                'SimpleRuleBased', RUN_MODES[i]
+            )
+            test_d(d)
+
+        d = utils.create_default_arguments_dict(
+            'SimpleRuleBased', RUN_MODES[2]
+        )
+        self.assertIsNone(d)
 
     def test_create_policy(self):
         policy = utils.create_policy(

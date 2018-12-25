@@ -2,8 +2,21 @@ import logging
 from trainers.trainers import HistoricalTrainer, LiveTrainer
 import policies.rule_based as rule_based
 from utils.common_defs import DEFAULT_COMMANDS
+from utils.common_defs import RUN_MODES
 
 LOGGER = logging.getLogger(__name__)
+
+
+def create_default_arguments_dict(policy, mode):
+    if policy == 'SimpleRuleBased' and mode != RUN_MODES[2]:
+        d = {}
+        d['start'] = 0.0
+        d['setting'] = 10.0
+        d['amplitude'] = 10.0
+        d['period'] = 2.0
+        d['commands_array'] = DEFAULT_COMMANDS
+        return d
+    return None
 
 
 def create_policy(policy, arguments_dict):

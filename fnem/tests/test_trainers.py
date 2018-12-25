@@ -24,7 +24,7 @@ class TestBaseTrainers(unittest.TestCase):
 
     def test_configuration(self):
         self.assertIsNotNone(self.trainer.device)
-        self.assertIsNone(self.trainer.training_sim_machine)
+        self.assertIsNone(self.trainer.machine)
         self.assertIsNone(self.trainer.training_data_file)
 
     def test_basic_methods(self):
@@ -86,7 +86,7 @@ class TestLiveTrainers(unittest.TestCase):
 
     def test_configuration(self):
         self.assertIsNotNone(self.trainer.device)
-        self.assertIsNotNone(self.trainer.training_sim_machine)
+        self.assertIsNotNone(self.trainer.machine)
         self.assertIsNotNone(self.trainer.num_steps)
         self.assertIsNone(self.trainer.num_epochs)
 

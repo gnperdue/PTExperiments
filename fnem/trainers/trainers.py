@@ -1,8 +1,17 @@
 import torch
 import logging
+from collections import deque
 
 
 LOGGER = logging.getLogger(__name__)
+
+
+def make_perf_memories(n, maxlen):
+    ll = []
+    for _ in range(n):
+        d = deque([], maxlen=maxlen)
+        ll.append(d)
+    return tuple(ll)
 
 
 class Trainer(object):
@@ -14,8 +23,9 @@ class Trainer(object):
         )
         LOGGER.info('Device = {}'.format(self.device))
         self.policy = policy
-        self.training_sim_machine = None
+        self.machine = None
         self.training_data_file = None
+        self.performance_memory_maxlen = 5000
 
     def build_or_restore_model_and_optimizer(self):
         self.policy.build_or_restore_model_and_optimizer()
@@ -49,11 +59,35 @@ class LiveTrainer(Trainer):
 
     def __init__(self, policy, sim_machine, arguments_dict):
         super(LiveTrainer, self).__init__(policy=policy)
-        self.training_sim_machine = sim_machine
+        self.machine = sim_machine
         self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
+        # self.m1, m2, m3, m4, ts, totals, heat, settings = make_perf_memories(
+        #     8, self.performance_memory_maxlen
+        # )
 
     def train_model_with_target_replay(self):
         # no concept of epochs with live data, run over machine steps as long
         # as they are available or until we reach a max step value?
-        pass
+
+        # TODO - perf counters should be part of self
+        m1, m2, m3, m4, ts, totals, heat, settings = make_perf_memories(
+            8, self.performance_memory_maxlen
+        )
+        for i in range(self.num_steps):
+            self.machine.step()
+            t = self.machine.get_time()
+            sensor_vals = self.machine.get_sensor_values()
+            ts.append(t)
+            for i, m in enumerate([m1, m2, m3, m4]):
+                m.append(sensor_vals[i])
+            totals.append(sum(sensor_vals))
+            settings.append(self.machine.get_setting())
+            heat.append(self.machine.get_heat())
+            state = sensor_vals + [t]
+            self.policy.set_state(state)
+            command = self.policy.compute_action()
+            self.machine.update_machine(command)
+            self.policy.update_setting(command)
+
+        self.machine.close_logger()

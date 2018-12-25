@@ -15,11 +15,9 @@ import logging
 import time
 import sys
 
-# from policies.rule_based import SimpleRuleBased
-# from sim.engines import SimulationMachine
-# from sim.data_model import DataGenerator
-# from sim.data_model import NoiseModel
-# from sim.recorders import MachineStateTextRecorder
+from utils.util_funcs import create_default_arguments_dict
+from utils.util_funcs import create_policy
+from utils.util_funcs import create_trainer
 from utils.util_funcs import get_logging_level
 from utils.common_defs import RUN_MODES
 
@@ -37,15 +35,17 @@ parser.add_argument('--log-level', default='INFO', type=str,
                     help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
 parser.add_argument('--mode', default='RUN-TRAINED',
                     type=str, help='run mode')
+parser.add_argument('--num-epochs', default=1, type=int,
+                    help='number of epochs (train)')
 parser.add_argument('--num-steps', default=100, type=int,
-                    help='number of time steps')
+                    help='number of time steps (train or run)')
 parser.add_argument('--policy', default='SimpleRuleBased', type=str,
                     help='policy class name')
 
 
 def main(
-    batch_size, ckpt_path, exp_replay_buffer, log_level, mode, num_steps,
-    policy
+    batch_size, ckpt_path, exp_replay_buffer, log_level, mode, num_epochs,
+    num_steps, policy
 ):
     mode = mode.upper()
     if mode not in RUN_MODES:
@@ -62,8 +62,17 @@ def main(
     LOGGER.info("Starting...")
     LOGGER.info(__file__)
 
-    # trainer.build_or_restore_model_and_optimizer(...)
-    # trainer.train_model_with_target_replay(num_epochs)
+    arguments_dict = create_default_arguments_dict(policy, mode)
+    # TODO - add code to allow arg dict override...
+    policy_class = create_policy(policy, arguments_dict)
+    data_source = None  # TODO - utils function to get file or make engine
+    trainer = create_trainer(data_source, policy_class, mode, num_epochs,
+                             num_steps)
+    trainer.build_or_restore_model_and_optimizer()
+    if 'TRAIN' in mode:
+        trainer.train_model_with_target_replay(num_epochs)
+    else:
+        trainer.run_model(num_epochs)
     # trainer.save_losses_and_winpct_plots(make_plot)
 
 

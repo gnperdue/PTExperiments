@@ -5,8 +5,30 @@ Usage:
 '''
 import unittest
 
-from sim.engines import SimulationMachine
+from utils.common_defs import DEFAULT_COMMANDS
+from policies.base import BasePolicy
 from policies.rule_based import SimpleRuleBased
+
+
+class TestBasePolicy(unittest.TestCase):
+
+    def setUp(self):
+        start = 0.0
+        amplitude = 10.0
+        period = 2.0
+        self.policy = BasePolicy(
+            time=start, setting=10.0, amplitude=amplitude, period=period,
+            commands_array=DEFAULT_COMMANDS
+        )
+
+    def test_api_methods(self):
+        with self.assertRaises(NotImplementedError):
+            state = [10.0, 1.0, 0.5, 0.1, 0.1]
+            self.policy.set_state(state)
+        with self.assertRaises(NotImplementedError):
+            self.policy.compute_action()
+        with self.assertRaises(NotImplementedError):
+            self.policy.build_or_restore_model_and_optimizer()
 
 
 class TestSimpleRuleBased(unittest.TestCase):
@@ -15,13 +37,9 @@ class TestSimpleRuleBased(unittest.TestCase):
         start = 0.0
         amplitude = 10.0
         period = 2.0
-        machine = SimulationMachine(
-            setting=None, data_generator=None, noise_model=None,
-            logger=None
-        )
         self.policy = SimpleRuleBased(
             time=start, setting=10.0, amplitude=amplitude, period=period,
-            commands_array=machine.get_commands()
+            commands_array=DEFAULT_COMMANDS
         )
 
     def tearDown(self):

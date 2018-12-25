@@ -23,6 +23,9 @@ class Trainer(object):
     def train_model_with_target_replay(self):
         raise NotImplementedError
 
+    def run_model(self):
+        raise NotImplementedError
+
     def save_performance_plots(self):
         raise NotImplementedError
 

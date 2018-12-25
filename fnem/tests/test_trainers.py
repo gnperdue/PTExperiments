@@ -32,6 +32,8 @@ class TestBaseTrainers(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.trainer.train_model_with_target_replay()
         with self.assertRaises(NotImplementedError):
+            self.trainer.run_model()
+        with self.assertRaises(NotImplementedError):
             self.trainer.save_performance_plots()
 
 

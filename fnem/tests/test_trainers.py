@@ -59,7 +59,7 @@ class TestHistoricalTrainers(unittest.TestCase):
         self.assertIsNotNone(self.trainer.num_epochs)
 
     def test_build_model_and_optimizer(self):
-        self.assertIsNotNone(self.trainer)
+        self.assertIsNotNone(self.trainer.policy)
 
 
 class TestLiveTrainers(unittest.TestCase):
@@ -91,7 +91,7 @@ class TestLiveTrainers(unittest.TestCase):
         self.assertIsNone(self.trainer.num_epochs)
 
     def test_build_model_and_optimizer(self):
-        pass
+        self.assertIsNotNone(self.trainer.policy)
 
     def test_train_model_with_target_replay(self):
         pass

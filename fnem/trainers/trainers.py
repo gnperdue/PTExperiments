@@ -43,9 +43,6 @@ class HistoricalTrainer(Trainer):
         # loop over epochs, where an epoch is one pass over the historical data
         pass
 
-    def save_performance_plots(self):
-        pass
-
 
 class LiveTrainer(Trainer):
     '''data source is a sim machine we interrogate for steps and values'''

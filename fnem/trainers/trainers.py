@@ -6,18 +6,10 @@ from collections import deque
 LOGGER = logging.getLogger(__name__)
 
 
-def make_perf_memories(n, maxlen):
-    ll = []
-    for _ in range(n):
-        d = deque([], maxlen=maxlen)
-        ll.append(d)
-    return tuple(ll)
-
-
 class Trainer(object):
     '''base class - defines the API'''
 
-    def __init__(self, policy):
+    def __init__(self, policy, performance_memory_maxlen=5000):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu'
         )
@@ -25,7 +17,15 @@ class Trainer(object):
         self.policy = policy
         self.machine = None
         self.training_data_file = None
-        self.performance_memory_maxlen = 5000
+        self.performance_memory_maxlen = performance_memory_maxlen
+        self.m1 = deque([], maxlen=self.performance_memory_maxlen)
+        self.m2 = deque([], maxlen=self.performance_memory_maxlen)
+        self.m3 = deque([], maxlen=self.performance_memory_maxlen)
+        self.m4 = deque([], maxlen=self.performance_memory_maxlen)
+        self.ts = deque([], maxlen=self.performance_memory_maxlen)
+        self.totals = deque([], maxlen=self.performance_memory_maxlen)
+        self.heat = deque([], maxlen=self.performance_memory_maxlen)
+        self.settings = deque([], maxlen=self.performance_memory_maxlen)
 
     def build_or_restore_model_and_optimizer(self):
         self.policy.build_or_restore_model_and_optimizer()
@@ -62,32 +62,25 @@ class LiveTrainer(Trainer):
         self.machine = sim_machine
         self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
-        # self.m1, m2, m3, m4, ts, totals, heat, settings = make_perf_memories(
-        #     8, self.performance_memory_maxlen
-        # )
 
     def train_model_with_target_replay(self):
         # no concept of epochs with live data, run over machine steps as long
-        # as they are available or until we reach a max step value?
+        # as they are available or until we reach a max step value
 
-        # TODO - perf counters should be part of self
-        m1, m2, m3, m4, ts, totals, heat, settings = make_perf_memories(
-            8, self.performance_memory_maxlen
-        )
         for i in range(self.num_steps):
-            self.machine.step()
-            t = self.machine.get_time()
-            sensor_vals = self.machine.get_sensor_values()
-            ts.append(t)
-            for i, m in enumerate([m1, m2, m3, m4]):
-                m.append(sensor_vals[i])
-            totals.append(sum(sensor_vals))
-            settings.append(self.machine.get_setting())
-            heat.append(self.machine.get_heat())
-            state = sensor_vals + [t]
-            self.policy.set_state(state)
-            command = self.policy.compute_action()
-            self.machine.update_machine(command)
-            self.policy.update_setting(command)
+            if self.machine.step():
+                t = self.machine.get_time()
+                sensor_vals = self.machine.get_sensor_values()
+                self.ts.append(t)
+                for i, m in enumerate([self.m1, self.m2, self.m3, self.m4]):
+                    m.append(sensor_vals[i])
+                self.totals.append(sum(sensor_vals))
+                self.settings.append(self.machine.get_setting())
+                self.heat.append(self.machine.get_heat())
+                state = sensor_vals + [t]
+                self.policy.set_state(state)
+                command = self.policy.compute_action()
+                self.machine.update_machine(command)
+                self.policy.update_setting(command)
 
         self.machine.close_logger()

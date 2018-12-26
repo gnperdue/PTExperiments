@@ -35,7 +35,8 @@ def create_policy(policy, arguments_dict):
         raise ValueError('Unknown policy ({}).'.format(policy))
 
 
-def create_trainer(data_source, policy, mode, num_epochs, num_steps):
+def create_trainer(data_source, policy, mode, num_epochs, num_steps,
+                   replay_buffer_size=100):
     '''
     * data_source: either a file (for historical training) or a
     simulation engine (for live training)
@@ -47,6 +48,7 @@ def create_trainer(data_source, policy, mode, num_epochs, num_steps):
     arguments_dict = {}
     arguments_dict['num_epochs'] = num_epochs
     arguments_dict['num_steps'] = num_steps
+    arguments_dict['replay_buffer_size'] = replay_buffer_size
     if mode == 'RUN-TRAINED':
         trainer = HistoricalTrainer(policy, data_source, arguments_dict)
     elif mode == 'TRAIN-HISTORICAL':

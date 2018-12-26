@@ -11,7 +11,6 @@ def create_default_arguments_dict(policy, mode):
     if policy == 'SimpleRuleBased':
         d = {}
         d['start'] = 0.0
-        d['setting'] = 10.0
         d['amplitude'] = 10.0
         d['period'] = 2.0
         d['commands_array'] = DEFAULT_COMMANDS
@@ -22,12 +21,11 @@ def create_default_arguments_dict(policy, mode):
 def create_policy(policy, arguments_dict):
     if policy == 'SimpleRuleBased':
         start = arguments_dict.get('start', 0.0)
-        setting = arguments_dict.get('setting', 10.0)
         amplitude = arguments_dict.get('amplitude', 10.0)
         period = arguments_dict.get('period', 2.0)
         commands_array = arguments_dict.get('commands_array', DEFAULT_COMMANDS)
         policy_class = rule_based.SimpleRuleBased(
-            time=start, setting=setting, amplitude=amplitude, period=period,
+            time=start, amplitude=amplitude, period=period,
             commands_array=commands_array
         )
         return policy_class

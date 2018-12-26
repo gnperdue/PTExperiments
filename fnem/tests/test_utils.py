@@ -11,7 +11,7 @@ from tests.common_defs import REFERNECE_LOG
 from utils.common_defs import RUN_MODES
 
 TEST_RULEBASED_ARG_DICT = {
-    'start': 0.0, 'setting': 10.0, 'amplitude': 10.0, 'period': 2.0,
+    'start': 0.0, 'amplitude': 10.0, 'period': 2.0,
     'commands_array': DEFAULT_COMMANDS
 }
 
@@ -44,9 +44,7 @@ class TestUtils(unittest.TestCase):
 
     def test_create_default_arguments_dict(self):
         def test_d(d):
-            keys = ['start', 'setting', 'amplitude', 'period',
-                    'commands_array']
-            for k in keys:
+            for k in ['start', 'amplitude', 'period', 'commands_array']:
                 self.assertIsNotNone(d[k])
 
         for i in range(3):
@@ -65,15 +63,11 @@ class TestUtils(unittest.TestCase):
         policy = utils.create_policy(
             'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
         )
-        state = [10.0, 1.0, 0.5, 0.1, 0.1]
+        state = [10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1]
         policy.set_state(state)
         self.assertEqual(policy._state, state[0:4])
+        self.assertEqual(policy._setting, state[-2])
         self.assertEqual(policy._time, state[-1])
-        setting0 = policy._setting
-        action = policy.compute_action()
-        policy.update_setting(action)
-        setting1 = policy._setting
-        self.assertIsNotNone(setting1 - setting0)
 
         with self.assertRaises(ValueError):
             policy = utils.create_policy(

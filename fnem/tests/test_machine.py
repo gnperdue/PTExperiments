@@ -15,6 +15,7 @@ from sim.data_model import DataGenerator as Generator
 from sim.data_model import NoiseModel as Noise
 from sim.engines import SimulationMachine
 from policies.rule_based import SimpleRuleBased
+from utils.common_defs import DEFAULT_COMMANDS
 
 from tests.common_defs import LOG_TEMPLATE
 from tests.common_defs import PLT_TEMPLATE
@@ -38,8 +39,8 @@ class TestMachineWithRuleBased(unittest.TestCase):
             logger=recorder, maxsteps=2000
         )
         self.policy = SimpleRuleBased(
-            time=0.0, setting=10.0, amplitude=10.0, period=2.0,
-            commands_array=self.machine.get_commands()
+            time=0.0, amplitude=10.0, period=2.0,
+            commands_array=DEFAULT_COMMANDS
         )
 
     def tearDown(self):
@@ -74,11 +75,10 @@ class TestMachineWithRuleBased(unittest.TestCase):
                 settings.append(setting)
                 heat = self.machine.get_heat()
                 heats.append(heat)
-                state = sensor_vals + [heat, t]
+                state = sensor_vals + [heat, setting, t]
                 self.policy.set_state(state)
                 command = self.policy.compute_action()
                 self.machine.update_machine(command)
-                self.policy.update_setting(command)
 
         self.machine.close_logger()
         reference_log_size = os.stat(REFERNECE_LOG).st_size

@@ -87,7 +87,7 @@ class LiveTrainer(Trainer):
                 heat = self.machine.get_heat()
                 self.heat.append(heat)
 
-                state = sensor_vals + [heat, t]
+                state = sensor_vals + [heat, setting, t]
                 batch_buffer.append(state)
                 # if len(replay_buffer) < self.replay_buffer_size:
                 #     replay_buffer.append(state)

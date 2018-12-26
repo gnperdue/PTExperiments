@@ -5,10 +5,10 @@ from .base import BasePolicy
 class SimpleRuleBased(BasePolicy):
 
     def __init__(
-        self, time, setting, amplitude, period, commands_array
+        self, time, amplitude, period, commands_array
     ):
         super(SimpleRuleBased, self).__init__(
-            time, setting, amplitude, period, commands_array
+            time, amplitude, period, commands_array
         )
 
     def set_state(self, sensor_array):
@@ -17,6 +17,7 @@ class SimpleRuleBased(BasePolicy):
         TODO - this should take a minibatch, not a single point
         '''
         self._state = sensor_array[0:4]
+        self._setting = sensor_array[-2]
         self._time = sensor_array[-1]
 
     def compute_action(self):

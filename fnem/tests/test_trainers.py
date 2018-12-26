@@ -18,7 +18,7 @@ class TestBaseTrainers(unittest.TestCase):
 
     def setUp(self):
         policy = SimpleRuleBased(
-            time=0.0, setting=10.0, amplitude=10.0, period=2.0,
+            time=0.0, amplitude=10.0, period=2.0,
             commands_array=DEFAULT_COMMANDS
         )
         self.trainer = trainers.Trainer(policy)
@@ -42,7 +42,7 @@ class TestHistoricalTrainers(unittest.TestCase):
 
     def setUp(self):
         policy = SimpleRuleBased(
-            time=0.0, setting=10.0, amplitude=10.0, period=2.0,
+            time=0.0, amplitude=10.0, period=2.0,
             commands_array=DEFAULT_COMMANDS
         )
         self.trainer = trainers.HistoricalTrainer(
@@ -69,7 +69,7 @@ class TestLiveTrainers(unittest.TestCase):
 
     def setUp(self):
         policy = SimpleRuleBased(
-            time=0.0, setting=10.0, amplitude=10.0, period=2.0,
+            time=0.0, amplitude=10.0, period=2.0,
             commands_array=DEFAULT_COMMANDS
         )
 

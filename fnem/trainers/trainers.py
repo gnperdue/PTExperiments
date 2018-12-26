@@ -48,6 +48,7 @@ class HistoricalTrainer(Trainer):
         self.training_data_file = training_file
         self.num_epochs = arguments_dict['num_epochs']
         self.num_steps = arguments_dict['num_steps']
+        self.replay_buffer_size = arguments_dict['replay_buffer_size']
 
     def train_model_with_target_replay(self):
         # loop over epochs, where an epoch is one pass over the historical data
@@ -62,11 +63,14 @@ class LiveTrainer(Trainer):
         self.machine = sim_machine
         self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
+        self.replay_buffer_size = arguments_dict['replay_buffer_size']
 
     def train_model_with_target_replay(self):
         # no concept of epochs with live data, run over machine steps as long
         # as they are available or until we reach a max step value
 
+        # TODO - loop over batches? build up target replay buffer?
+        replay_buffer = []
         for i in range(self.num_steps):
             if self.machine.step():
                 t = self.machine.get_time()
@@ -77,7 +81,22 @@ class LiveTrainer(Trainer):
                 self.totals.append(sum(sensor_vals))
                 self.settings.append(self.machine.get_setting())
                 self.heat.append(self.machine.get_heat())
+
                 state = sensor_vals + [t]
+                if len(replay_buffer) < self.replay_buffer_size:
+                    replay_buffer.append(state)
+                else:
+                    replay_buffer.pop(0)
+                    replay_buffer.append(state)
+                    # TODO - build trainbatch, pass the batch to the policy
+                    # X_train, y_train = self._build_trainbatch(replay_buffer)
+                    # self.policy.set_state_batch(X_train, y_train)
+                    ## compute action should:
+                    ## * zero gradiaents
+                    ## * compute loss, add loss to a monitoring log
+                    ## * call `backward()`
+                    ## * call `optimizer.step()`
+                    # command = self.policy.compute_action()
                 self.policy.set_state(state)
                 command = self.policy.compute_action()
                 self.machine.update_machine(command)

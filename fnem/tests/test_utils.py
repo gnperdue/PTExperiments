@@ -86,7 +86,10 @@ class TestUtils(unittest.TestCase):
             'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
         )
         mode = 'RUN-TRAINED'
-        trainer = utils.create_trainer(data_source, policy, mode, 1, 1)
+        trainer = utils.create_trainer(data_source, policy, mode, 1, 1, 1)
+        self.assertEqual(trainer.num_epochs, 1)
+        self.assertEqual(trainer.num_steps, 1)
+        self.assertEqual(trainer.replay_buffer_size, 1)
 
         with self.assertRaises(ValueError):
             trainer = utils.create_trainer(

@@ -9,7 +9,7 @@ from utils.common_defs import DEFAULT_COMMANDS
 from tests.common_defs import REFERNECE_LOG
 
 TEST_TRAIN_ARGS_DICT = {
-    'num_epochs': 1, 'num_steps': 100
+    'num_epochs': 1, 'num_steps': 100, 'replay_buffer_size': 100
 }
 
 

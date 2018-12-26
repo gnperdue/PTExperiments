@@ -59,7 +59,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
         m3 = []
         m4 = []
         totals = []
-        heat = []
+        heats = []
         settings = []
         ts = []
         for i in range(5000):
@@ -70,9 +70,11 @@ class TestMachineWithRuleBased(unittest.TestCase):
                 for i, m in enumerate([m1, m2, m3, m4]):
                     m.append(sensor_vals[i])
                 totals.append(sum(sensor_vals))
-                settings.append(self.machine.get_setting())
-                heat.append(self.machine.get_heat())
-                state = sensor_vals + [t]
+                setting = self.machine.get_setting()
+                settings.append(setting)
+                heat = self.machine.get_heat()
+                heats.append(heat)
+                state = sensor_vals + [heat, t]
                 self.policy.set_state(state)
                 command = self.policy.compute_action()
                 self.machine.update_machine(command)
@@ -93,7 +95,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
         ax2 = plt.subplot(gs[1])
         ax2.scatter(ts, totals, c='k')
         ax3 = plt.subplot(gs[2])
-        ax3.scatter(ts, heat, c='k')
+        ax3.scatter(ts, heats, c='k')
         ax4 = plt.subplot(gs[3])
         ax4.scatter(ts, settings, c='k')
 

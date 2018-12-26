@@ -9,7 +9,8 @@ from utils.common_defs import DEFAULT_COMMANDS
 from tests.common_defs import REFERNECE_LOG
 
 TEST_TRAIN_ARGS_DICT = {
-    'num_epochs': 1, 'num_steps': 100, 'replay_buffer_size': 100
+    'num_epochs': 1, 'num_steps': 100, 'replay_buffer_size': 100,
+    'batch_size': 20
 }
 
 
@@ -57,6 +58,8 @@ class TestHistoricalTrainers(unittest.TestCase):
         self.assertIsNotNone(self.trainer.training_data_file)
         self.assertIsNotNone(self.trainer.num_steps)
         self.assertIsNotNone(self.trainer.num_epochs)
+        self.assertIsNotNone(self.trainer.batch_size)
+        self.assertIsNotNone(self.trainer.replay_buffer_size)
 
     def test_build_model_and_optimizer(self):
         self.assertIsNotNone(self.trainer.policy)
@@ -88,6 +91,8 @@ class TestLiveTrainers(unittest.TestCase):
         self.assertIsNotNone(self.trainer.device)
         self.assertIsNotNone(self.trainer.machine)
         self.assertIsNotNone(self.trainer.num_steps)
+        self.assertIsNotNone(self.trainer.batch_size)
+        self.assertIsNotNone(self.trainer.replay_buffer_size)
         self.assertIsNone(self.trainer.num_epochs)
 
     def test_build_model_and_optimizer(self):

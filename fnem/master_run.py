@@ -43,11 +43,13 @@ parser.add_argument('--num-steps', default=100, type=int,
                     help='number of time steps (train or run)')
 parser.add_argument('--policy', default='SimpleRuleBased', type=str,
                     help='policy class name')
+parser.add_argument('--sequence-size', default=20, type=int,
+                    help='state sequence size')
 
 
 def main(
     batch_size, ckpt_path, exp_replay_buffer, log_level, make_plot, mode,
-    num_epochs, num_steps, policy
+    num_epochs, num_steps, policy, sequence_size
 ):
     mode = mode.upper()
     if mode not in RUN_MODES:
@@ -69,7 +71,7 @@ def main(
     policy_class = create_policy(policy, arguments_dict)
     data_source = None  # TODO - utils function to get file or make engine
     trainer = create_trainer(data_source, policy_class, mode, num_epochs,
-                             num_steps)
+                             num_steps, sequence_size)
     trainer.build_or_restore_model_and_optimizer()
     if 'TRAIN' in mode:
         trainer.train_model_with_target_replay()

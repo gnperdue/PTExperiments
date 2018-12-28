@@ -65,7 +65,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
         settings = []
         ts = []
         sequence_buffer = []
-        for i in range(50):
+        for i in range(5000):
             if self.machine.step():
                 t = self.machine.get_time()
                 sensor_vals = self.machine.get_sensor_values()
@@ -91,7 +91,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
         self.machine.close_logger()
         reference_log_size = os.stat(REFERNECE_LOG).st_size
         new_log_size = os.stat(self.machine_log + '.csv.gz').st_size
-        # self.assertEqual(reference_log_size, new_log_size)
+        self.assertEqual(reference_log_size, new_log_size)
 
         fig = plt.Figure(figsize=(10, 6))
         gs = plt.GridSpec(1, 4)
@@ -114,7 +114,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
         relative_size = 100.0 * \
             np.abs(reference_plot_size - new_plot_size) / \
             reference_plot_size
-        # self.assertTrue(relative_size < 5.0)
+        self.assertTrue(relative_size < 5.0)
 
 
 if __name__ == '__main__':

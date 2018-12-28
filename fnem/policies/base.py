@@ -29,6 +29,16 @@ class BasePolicy(object):
         '''
         raise NotImplementedError
 
+    def train(self):
+        '''
+        train should:
+        * zero gradiaents
+        * compute loss, add loss to a monitoring log
+        * call `backward()`
+        * call `optimizer.step()`
+        '''
+        raise NotImplementedError
+
     def compute_action(self):
         raise NotImplementedError
 

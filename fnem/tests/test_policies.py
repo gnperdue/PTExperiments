@@ -28,6 +28,8 @@ class TestBasePolicy(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.policy.compute_action()
         with self.assertRaises(NotImplementedError):
+            self.policy.train()
+        with self.assertRaises(NotImplementedError):
             self.policy.build_or_restore_model_and_optimizer()
 
 

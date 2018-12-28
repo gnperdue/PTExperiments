@@ -85,6 +85,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
                     sequence_buffer.pop(0)
                     sequence_buffer.append(state)
                     self.policy.set_state(sequence_buffer)
+                    self.policy.train()
                     command = self.policy.compute_action()
                     self.machine.update_machine(command)
 

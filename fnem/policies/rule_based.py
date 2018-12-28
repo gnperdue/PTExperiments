@@ -21,6 +21,13 @@ class SimpleRuleBased(BasePolicy):
         self._setting = sensor_array[-2]
         self._time = sensor_array[-1]
 
+    def train(self):
+        '''
+        this policy does not train and only uses the most recent t to predict
+        a setting
+        '''
+        pass
+
     def compute_action(self):
         '''
         pure time-based, want to go from ampl to -ampl as t goes from

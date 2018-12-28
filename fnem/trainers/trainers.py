@@ -72,7 +72,7 @@ class LiveTrainer(Trainer):
         # as they are available or until we reach a max step value
 
         # TODO - build up target replay buffer of sequencees
-        sequence_buffer, replay_buffer = [], []
+        sequence_buffer = []
         for i in range(self.num_steps):
             if self.machine.step():
                 t = self.machine.get_time()
@@ -85,9 +85,22 @@ class LiveTrainer(Trainer):
                 self.settings.append(setting)
                 heat = self.machine.get_heat()
                 self.heat.append(heat)
-
                 state = sensor_vals + [heat, setting, t]
-                sequence_buffer.append(state)
+                if len(sequence_buffer) < self.sequence_size:
+                    sequence_buffer.append(state)
+                else:
+                    sequence_buffer.pop(0)
+                    sequence_buffer.append(state)
+                    self.policy.set_state(sequence_buffer)
+                    #     ## train should:
+                    #     ## * zero gradiaents
+                    #     ## * compute loss, add loss to a monitoring log
+                    #     ## * call `backward()`
+                    #     ## * call `optimizer.step()`
+                    self.policy.train()
+                    command = self.policy.compute_action()
+                    self.machine.update_machine(command)
+
                 # if len(replay_buffer) < self.replay_buffer_size:
                 #     replay_buffer.append(state)
                 # else:
@@ -102,9 +115,5 @@ class LiveTrainer(Trainer):
                 #     ## * call `backward()`
                 #     ## * call `optimizer.step()`
                 #     # command = self.policy.compute_action()
-                self.policy.set_state(state)
-                command = self.policy.compute_action()
-                self.machine.update_machine(command)
-                self.policy.update_setting(command)
 
         self.machine.close_logger()

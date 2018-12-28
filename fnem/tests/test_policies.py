@@ -23,7 +23,7 @@ class TestBasePolicy(unittest.TestCase):
 
     def test_api_methods(self):
         with self.assertRaises(NotImplementedError):
-            state = [10.0, 1.0, 0.5, 0.1, 0.1]
+            state = [[10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1]]
             self.policy.set_state(state)
         with self.assertRaises(NotImplementedError):
             self.policy.compute_action()
@@ -46,18 +46,14 @@ class TestSimpleRuleBased(unittest.TestCase):
         pass
 
     def test_set_state(self):
-        state = [10.0, 1.0, 0.5, 0.1, 5.0, 10.0, 0.1]
+        state = [[10.0, 1.0, 0.5, 0.1, 5.0, 10.0, 0.1]]
         self.policy.set_state(state)
-        self.assertEqual(self.policy._state, state[0:4])
-        self.assertEqual(self.policy._setting, state[-2])
-        self.assertEqual(self.policy._time, state[-1])
+        self.assertEqual(self.policy._state, state[0][0:4])
+        self.assertEqual(self.policy._setting, state[0][-2])
+        self.assertEqual(self.policy._time, state[0][-1])
 
     def test_compute_action(self):
         pass
-        # setting0 = self.policy._setting
-        # action = self.policy.compute_action()
-        # setting1 = self.policy._setting
-        # self.assertIsNotNone(setting1 - setting0)
 
 
 if __name__ == '__main__':

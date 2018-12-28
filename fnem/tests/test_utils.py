@@ -63,11 +63,11 @@ class TestUtils(unittest.TestCase):
         policy = utils.create_policy(
             'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
         )
-        state = [10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1]
+        state = [[10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1]]
         policy.set_state(state)
-        self.assertEqual(policy._state, state[0:4])
-        self.assertEqual(policy._setting, state[-2])
-        self.assertEqual(policy._time, state[-1])
+        self.assertEqual(policy._state, state[0][0:4])
+        self.assertEqual(policy._setting, state[0][-2])
+        self.assertEqual(policy._time, state[0][-1])
 
         with self.assertRaises(ValueError):
             policy = utils.create_policy(
@@ -83,7 +83,7 @@ class TestUtils(unittest.TestCase):
         trainer = utils.create_trainer(data_source, policy, mode, 1, 1, 1, 1)
         self.assertEqual(trainer.num_epochs, 1)
         self.assertEqual(trainer.num_steps, 1)
-        self.assertEqual(trainer.batch_size, 1)
+        self.assertEqual(trainer.sequence_size, 1)
         self.assertEqual(trainer.replay_buffer_size, 1)
 
         with self.assertRaises(ValueError):

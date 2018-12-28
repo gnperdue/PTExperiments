@@ -22,10 +22,10 @@ class BasePolicy(object):
         self._state = None
         self._commands = np.asarray(commands_array, dtype=DTYPE)
 
-    def set_state(self, sensor_array):
+    def set_state(self, sensor_array_sequence):
         '''
-        sensor_array should be a minibatch compoesed of 5 element arrays - one
-        for each sensor, t.
+        sensor_array should be a sequence compoesed of 7 element arrays - one
+        for each sensor, the heat, the setting, and t.
         '''
         raise NotImplementedError
 

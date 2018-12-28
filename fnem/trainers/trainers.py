@@ -48,7 +48,7 @@ class HistoricalTrainer(Trainer):
         self.training_data_file = training_file
         self.num_epochs = arguments_dict['num_epochs']
         self.num_steps = arguments_dict['num_steps']
-        self.batch_size = arguments_dict['batch_size']
+        self.sequence_size = arguments_dict['sequence_size']
         self.replay_buffer_size = arguments_dict['replay_buffer_size']
 
     def train_model_with_target_replay(self):
@@ -64,16 +64,15 @@ class LiveTrainer(Trainer):
         self.machine = sim_machine
         self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
-        self.batch_size = arguments_dict['batch_size']
+        self.sequence_size = arguments_dict['sequence_size']
         self.replay_buffer_size = arguments_dict['replay_buffer_size']
 
     def train_model_with_target_replay(self):
         # no concept of epochs with live data, run over machine steps as long
         # as they are available or until we reach a max step value
 
-        # TODO - loop over batches...
-        # TODO - build up target replay buffer of batches
-        batch_buffer, replay_buffer = [], []
+        # TODO - build up target replay buffer of sequencees
+        sequence_buffer, replay_buffer = [], []
         for i in range(self.num_steps):
             if self.machine.step():
                 t = self.machine.get_time()
@@ -88,15 +87,15 @@ class LiveTrainer(Trainer):
                 self.heat.append(heat)
 
                 state = sensor_vals + [heat, setting, t]
-                batch_buffer.append(state)
+                sequence_buffer.append(state)
                 # if len(replay_buffer) < self.replay_buffer_size:
                 #     replay_buffer.append(state)
                 # else:
                 #     replay_buffer.pop(0)
                 #     replay_buffer.append(state)
-                #     # TODO - build trainbatch, pass the batch to the policy
-                #     # X_train, y_train = self._build_trainbatch(replay_buffer)
-                #     # self.policy.set_state_batch(X_train, y_train)
+                #     # TODO - build trainsequence, pass the sequence to the policy
+                #     # X_train, y_train = self._build_trainsequence(replay_buffer)
+                #     # self.policy.set_state_sequence(X_train, y_train)
                 #     ## compute action should:
                 #     ## * zero gradiaents
                 #     ## * compute loss, add loss to a monitoring log

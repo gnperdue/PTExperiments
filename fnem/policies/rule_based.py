@@ -11,11 +11,12 @@ class SimpleRuleBased(BasePolicy):
             time, amplitude, period, commands_array
         )
 
-    def set_state(self, sensor_array):
+    def set_state(self, sensor_array_sequence):
         '''
-        this policy ignores state and only uses t
-        TODO - this should take a minibatch, not a single point
+        this policy ignores the full state and only uses the most recent t
+        in the sequence
         '''
+        sensor_array = sensor_array_sequence[-1]
         self._state = sensor_array[0:4]
         self._setting = sensor_array[-2]
         self._time = sensor_array[-1]

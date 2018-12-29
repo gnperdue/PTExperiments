@@ -73,10 +73,7 @@ def main(
     trainer = create_trainer(data_source, policy_class, mode, num_epochs,
                              num_steps, sequence_size)
     trainer.build_or_restore_model_and_optimizer()
-    if 'TRAIN' in mode:
-        trainer.train_model_with_target_replay()
-    else:
-        trainer.run_model()
+    trainer.train_or_run_model(train=('TRAIN' in mode))
     if make_plot:
         trainer.save_performance_plots()
 

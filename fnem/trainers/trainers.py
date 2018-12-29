@@ -30,10 +30,7 @@ class Trainer(object):
     def build_or_restore_model_and_optimizer(self):
         self.policy.build_or_restore_model_and_optimizer()
 
-    def train_model_with_target_replay(self):
-        raise NotImplementedError
-
-    def run_model(self):
+    def train_or_run_model(self, train):
         raise NotImplementedError
 
     def save_performance_plots(self):
@@ -51,7 +48,7 @@ class HistoricalTrainer(Trainer):
         self.sequence_size = arguments_dict['sequence_size']
         self.replay_buffer_size = arguments_dict['replay_buffer_size']
 
-    def train_model_with_target_replay(self):
+    def train_or_run_model(self, train):
         # loop over epochs, where an epoch is one pass over the historical data
         pass
 
@@ -67,7 +64,7 @@ class LiveTrainer(Trainer):
         self.sequence_size = arguments_dict['sequence_size']
         self.replay_buffer_size = arguments_dict['replay_buffer_size']
 
-    def train_model_with_target_replay(self):
+    def train_or_run_model(self, train):
         # no concept of epochs with live data, run over machine steps as long
         # as they are available or until we reach a max step value
 
@@ -97,7 +94,8 @@ class LiveTrainer(Trainer):
                     #     ## * compute loss, add loss to a monitoring log
                     #     ## * call `backward()`
                     #     ## * call `optimizer.step()`
-                    self.policy.train()
+                    if train:
+                        self.policy.train()
                     command = self.policy.compute_action()
                     self.machine.update_machine(command)
 
@@ -117,3 +115,6 @@ class LiveTrainer(Trainer):
                 #     # command = self.policy.compute_action()
 
         self.machine.close_logger()
+
+    def save_performance_plots(self):
+        pass

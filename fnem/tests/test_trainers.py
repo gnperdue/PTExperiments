@@ -31,9 +31,7 @@ class TestBaseTrainers(unittest.TestCase):
     def test_basic_methods(self):
         self.trainer.build_or_restore_model_and_optimizer()
         with self.assertRaises(NotImplementedError):
-            self.trainer.train_model_with_target_replay()
-        with self.assertRaises(NotImplementedError):
-            self.trainer.run_model()
+            self.trainer.train_or_run_model(True)
         with self.assertRaises(NotImplementedError):
             self.trainer.save_performance_plots()
 
@@ -98,12 +96,12 @@ class TestLiveTrainers(unittest.TestCase):
     def test_build_model_and_optimizer(self):
         self.assertIsNotNone(self.trainer.policy)
 
-    def test_train_model_with_target_replay(self):
+    def test_train_or_run_model(self):
+        # self.trainer.train_or_run_model(True)
         pass
 
     def test_save_performance_plots(self):
-        with self.assertRaises(NotImplementedError):
-            self.trainer.save_performance_plots()
+        pass
 
 
 if __name__ == '__main__':

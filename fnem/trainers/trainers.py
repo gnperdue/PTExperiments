@@ -1,6 +1,9 @@
-import torch
 import logging
+import time
 from collections import deque
+
+import torch
+import matplotlib.pyplot as plt
 
 
 LOGGER = logging.getLogger(__name__)
@@ -14,6 +17,7 @@ class Trainer(object):
             'cuda:0' if torch.cuda.is_available() else 'cpu'
         )
         LOGGER.info('Device = {}'.format(self.device))
+        self.tstamp = int(time.time())
         self.policy = policy
         self.machine = None
         self.training_data_file = None
@@ -43,6 +47,7 @@ class HistoricalTrainer(Trainer):
     def __init__(self, policy, training_file, arguments_dict):
         super(HistoricalTrainer, self).__init__(policy=policy)
         self.training_data_file = training_file
+        self.figname = 'historical_trainer_%d.pdf' % self.tstamp
         self.num_epochs = arguments_dict['num_epochs']
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']
@@ -59,6 +64,7 @@ class LiveTrainer(Trainer):
     def __init__(self, policy, sim_machine, arguments_dict):
         super(LiveTrainer, self).__init__(policy=policy)
         self.machine = sim_machine
+        self.figname = 'live_trainer_%d.pdf' % self.tstamp
         self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']
@@ -117,4 +123,19 @@ class LiveTrainer(Trainer):
         self.machine.close_logger()
 
     def save_performance_plots(self):
-        pass
+        fig = plt.Figure(figsize=(10, 6))
+        gs = plt.GridSpec(1, 4)
+        ax1 = plt.subplot(gs[0])
+        ax1.scatter(self.ts, self.m1, c='r')
+        ax1.scatter(self.ts, self.m2, c='g')
+        ax1.scatter(self.ts, self.m3, c='b')
+        ax1.scatter(self.ts, self.m4, c='y')
+        ax2 = plt.subplot(gs[1])
+        ax2.scatter(self.ts, self.totals, c='k')
+        ax3 = plt.subplot(gs[2])
+        ax3.scatter(self.ts, self.heats, c='k')
+        ax4 = plt.subplot(gs[3])
+        ax4.scatter(self.ts, self.settings, c='k')
+
+        fig.tight_layout()
+        plt.savefig(self.figname, bbox_inches='tight')

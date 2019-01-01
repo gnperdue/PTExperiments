@@ -12,11 +12,12 @@ LOGGER = logging.getLogger(__name__)
 class Trainer(object):
     '''base class - defines the API'''
 
-    def __init__(self, policy, performance_memory_maxlen=5000):
+    def __init__(self, policy, data_source, performance_memory_maxlen=5000):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu'
         )
         LOGGER.info('Device = {}'.format(self.device))
+        self.data_source = data_source
         self.tstamp = int(time.time())
         self.policy = policy
         self.machine = None
@@ -44,9 +45,8 @@ class Trainer(object):
 class HistoricalTrainer(Trainer):
     '''data source is a file to loop over'''
 
-    def __init__(self, policy, training_file, arguments_dict):
+    def __init__(self, policy, data_source, arguments_dict):
         super(HistoricalTrainer, self).__init__(policy=policy)
-        self.training_data_file = training_file
         self.figname = 'historical_trainer_%d.pdf' % self.tstamp
         self.num_epochs = arguments_dict['num_epochs']
         self.num_steps = arguments_dict['num_steps']
@@ -61,9 +61,9 @@ class HistoricalTrainer(Trainer):
 class LiveTrainer(Trainer):
     '''data source is a sim machine we interrogate for steps and values'''
 
-    def __init__(self, policy, sim_machine, arguments_dict):
-        super(LiveTrainer, self).__init__(policy=policy)
-        self.machine = sim_machine
+    def __init__(self, policy, data_source, arguments_dict):
+        super(LiveTrainer, self).__init__(policy=policy,
+                                          data_source=data_source)
         self.figname = 'live_trainer_%d.pdf' % self.tstamp
         self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
@@ -76,49 +76,67 @@ class LiveTrainer(Trainer):
 
         # TODO - build up target replay buffer of sequencees
         sequence_buffer = []
-        for i in range(self.num_steps):
-            if self.machine.step():
-                t = self.machine.get_time()
-                sensor_vals = self.machine.get_sensor_values()
-                self.ts.append(t)
-                for i, m in enumerate([self.m1, self.m2, self.m3, self.m4]):
-                    m.append(sensor_vals[i])
-                self.totals.append(sum(sensor_vals))
-                setting = self.machine.get_setting()
-                self.settings.append(setting)
-                heat = self.machine.get_heat()
-                self.heat.append(heat)
-                state = sensor_vals + [heat, setting, t]
-                if len(sequence_buffer) < self.sequence_size:
-                    sequence_buffer.append(state)
-                else:
-                    sequence_buffer.pop(0)
-                    sequence_buffer.append(state)
-                    self.policy.set_state(sequence_buffer)
-                    #     ## train should:
-                    #     ## * zero gradiaents
-                    #     ## * compute loss, add loss to a monitoring log
-                    #     ## * call `backward()`
-                    #     ## * call `optimizer.step()`
-                    if train:
-                        self.policy.train()
-                    command = self.policy.compute_action()
-                    self.machine.update_machine(command)
-
-                # if len(replay_buffer) < self.replay_buffer_size:
-                #     replay_buffer.append(state)
-                # else:
-                #     replay_buffer.pop(0)
-                #     replay_buffer.append(state)
-                #     # TODO - build trainsequence, pass the sequence to the policy
-                #     # X_train, y_train = self._build_trainsequence(replay_buffer)
-                #     # self.policy.set_state_sequence(X_train, y_train)
-                #     ## compute action should:
+        for i, state in enumerate(self.data_source):
+            if len(sequence_buffer) < self.sequence_size:
+                sequence_buffer.append(state)
+            else:
+                sequence_buffer.pop(0)
+                sequence_buffer.append(state)
+                self.policy.set_state(sequence_buffer)
+                #     ## train should:
                 #     ## * zero gradiaents
                 #     ## * compute loss, add loss to a monitoring log
                 #     ## * call `backward()`
                 #     ## * call `optimizer.step()`
-                #     # command = self.policy.compute_action()
+                if train:
+                    self.policy.train()
+                command = self.policy.compute_action()
+                self.machine.update_machine(command)
+        # TODO - how to save and plot heat?
+
+        # for i in range(self.num_steps):
+        #     if self.machine.step():
+        #         t = self.machine.get_time()
+        #         sensor_vals = self.machine.get_sensor_values()
+        #         self.ts.append(t)
+        #         for i, m in enumerate([self.m1, self.m2, self.m3, self.m4]):
+        #             m.append(sensor_vals[i])
+        #         self.totals.append(sum(sensor_vals))
+        #         setting = self.machine.get_setting()
+        #         self.settings.append(setting)
+        #         heat = self.machine.get_heat()
+        #         self.heat.append(heat)
+        #         state = sensor_vals + [heat, setting, t]
+        #         if len(sequence_buffer) < self.sequence_size:
+        #             sequence_buffer.append(state)
+        #         else:
+        #             sequence_buffer.pop(0)
+        #             sequence_buffer.append(state)
+        #             self.policy.set_state(sequence_buffer)
+        #             #     ## train should:
+        #             #     ## * zero gradiaents
+        #             #     ## * compute loss, add loss to a monitoring log
+        #             #     ## * call `backward()`
+        #             #     ## * call `optimizer.step()`
+        #             if train:
+        #                 self.policy.train()
+        #             command = self.policy.compute_action()
+        #             self.machine.update_machine(command)
+
+        # if len(replay_buffer) < self.replay_buffer_size:
+        #     replay_buffer.append(state)
+        # else:
+        #     replay_buffer.pop(0)
+        #     replay_buffer.append(state)
+        #     # TODO - build trainsequence, pass the sequence to the policy
+        #     # X_train, y_train = self._build_trainsequence(replay_buffer)
+        #     # self.policy.set_state_sequence(X_train, y_train)
+        #     ## compute action should:
+        #     ## * zero gradiaents
+        #     ## * compute loss, add loss to a monitoring log
+        #     ## * call `backward()`
+        #     ## * call `optimizer.step()`
+        #     # command = self.policy.compute_action()
 
         self.machine.close_logger()
 

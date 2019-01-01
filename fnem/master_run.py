@@ -41,8 +41,6 @@ parser.add_argument('--log-level', default='INFO', type=str,
                     help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
 parser.add_argument('--make-plot', default=False, action='store_true',
                     help='plot win percentages and losses')
-parser.add_argument('--maxsteps', default=1000, type=int,
-                    help='max simulation steps')
 parser.add_argument('--mode', default='RUN-TRAINED',
                     type=str, help='run mode')
 parser.add_argument('--num-epochs', default=1, type=int,
@@ -57,7 +55,7 @@ parser.add_argument('--sequence-size', default=20, type=int,
 
 def main(
     batch_size, ckpt_path, data_source_path, exp_replay_buffer, log_level,
-    make_plot, maxsteps, mode, num_epochs, num_steps, policy, sequence_size
+    make_plot, mode, num_epochs, num_steps, policy, sequence_size
 ):
     mode = mode.upper()
     if mode not in RUN_MODES:
@@ -79,7 +77,7 @@ def main(
     policy_class = create_policy(policy, arguments_dict)
     data_source = create_data_source(mode, batch_size,
                                      source_path=data_source_path,
-                                     maxsteps=maxsteps)
+                                     maxsteps=num_steps)
     trainer = create_trainer(data_source, policy_class, mode, num_epochs,
                              num_steps, sequence_size)
     trainer.build_or_restore_model_and_optimizer()

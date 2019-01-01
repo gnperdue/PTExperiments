@@ -1,4 +1,6 @@
 import numpy as np
+import os
+import pathlib
 
 # data amplitudes
 D1AMP, D2AMP, D3AMP, D4AMP = 10.0, 1.0, 0.5, 0.1
@@ -17,3 +19,16 @@ RUN_MODES = [
     'RUN-TRAINED-HISTORICAL', 'RUN-TRAINED-LIVE', 'TRAIN-HISTORICAL',
     'TRAIN-LIVE'
 ]
+
+source_path = pathlib.Path(os.environ['HOME'])
+source_path = source_path/'Dropbox/ArtificialIntelligence/InterestingPyTorch'
+source_path = source_path/'PTExperiments/fnem/reference_files'
+DEFAULT_SOURCE_PATH = source_path
+
+LOG_TEMPLATE = 'log_machinewithrule_%d'
+PLT_TEMPLATE = 'plt_machinewithrule_%d'
+REFERENCE_TSTAMP = 1545976343
+REFERNECE_LOG = (LOG_TEMPLATE % REFERENCE_TSTAMP) + '.csv.gz'
+REFERNECE_LOG = pathlib.Path('./reference_files')/REFERNECE_LOG
+REFERENCE_PLT = (PLT_TEMPLATE % REFERENCE_TSTAMP) + '.pdf'
+REFERENCE_PLT = pathlib.Path('./reference_files')/REFERENCE_PLT

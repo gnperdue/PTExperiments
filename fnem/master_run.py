@@ -20,6 +20,7 @@ from utils.util_funcs import create_policy
 from utils.util_funcs import create_trainer
 from utils.util_funcs import get_logging_level
 from utils.common_defs import RUN_MODES
+from utils.common_defs import REFERNECE_LOG
 
 import warnings
 # 'error' to stop on warns, 'ignore' to ignore silly matplotlib noise
@@ -45,6 +46,8 @@ parser.add_argument('--policy', default='SimpleRuleBased', type=str,
                     help='policy class name')
 parser.add_argument('--sequence-size', default=20, type=int,
                     help='state sequence size')
+parser.add_argument('--data-source-path', default=REFERNECE_LOG, type=str,
+                    help='absolute path for source data')
 
 
 def main(

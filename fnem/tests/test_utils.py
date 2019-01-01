@@ -7,7 +7,7 @@ import logging
 import unittest
 import utils.util_funcs as utils
 from utils.common_defs import DEFAULT_COMMANDS
-from tests.common_defs import REFERNECE_LOG
+from utils.common_defs import REFERNECE_LOG
 from utils.common_defs import RUN_MODES
 
 TEST_RULEBASED_ARG_DICT = {
@@ -92,6 +92,9 @@ class TestUtils(unittest.TestCase):
             )
 
     def test_create_data_source(self):
+        with self.assertRaises(ValueError):
+            data_source = utils.create_data_source('TRAIN-HISTORICAL')
+
         with self.assertRaises(ValueError):
             data_source = utils.create_data_source('NoSuchMode')
 

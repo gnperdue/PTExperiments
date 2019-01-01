@@ -6,7 +6,7 @@ from sim.data_model import NoiseModel as Noise
 from sim.engines import SimulationMachine
 from policies.rule_based import SimpleRuleBased
 from utils.common_defs import DEFAULT_COMMANDS
-from tests.common_defs import REFERNECE_LOG
+from utils.common_defs import REFERNECE_LOG
 
 TEST_TRAIN_ARGS_DICT = {
     'num_epochs': 1, 'num_steps': 100, 'replay_buffer_size': 100,

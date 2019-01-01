@@ -1,4 +1,5 @@
 import logging
+import os
 from trainers.trainers import HistoricalTrainer, LiveTrainer
 import policies.rule_based as rule_based
 from utils.common_defs import DEFAULT_COMMANDS
@@ -56,10 +57,13 @@ def create_trainer(data_source, policy, mode, num_epochs, num_steps,
     return trainer
 
 
-def create_data_source(mode):
+def create_data_source(mode, source_path=None, source_file=None):
     data_source = None
     if 'HISTORICAL' in mode:
-        pass
+        if source_path is not None and source_file is not None:
+            return os.path.join(source_path, source_file)
+        else:
+            raise ValueError('Source paths required for historical training.')
     elif 'LIVE' in mode:
         pass
     else:

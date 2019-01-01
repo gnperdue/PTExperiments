@@ -17,10 +17,10 @@ from sim.engines import SimulationMachine
 from policies.rule_based import SimpleRuleBased
 from utils.common_defs import DEFAULT_COMMANDS
 
-from tests.common_defs import LOG_TEMPLATE
-from tests.common_defs import PLT_TEMPLATE
-from tests.common_defs import REFERNECE_LOG
-from tests.common_defs import REFERENCE_PLT
+from utils.common_defs import LOG_TEMPLATE
+from utils.common_defs import PLT_TEMPLATE
+from utils.common_defs import REFERNECE_LOG
+from utils.common_defs import REFERENCE_PLT
 
 
 class TestMachineWithRuleBased(unittest.TestCase):

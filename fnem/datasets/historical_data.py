@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 
 
-class ToTensor(object):
+class HistoricalToTensor(object):
     '''transform for moving historical data to tensors'''
 
     def __call__(self, sample):

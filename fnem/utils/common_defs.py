@@ -27,6 +27,7 @@ DEFAULT_SOURCE_PATH = source_path
 
 LOG_TEMPLATE = 'log_machinewithrule_%d'
 PLT_TEMPLATE = 'plt_machinewithrule_%d'
+DATASET_MACHINE_LOG_TEMPLATE = 'log_dataset_machine_%d'
 REFERENCE_TSTAMP = 1545976343
 REFERNECE_LOG = (LOG_TEMPLATE % REFERENCE_TSTAMP) + '.csv.gz'
 REFERNECE_LOG = pathlib.Path('./reference_files')/REFERNECE_LOG

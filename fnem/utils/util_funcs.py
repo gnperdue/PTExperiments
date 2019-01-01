@@ -47,15 +47,24 @@ def create_trainer(data_source, policy, mode, num_epochs, num_steps,
     arguments_dict['num_steps'] = num_steps
     arguments_dict['sequence_size'] = sequence_size
     arguments_dict['replay_buffer_size'] = replay_buffer_size
-    if mode == 'RUN-TRAINED':
+    if 'HISTORICAL' in mode:
         trainer = HistoricalTrainer(policy, data_source, arguments_dict)
-    elif mode == 'TRAIN-HISTORICAL':
-        trainer = HistoricalTrainer(policy, data_source, arguments_dict)
-    elif mode == 'TRAIN-LIVE':
+    elif 'LIVE' in mode:
         trainer = LiveTrainer(policy, data_source, arguments_dict)
     else:
         raise ValueError('Unknown mode ({}).'.format(mode))
     return trainer
+
+
+def create_data_source(mode):
+    data_source = None
+    if 'HISTORICAL' in mode:
+        pass
+    elif 'LIVE' in mode:
+        pass
+    else:
+        raise ValueError('Unknown mode ({}).'.format(mode))
+    return data_source
 
 
 def get_logging_level(log_level):

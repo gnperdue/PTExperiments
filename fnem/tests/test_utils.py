@@ -47,13 +47,13 @@ class TestUtils(unittest.TestCase):
             for k in ['start', 'amplitude', 'period', 'commands_array']:
                 self.assertIsNotNone(d[k])
 
-        for i in range(3):
+        for i in range(len(RUN_MODES)):
             d = utils.create_default_arguments_dict(
                 'NoSuchPolicy', RUN_MODES[i]
             )
             self.assertIsNone(d)
 
-        for i in range(3):
+        for i in range(len(RUN_MODES)):
             d = utils.create_default_arguments_dict(
                 'SimpleRuleBased', RUN_MODES[i]
             )
@@ -79,7 +79,7 @@ class TestUtils(unittest.TestCase):
         policy = utils.create_policy(
             'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
         )
-        mode = 'RUN-TRAINED'
+        mode = 'RUN-TRAINED-HISTORICAL'
         trainer = utils.create_trainer(data_source, policy, mode, 1, 1, 1, 1)
         self.assertEqual(trainer.num_epochs, 1)
         self.assertEqual(trainer.num_steps, 1)
@@ -90,6 +90,10 @@ class TestUtils(unittest.TestCase):
             trainer = utils.create_trainer(
                 data_source, policy, 'NoSuchMode', 1, 1
             )
+
+    def test_create_data_source(self):
+        with self.assertRaises(ValueError):
+            data_source = utils.create_data_source('NoSuchMode')
 
 
 if __name__ == '__main__':

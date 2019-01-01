@@ -14,5 +14,6 @@ DEFAULT_COMMANDS = np.array([-0.5, -0.375, -0.25, -0.125, 0.0,
 
 # strategies for running a trainer class
 RUN_MODES = [
-    'RUN-TRAINED', 'TRAIN-HISTORICAL', 'TRAIN-LIVE'
+    'RUN-TRAINED-HISTORICAL', 'RUN-TRAINED-LIVE', 'TRAIN-HISTORICAL',
+    'TRAIN-LIVE'
 ]

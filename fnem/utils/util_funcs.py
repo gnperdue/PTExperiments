@@ -1,11 +1,16 @@
 import logging
 import os
+import time
 
-# from torch.utils.data import DataLoader
+import torchvision.transforms as transforms
+from torch.utils.data import DataLoader
 
 from trainers.trainers import HistoricalTrainer, LiveTrainer
+from datasets.live_data import LiveDataset
+from datasets.live_data import LiveToTensor
 import policies.rule_based as rule_based
 from utils.common_defs import DEFAULT_COMMANDS
+from utils.common_defs import DATASET_MACHINE_LOG_TEMPLATE
 
 LOGGER = logging.getLogger(__name__)
 
@@ -60,17 +65,26 @@ def create_trainer(data_source, policy, mode, num_epochs, num_steps,
     return trainer
 
 
-def create_data_source(mode, source_path=None, source_file=None):
+def create_data_source(
+    mode, batch_size, source_path=None, maxsteps=None
+):
     data_source = None
     if 'HISTORICAL' in mode:
-        if source_path is not None and source_file is not None:
+        if source_path is not None:
             # TODO - need to make a proper data loader and wrap it to unpack,
             # etc.
-            return os.path.join(source_path, source_file)
+            return source_path
         else:
             raise ValueError('Source paths required for historical training.')
     elif 'LIVE' in mode:
-        pass
+        logname = './' + DATASET_MACHINE_LOG_TEMPLATE % time.time()
+        trnsfrms = transforms.Compose([LiveToTensor()])
+        dataset = LiveDataset(
+            maxsteps=maxsteps, logname=logname, transform=trnsfrms
+        )
+        data_source = DataLoader(
+            dataset, batch_size=batch_size, shuffle=False, num_workers=1
+        )
     else:
         raise ValueError('Unknown mode ({}).'.format(mode))
     return data_source

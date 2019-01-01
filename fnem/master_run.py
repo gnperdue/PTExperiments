@@ -1,7 +1,8 @@
 '''
 Running modes (`--mode`):
 
-* RUN-TRAINED: run a trained policy and generate historical data.
+* RUN-TRAINED-HISTORICAL: run a trained policy on historical data.
+* RUN-TRAINED-LIVE: run a trained policy on live simulated data.
 * TRAIN-HISTORICAL: run a policy with live training from historical data.
 * TRAIN-LIVE: run a policy with live training using an asynchronous running
   simulation.
@@ -15,12 +16,13 @@ import logging
 import time
 import sys
 
+from utils.util_funcs import create_data_source
 from utils.util_funcs import create_default_arguments_dict
 from utils.util_funcs import create_policy
 from utils.util_funcs import create_trainer
 from utils.util_funcs import get_logging_level
 from utils.common_defs import RUN_MODES
-from utils.common_defs import REFERNECE_LOG
+from utils.common_defs import MACHINE_WITH_RULE_REFERNECE_LOG
 
 import warnings
 # 'error' to stop on warns, 'ignore' to ignore silly matplotlib noise
@@ -30,12 +32,17 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', default=100, type=int, help='batch size')
 parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
+parser.add_argument('--data-source-path',
+                    default=MACHINE_WITH_RULE_REFERNECE_LOG, type=str,
+                    help='absolute path for source data')
 parser.add_argument('--exp-replay-buffer', default=500, type=int,
                     help='replay buffer')
 parser.add_argument('--log-level', default='INFO', type=str,
                     help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
 parser.add_argument('--make-plot', default=False, action='store_true',
                     help='plot win percentages and losses')
+parser.add_argument('--maxsteps', default=1000, type=int,
+                    help='max simulation steps')
 parser.add_argument('--mode', default='RUN-TRAINED',
                     type=str, help='run mode')
 parser.add_argument('--num-epochs', default=1, type=int,
@@ -46,13 +53,11 @@ parser.add_argument('--policy', default='SimpleRuleBased', type=str,
                     help='policy class name')
 parser.add_argument('--sequence-size', default=20, type=int,
                     help='state sequence size')
-parser.add_argument('--data-source-path', default=REFERNECE_LOG, type=str,
-                    help='absolute path for source data')
 
 
 def main(
-    batch_size, ckpt_path, exp_replay_buffer, log_level, make_plot, mode,
-    num_epochs, num_steps, policy, sequence_size
+    batch_size, ckpt_path, data_source_path, exp_replay_buffer, log_level,
+    make_plot, maxsteps, mode, num_epochs, num_steps, policy, sequence_size
 ):
     mode = mode.upper()
     if mode not in RUN_MODES:
@@ -72,7 +77,9 @@ def main(
     arguments_dict = create_default_arguments_dict(policy, mode)
     # TODO - add code to allow arg dict override...
     policy_class = create_policy(policy, arguments_dict)
-    data_source = None  # TODO - utils function to get file or make engine
+    data_source = create_data_source(mode, batch_size,
+                                     source_path=data_source_path,
+                                     maxsteps=maxsteps)
     trainer = create_trainer(data_source, policy_class, mode, num_epochs,
                              num_steps, sequence_size)
     trainer.build_or_restore_model_and_optimizer()

@@ -61,6 +61,8 @@ def create_data_source(mode, source_path=None, source_file=None):
     data_source = None
     if 'HISTORICAL' in mode:
         if source_path is not None and source_file is not None:
+            # TODO - need to make a proper data loader and wrap it to unpack,
+            # etc.
             return os.path.join(source_path, source_file)
         else:
             raise ValueError('Source paths required for historical training.')

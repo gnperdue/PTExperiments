@@ -6,7 +6,7 @@ from sim.data_model import NoiseModel as Noise
 from sim.engines import SimulationMachine
 from policies.rule_based import SimpleRuleBased
 from utils.common_defs import DEFAULT_COMMANDS
-from utils.common_defs import REFERNECE_LOG
+from utils.common_defs import MACHINE_WITH_RULE_REFERNECE_LOG
 
 TEST_TRAIN_ARGS_DICT = {
     'num_epochs': 1, 'num_steps': 100, 'replay_buffer_size': 100,
@@ -44,7 +44,7 @@ class TestHistoricalTrainers(unittest.TestCase):
             commands_array=DEFAULT_COMMANDS
         )
         self.trainer = trainers.HistoricalTrainer(
-            policy=policy, training_file=REFERNECE_LOG,
+            policy=policy, training_file=MACHINE_WITH_RULE_REFERNECE_LOG,
             arguments_dict=TEST_TRAIN_ARGS_DICT
         )
 

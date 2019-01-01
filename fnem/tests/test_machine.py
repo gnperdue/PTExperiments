@@ -17,10 +17,10 @@ from sim.engines import SimulationMachine
 from policies.rule_based import SimpleRuleBased
 from utils.common_defs import DEFAULT_COMMANDS
 
-from utils.common_defs import LOG_TEMPLATE
-from utils.common_defs import PLT_TEMPLATE
-from utils.common_defs import REFERNECE_LOG
-from utils.common_defs import REFERENCE_PLT
+from utils.common_defs import MACHINE_WITH_RULE_LOG_TEMPLATE
+from utils.common_defs import MACHINE_WITH_RULE_PLT_TEMPLATE
+from utils.common_defs import MACHINE_WITH_RULE_REFERNECE_LOG
+from utils.common_defs import MACHINE_WITH_RULE_REFERENCE_PLT
 
 
 class TestMachineWithRuleBased(unittest.TestCase):
@@ -28,8 +28,10 @@ class TestMachineWithRuleBased(unittest.TestCase):
     def setUp(self):
         np.random.seed(0)
         self.test_time = time.time()
-        self.machine_log = './' + LOG_TEMPLATE % self.test_time
-        self.machine_plt = './' + PLT_TEMPLATE % self.test_time + '.pdf'
+        self.machine_log = './' + \
+            MACHINE_WITH_RULE_LOG_TEMPLATE % self.test_time
+        self.machine_plt = './' + \
+            MACHINE_WITH_RULE_PLT_TEMPLATE % self.test_time + '.pdf'
 
         dgen = Generator()
         nosgen = Noise()
@@ -90,7 +92,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
                     self.machine.update_machine(command)
 
         self.machine.close_logger()
-        reference_log_size = os.stat(REFERNECE_LOG).st_size
+        reference_log_size = os.stat(MACHINE_WITH_RULE_REFERNECE_LOG).st_size
         new_log_size = os.stat(self.machine_log + '.csv.gz').st_size
         self.assertEqual(reference_log_size, new_log_size)
 
@@ -110,7 +112,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
 
         fig.tight_layout()
         plt.savefig(self.machine_plt, bbox_inches='tight')
-        reference_plot_size = os.stat(REFERENCE_PLT).st_size
+        reference_plot_size = os.stat(MACHINE_WITH_RULE_REFERENCE_PLT).st_size
         new_plot_size = os.stat(self.machine_plt).st_size
         relative_size = 100.0 * \
             np.abs(reference_plot_size - new_plot_size) / \

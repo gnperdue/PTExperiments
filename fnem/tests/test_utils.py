@@ -7,7 +7,7 @@ import logging
 import unittest
 import utils.util_funcs as utils
 from utils.common_defs import DEFAULT_COMMANDS
-from utils.common_defs import REFERNECE_LOG
+from utils.common_defs import MACHINE_WITH_RULE_REFERNECE_LOG
 from utils.common_defs import RUN_MODES
 
 TEST_RULEBASED_ARG_DICT = {
@@ -75,7 +75,7 @@ class TestUtils(unittest.TestCase):
             )
 
     def test_create_trainer(self):
-        data_source = REFERNECE_LOG
+        data_source = MACHINE_WITH_RULE_REFERNECE_LOG
         policy = utils.create_policy(
             'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
         )

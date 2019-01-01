@@ -6,6 +6,7 @@ Usage:
 import unittest
 import time
 
+import torch
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
@@ -32,12 +33,12 @@ class TestLiveDataset(unittest.TestCase):
     def setUp(self):
         self.test_time = time.time()
         self.maxsteps = 100
-        logname = './' + DATASET_MACHINE_LOG_TEMPLATE % self.test_time
+        self.logname = './' + DATASET_MACHINE_LOG_TEMPLATE % self.test_time
         trnsfrms = transforms.Compose([
             LiveToTensor()
         ])
         self.dataset = LiveDataset(
-            maxsteps=self.maxsteps, logname=logname, transform=trnsfrms
+            maxsteps=self.maxsteps, logname=self.logname, transform=trnsfrms
         )
 
     def tearDown(self):
@@ -48,8 +49,13 @@ class TestLiveDataset(unittest.TestCase):
             self.dataset, batch_size=10, shuffle=False, num_workers=1
         )
         for i, sample in enumerate(dl):
-            print(i, sample)
+            self.assertEqual(sample.shape, torch.Size([10, 7]))
         self.dataset.close_machine_logger()
+
+        # reference_log_size = os.stat(REFERNECE_LOG).st_size
+        # new_log_size = os.stat(self.machine_log + '.csv.gz').st_size
+        # self.assertEqual(reference_log_size, new_log_size)
+
 
     def test_dataset_len(self):
         self.assertEqual(self.maxsteps, len(self.dataset))

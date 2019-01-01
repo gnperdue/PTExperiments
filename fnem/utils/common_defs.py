@@ -25,11 +25,16 @@ source_path = source_path/'Dropbox/ArtificialIntelligence/InterestingPyTorch'
 source_path = source_path/'PTExperiments/fnem/reference_files'
 DEFAULT_SOURCE_PATH = source_path
 
-LOG_TEMPLATE = 'log_machinewithrule_%d'
-PLT_TEMPLATE = 'plt_machinewithrule_%d'
+MACHINE_WITH_RULE_LOG_TEMPLATE = 'log_machinewithrule_%d'
+MACHINE_WITH_RULE_PLT_TEMPLATE = 'plt_machinewithrule_%d'
 DATASET_MACHINE_LOG_TEMPLATE = 'log_dataset_machine_%d'
-REFERENCE_TSTAMP = 1545976343
-REFERNECE_LOG = (LOG_TEMPLATE % REFERENCE_TSTAMP) + '.csv.gz'
-REFERNECE_LOG = pathlib.Path('./reference_files')/REFERNECE_LOG
-REFERENCE_PLT = (PLT_TEMPLATE % REFERENCE_TSTAMP) + '.pdf'
-REFERENCE_PLT = pathlib.Path('./reference_files')/REFERENCE_PLT
+
+REFERENCE_TSTAMP1 = 1545976343
+MACHINE_WITH_RULE_REFERNECE_LOG = \
+    (MACHINE_WITH_RULE_LOG_TEMPLATE % REFERENCE_TSTAMP1) + '.csv.gz'
+MACHINE_WITH_RULE_REFERNECE_LOG = \
+    pathlib.Path('./reference_files')/MACHINE_WITH_RULE_REFERNECE_LOG
+MACHINE_WITH_RULE_REFERENCE_PLT = \
+    (MACHINE_WITH_RULE_PLT_TEMPLATE % REFERENCE_TSTAMP1) + '.pdf'
+MACHINE_WITH_RULE_REFERENCE_PLT = \
+    pathlib.Path('./reference_files')/MACHINE_WITH_RULE_REFERENCE_PLT

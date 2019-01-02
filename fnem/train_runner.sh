@@ -12,7 +12,7 @@ ARGS+=" --mode $MODE"
 ARGS+=" --num-steps $NUMSTEPS"
 ARGS+=" --policy $POLICY"
 ARGS+=" --sequence-size $SEQSIZE"
-# ARGS+=" --make-plot"
+ARGS+=" --make-plot"
 
 cat << EOF
 python $EXE $ARGS

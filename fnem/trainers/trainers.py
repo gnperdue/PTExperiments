@@ -29,7 +29,7 @@ class Trainer(object):
         self.m4 = deque([], maxlen=self.performance_memory_maxlen)
         self.ts = deque([], maxlen=self.performance_memory_maxlen)
         self.totals = deque([], maxlen=self.performance_memory_maxlen)
-        self.heat = deque([], maxlen=self.performance_memory_maxlen)
+        self.heats = deque([], maxlen=self.performance_memory_maxlen)
         self.settings = deque([], maxlen=self.performance_memory_maxlen)
 
     def build_or_restore_model_and_optimizer(self):
@@ -77,6 +77,16 @@ class LiveTrainer(Trainer):
 
         sequence_buffer = []
         for i, state in enumerate(self.data_source):
+            sensor_vals = state[0:4].numpy()
+            heat = state[4].numpy()
+            setting = state[5].numpy()
+            t = state[6].numpy()
+            for i, m in enumerate([self.m1, self.m2, self.m3, self.m4]):
+                m.append(sensor_vals[i])
+            self.totals.append(sum(sensor_vals))
+            self.heats.append(heat)
+            self.settings.append(setting)
+            self.ts.append(t)
             if len(sequence_buffer) < self.sequence_size:
                 sequence_buffer.append(state)
             else:
@@ -92,53 +102,7 @@ class LiveTrainer(Trainer):
                     self.policy.train()
                 command = self.policy.compute_action()
                 self.data_source.update_setting(command)
-        # TODO - how to save and plot heat?
 
-        # for i in range(self.num_steps):
-        #     if self.machine.step():
-        #         t = self.machine.get_time()
-        #         sensor_vals = self.machine.get_sensor_values()
-        #         self.ts.append(t)
-        #         for i, m in enumerate([self.m1, self.m2, self.m3, self.m4]):
-        #             m.append(sensor_vals[i])
-        #         self.totals.append(sum(sensor_vals))
-        #         setting = self.machine.get_setting()
-        #         self.settings.append(setting)
-        #         heat = self.machine.get_heat()
-        #         self.heat.append(heat)
-        #         state = sensor_vals + [heat, setting, t]
-        #         if len(sequence_buffer) < self.sequence_size:
-        #             sequence_buffer.append(state)
-        #         else:
-        #             sequence_buffer.pop(0)
-        #             sequence_buffer.append(state)
-        #             self.policy.set_state(sequence_buffer)
-        #             #     ## train should:
-        #             #     ## * zero gradiaents
-        #             #     ## * compute loss, add loss to a monitoring log
-        #             #     ## * call `backward()`
-        #             #     ## * call `optimizer.step()`
-        #             if train:
-        #                 self.policy.train()
-        #             command = self.policy.compute_action()
-        #             self.machine.update_machine(command)
-
-        # if len(replay_buffer) < self.replay_buffer_size:
-        #     replay_buffer.append(state)
-        # else:
-        #     replay_buffer.pop(0)
-        #     replay_buffer.append(state)
-        #     # TODO - build trainsequence, pass the sequence to the policy
-        #     # X_train, y_train = self._build_trainsequence(replay_buffer)
-        #     # self.policy.set_state_sequence(X_train, y_train)
-        #     ## compute action should:
-        #     ## * zero gradiaents
-        #     ## * compute loss, add loss to a monitoring log
-        #     ## * call `backward()`
-        #     ## * call `optimizer.step()`
-        #     # command = self.policy.compute_action()
-
-        # TODO - can we call methods on a DataLoader's Dataset?
         self.data_source.close_dataset_logger()
 
     def save_performance_plots(self):

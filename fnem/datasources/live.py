@@ -9,7 +9,7 @@ from sim.engines import SimulationMachine
 
 class LiveData(object):
 
-    def __init__(self, setting=10.0, maxsteps=2000, logname='log.txt',
+    def __init__(self, setting=10.0, maxsteps=2000, logname='tmplog',
                  pytorch=True):
         self._maxsteps = maxsteps
         self._machine_log = logname

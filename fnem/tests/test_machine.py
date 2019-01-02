@@ -76,7 +76,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
                 setting = self.machine.get_setting()
                 heat = self.machine.get_heat()
                 # Create a synthetic batch of size 1.
-                state = [sensor_vals + [heat, setting, t]]
+                state = sensor_vals + [heat, setting, t]
                 ts.append(t)
                 totals.append(total)
                 settings.append(setting)

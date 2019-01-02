@@ -75,7 +75,6 @@ class LiveTrainer(Trainer):
         # no concept of epochs with live data, run over machine steps as long
         # as they are available or until we reach a max step value
 
-        # TODO - build up target replay buffer of sequencees
         sequence_buffer = []
         for i, state in enumerate(self.data_source):
             if len(sequence_buffer) < self.sequence_size:
@@ -92,7 +91,7 @@ class LiveTrainer(Trainer):
                 if train:
                     self.policy.train()
                 command = self.policy.compute_action()
-                self.data_source.dataset.update_setting(command)
+                self.data_source.update_setting(command)
         # TODO - how to save and plot heat?
 
         # for i in range(self.num_steps):
@@ -140,7 +139,7 @@ class LiveTrainer(Trainer):
         #     # command = self.policy.compute_action()
 
         # TODO - can we call methods on a DataLoader's Dataset?
-        self.data_source.dataset.close_dataset_logger()
+        self.data_source.close_dataset_logger()
 
     def save_performance_plots(self):
         fig = plt.Figure(figsize=(10, 6))

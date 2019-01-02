@@ -16,9 +16,9 @@ class SimpleRuleBased(BasePolicy):
         '''
         this policy ignores the full state and only uses the most recent t
         in the sequence. the `sensor_array_sequence` is expected to be a
-        list of batches. we want to take the last entry of the last batch.
+        batch. we want to take the last entry of the last batch.
         '''
-        sensor_array = sensor_array_sequence[-1][-1]
+        sensor_array = sensor_array_sequence[-1]
         self._state = sensor_array[0:4]
         self._setting = sensor_array[-2]
         self._time = sensor_array[-1]

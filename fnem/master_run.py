@@ -29,7 +29,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch-size', default=20, type=int, help='batch size')
 parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
 parser.add_argument('--data-source-path',
@@ -54,7 +53,7 @@ parser.add_argument('--sequence-size', default=10, type=int,
 
 
 def main(
-    batch_size, ckpt_path, data_source_path, exp_replay_buffer, log_level,
+    ckpt_path, data_source_path, exp_replay_buffer, log_level,
     make_plot, mode, num_epochs, num_steps, policy, sequence_size
 ):
     mode = mode.upper()
@@ -75,8 +74,7 @@ def main(
     arguments_dict = create_default_arguments_dict(policy, mode)
     # TODO - add code to allow arg dict override...
     policy_class = create_policy(policy, arguments_dict)
-    data_source = create_data_source(mode, batch_size,
-                                     source_path=data_source_path,
+    data_source = create_data_source(mode, source_path=data_source_path,
                                      maxsteps=num_steps)
     trainer = create_trainer(data_source, policy_class, mode, num_epochs,
                              num_steps, sequence_size)

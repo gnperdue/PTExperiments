@@ -1,10 +1,11 @@
 import unittest
 import trainers.trainers as trainers
 
-from sim.data_model import DataGenerator as Generator
-from sim.data_model import NoiseModel as Noise
-from sim.engines import SimulationMachine
 from policies.rule_based import SimpleRuleBased
+from utils.util_funcs import create_data_source
+from utils.util_funcs import create_default_arguments_dict
+from utils.util_funcs import create_policy
+from utils.util_funcs import create_trainer
 from utils.common_defs import DEFAULT_COMMANDS
 from utils.common_defs import MACHINE_WITH_RULE_REFERNECE_LOG
 
@@ -67,21 +68,13 @@ class TestHistoricalTrainers(unittest.TestCase):
 class TestLiveTrainers(unittest.TestCase):
 
     def setUp(self):
-        policy = SimpleRuleBased(
-            time=0.0, amplitude=10.0, period=2.0,
-            commands_array=DEFAULT_COMMANDS
-        )
-
-        dgen = Generator()
-        nosgen = Noise()
-        machine = SimulationMachine(
-            setting=10.0, data_generator=dgen, noise_model=nosgen, logger=None
-        )
-        # TODO - pass a proper DataLoader instead...
-        self.trainer = trainers.LiveTrainer(
-            policy=policy, data_source=machine,
-            arguments_dict=TEST_TRAIN_ARGS_DICT
-        )
+        arguments_dict = create_default_arguments_dict('SimpleRuleBased',
+                                                       'TRAIN-LIVE')
+        policy_class = create_policy('SimpleRuleBased', arguments_dict)
+        data_source = create_data_source('TRAIN-LIVE', 10, maxsteps=1000)
+        self.trainer = create_trainer(data_source, policy_class, 'TRAIN-LIVE',
+                                      num_epochs=None, num_steps=1000,
+                                      sequence_size=1)
 
     def tearDown(self):
         pass

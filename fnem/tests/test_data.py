@@ -59,7 +59,7 @@ class TestLiveDataset(unittest.TestCase):
         # we need to kill some time before closing the logger since the
         # dataloader is doing its thing on a different thread
         time.sleep(1)
-        self.dataset.close_machine_logger()
+        self.dataset.close_dataset_logger()
         reference_log_size = os.stat(DATASET_MACHINE_REFERENCE_LOG).st_size
         new_log_size = os.stat(self.logname + '.csv.gz').st_size
         self.assertEqual(reference_log_size, new_log_size)

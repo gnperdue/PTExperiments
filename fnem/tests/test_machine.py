@@ -40,9 +40,10 @@ class TestMachineWithRuleBased(unittest.TestCase):
             setting=10.0, data_generator=dgen, noise_model=nosgen,
             logger=recorder, maxsteps=2000
         )
+        # Test with NumPy - so `pytorch=False`
         self.policy = SimpleRuleBased(
             time=0.0, amplitude=10.0, period=2.0,
-            commands_array=DEFAULT_COMMANDS
+            commands_array=DEFAULT_COMMANDS, pytorch=False
         )
 
     def tearDown(self):
@@ -74,7 +75,8 @@ class TestMachineWithRuleBased(unittest.TestCase):
                 total = sum(sensor_vals)
                 setting = self.machine.get_setting()
                 heat = self.machine.get_heat()
-                state = sensor_vals + [heat, setting, t]
+                # Create a synthetic batch of size 1.
+                state = [sensor_vals + [heat, setting, t]]
                 ts.append(t)
                 totals.append(total)
                 settings.append(setting)

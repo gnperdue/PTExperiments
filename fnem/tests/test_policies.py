@@ -48,11 +48,13 @@ class TestSimpleRuleBased(unittest.TestCase):
         pass
 
     def test_set_state(self):
-        state = [[10.0, 1.0, 0.5, 0.1, 5.0, 10.0, 0.1]]
+        # `state` is a list (sequence of batchs) of lists (batches of size N)
+        # of lists of sensor and other settings data.
+        state = [[[10.0, 1.0, 0.5, 0.1, 5.0, 10.0, 0.1]]]
         self.policy.set_state(state)
-        self.assertEqual(self.policy._state, state[0][0:4])
-        self.assertEqual(self.policy._setting, state[0][-2])
-        self.assertEqual(self.policy._time, state[0][-1])
+        self.assertEqual(self.policy._state, state[0][0][0:4])
+        self.assertEqual(self.policy._setting, state[0][0][-2])
+        self.assertEqual(self.policy._time, state[0][0][-1])
 
     def test_compute_action(self):
         pass

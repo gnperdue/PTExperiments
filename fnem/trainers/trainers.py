@@ -46,7 +46,8 @@ class HistoricalTrainer(Trainer):
     '''data source is a file to loop over'''
 
     def __init__(self, policy, data_source, arguments_dict):
-        super(HistoricalTrainer, self).__init__(policy=policy)
+        super(HistoricalTrainer, self).__init__(policy=policy,
+                                                data_source=data_source)
         self.figname = 'historical_trainer_%d.pdf' % self.tstamp
         self.num_epochs = arguments_dict['num_epochs']
         self.num_steps = arguments_dict['num_steps']
@@ -91,7 +92,7 @@ class LiveTrainer(Trainer):
                 if train:
                     self.policy.train()
                 command = self.policy.compute_action()
-                self.machine.update_machine(command)
+                self.data_source.dataset.update_setting(command)
         # TODO - how to save and plot heat?
 
         # for i in range(self.num_steps):
@@ -138,7 +139,8 @@ class LiveTrainer(Trainer):
         #     ## * call `optimizer.step()`
         #     # command = self.policy.compute_action()
 
-        self.machine.close_logger()
+        # TODO - can we call methods on a DataLoader's Dataset?
+        self.data_source.dataset.close_dataset_logger()
 
     def save_performance_plots(self):
         fig = plt.Figure(figsize=(10, 6))

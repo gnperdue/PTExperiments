@@ -63,11 +63,13 @@ class TestUtils(unittest.TestCase):
         policy = utils.create_policy(
             'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
         )
-        state = [[10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1]]
+        # `state` is a list (sequence of batchs) of lists (batches of size N)
+        # of lists of sensor and other settings data.
+        state = [[[10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1]]]
         policy.set_state(state)
-        self.assertEqual(policy._state, state[0][0:4])
-        self.assertEqual(policy._setting, state[0][-2])
-        self.assertEqual(policy._time, state[0][-1])
+        self.assertEqual(policy._state, state[0][0][0:4])
+        self.assertEqual(policy._setting, state[0][0][-2])
+        self.assertEqual(policy._time, state[0][0][-1])
 
         with self.assertRaises(ValueError):
             policy = utils.create_policy(
@@ -93,10 +95,12 @@ class TestUtils(unittest.TestCase):
 
     def test_create_data_source(self):
         with self.assertRaises(ValueError):
-            data_source = utils.create_data_source('TRAIN-HISTORICAL')
+            data_source = utils.create_data_source('TRAIN-HISTORICAL',
+                                                   batch_size=10)
 
         with self.assertRaises(ValueError):
-            data_source = utils.create_data_source('NoSuchMode')
+            data_source = utils.create_data_source('NoSuchMode',
+                                                   batch_size=10)
 
 
 if __name__ == '__main__':

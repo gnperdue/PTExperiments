@@ -29,7 +29,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch-size', default=100, type=int, help='batch size')
+parser.add_argument('--batch-size', default=20, type=int, help='batch size')
 parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
 parser.add_argument('--data-source-path',
@@ -49,7 +49,7 @@ parser.add_argument('--num-steps', default=100, type=int,
                     help='number of time steps (train or run)')
 parser.add_argument('--policy', default='SimpleRuleBased', type=str,
                     help='policy class name')
-parser.add_argument('--sequence-size', default=20, type=int,
+parser.add_argument('--sequence-size', default=10, type=int,
                     help='state sequence size')
 
 

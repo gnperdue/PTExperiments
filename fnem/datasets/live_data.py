@@ -31,8 +31,11 @@ class LiveDataset(Dataset):
             logger=recorder, maxsteps=self._maxsteps
         )
 
-    def close_machine_logger(self):
+    def close_dataset_logger(self):
         self.machine.close_logger()
+
+    def update_setting(self, command):
+        self.machine.update_machine(command)
 
     def __len__(self):
         return self._maxsteps

@@ -21,7 +21,7 @@ class TestBaseTrainers(unittest.TestCase):
             time=0.0, amplitude=10.0, period=2.0,
             commands_array=DEFAULT_COMMANDS
         )
-        self.trainer = trainers.Trainer(policy)
+        self.trainer = trainers.Trainer(policy, data_source=None)
 
     def test_configuration(self):
         self.assertIsNotNone(self.trainer.device)
@@ -43,8 +43,9 @@ class TestHistoricalTrainers(unittest.TestCase):
             time=0.0, amplitude=10.0, period=2.0,
             commands_array=DEFAULT_COMMANDS
         )
+        # TODO - need to make a DataLoader to hold the csv data accessor
         self.trainer = trainers.HistoricalTrainer(
-            policy=policy, training_file=MACHINE_WITH_RULE_REFERNECE_LOG,
+            policy=policy, data_source=MACHINE_WITH_RULE_REFERNECE_LOG,
             arguments_dict=TEST_TRAIN_ARGS_DICT
         )
 
@@ -53,7 +54,7 @@ class TestHistoricalTrainers(unittest.TestCase):
 
     def test_configuration(self):
         self.assertIsNotNone(self.trainer.device)
-        self.assertIsNotNone(self.trainer.training_data_file)
+        self.assertIsNotNone(self.trainer.data_source)
         self.assertIsNotNone(self.trainer.num_steps)
         self.assertIsNotNone(self.trainer.num_epochs)
         self.assertIsNotNone(self.trainer.sequence_size)
@@ -76,9 +77,9 @@ class TestLiveTrainers(unittest.TestCase):
         machine = SimulationMachine(
             setting=10.0, data_generator=dgen, noise_model=nosgen, logger=None
         )
-
+        # TODO - pass a proper DataLoader instead...
         self.trainer = trainers.LiveTrainer(
-            policy=policy, sim_machine=machine,
+            policy=policy, data_source=machine,
             arguments_dict=TEST_TRAIN_ARGS_DICT
         )
 
@@ -87,7 +88,7 @@ class TestLiveTrainers(unittest.TestCase):
 
     def test_configuration(self):
         self.assertIsNotNone(self.trainer.device)
-        self.assertIsNotNone(self.trainer.machine)
+        self.assertIsNotNone(self.trainer.data_source)
         self.assertIsNotNone(self.trainer.num_steps)
         self.assertIsNotNone(self.trainer.sequence_size)
         self.assertIsNotNone(self.trainer.replay_buffer_size)

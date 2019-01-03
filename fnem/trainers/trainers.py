@@ -89,8 +89,6 @@ class HistoricalTrainer(Trainer):
                     if train:
                         self.policy.train()
                     command = self.policy.compute_action()
-                    # TODO - compute new setting based on chosen command
-                    # self.data_source.update_setting(command)
                     adjustment = self.policy.get_adjustment_value(command)
                     self.data_source.adjust_setting(adjustment)
 

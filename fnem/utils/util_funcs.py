@@ -1,5 +1,4 @@
 import logging
-import os
 import time
 
 import torchvision.transforms as transforms
@@ -7,6 +6,7 @@ from torch.utils.data import DataLoader
 
 from trainers.trainers import HistoricalTrainer, LiveTrainer
 from datasources.live import LiveData
+from datasources.historical import HistoricalData
 from datasets.live_data import LiveDataset
 from datasets.live_data import LiveToTensor
 import policies.rule_based as rule_based
@@ -69,11 +69,11 @@ def create_trainer(data_source, policy, mode, num_epochs, num_steps,
 def create_data_source(
     mode, source_path=None, maxsteps=None
 ):
+    # TODO - need to pass in starting setting
     data_source = None
     if 'HISTORICAL' in mode:
         if source_path is not None:
-            # TODO ...
-            return None
+            data_source = HistoricalData(setting=10.0, source_file=source_path)
         else:
             raise ValueError('Source paths required for historical training.')
     elif 'LIVE' in mode:

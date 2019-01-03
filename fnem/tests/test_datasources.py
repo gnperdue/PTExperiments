@@ -47,7 +47,7 @@ class TestHistoricalData(unittest.TestCase):
     def setUp(self):
         self.epochs = 2
         self.dataset = HistoricalData(
-            source_file=MACHINE_WITH_RULE_REFERNECE_LOG
+            setting=10.0, source_file=MACHINE_WITH_RULE_REFERNECE_LOG
         )
 
     def tearDown(self):

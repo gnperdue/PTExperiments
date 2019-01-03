@@ -22,6 +22,9 @@ class BasePolicy(object):
         self._state = None
         self._commands = np.asarray(commands_array, dtype=DTYPE)
 
+    def get_adjustment_value(self, command):
+        return self._commands[command]
+
     def set_state(self, sensor_array_sequence):
         '''
         sensor_array should be a sequence compoesed of 7 element arrays - one

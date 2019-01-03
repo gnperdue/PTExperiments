@@ -4,7 +4,8 @@ import torch
 
 class HistoricalData(object):
 
-    def __init__(self, source_file, pytorch=True):
+    def __init__(self, setting, source_file, pytorch=True):
+        self._setting = setting
         self._file = source_file
         self._is_zipped = str(self._file)[-3:] == '.gz'
         self._pytorch = pytorch
@@ -33,3 +34,9 @@ class HistoricalData(object):
             for line in fp:
                 yield self._parse_line(line)
             return
+
+    def adjust_setting(self, adjustment):
+        self._setting += adjustment
+
+    def get_setting(self):
+        return self._setting

@@ -28,6 +28,9 @@ class LiveData(object):
     def update_setting(self, command):
         self.machine.update_machine(command)
 
+    def get_setting(self):
+        return self.machine.get_setting()
+
     def __len__(self):
         return self._maxsteps
 

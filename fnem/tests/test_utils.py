@@ -125,15 +125,15 @@ class TestUtils(unittest.TestCase):
                 self.fc1 = nn.Linear(64 * 12 * 12, 128)
                 self.fc2 = nn.Linear(128, 10)
 
-            def forward(self, x):
-                x = F.relu(self.conv1(x))
-                x = F.relu(self.conv2(x))
-                x = self.dropout1(self.pool(x))
-                x = x.view(-1, 64 * 12 * 12)
-                x = F.relu(self.fc1(x))
-                x = self.dropout2(x)
-                x = self.fc2(x)
-                return x
+            # def forward(self, x):
+            #     x = F.relu(self.conv1(x))
+            #     x = F.relu(self.conv2(x))
+            #     x = self.dropout1(self.pool(x))
+            #     x = x.view(-1, 64 * 12 * 12)
+            #     x = F.relu(self.fc1(x))
+            #     x = self.dropout2(x)
+            #     x = self.fc2(x)
+            #     return x
 
         net = Net()
         self.assertEqual(1199882, utils.count_parameters(net))

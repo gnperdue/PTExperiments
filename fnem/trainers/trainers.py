@@ -54,6 +54,8 @@ class HistoricalTrainer(Trainer):
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']
         self.replay_buffer_size = arguments_dict['replay_buffer_size']
+        # policy operates on numpy here
+        self.policy.pytorch = False
 
     def train_or_run_model(self, train):
         # loop over epochs, where an epoch is 1 pass over the historical data.
@@ -63,11 +65,11 @@ class HistoricalTrainer(Trainer):
             sequence_buffer = []
             for i, data in enumerate(self.data_source):
                 setting = self.data_source.get_setting()
-                state = data[0]
-                sensor_vals = state[0:4].numpy()
-                heat = state[4].numpy()
-                target_setting = state[5].numpy()
-                t = state[6].numpy()
+                historical_state = data[0]
+                sensor_vals = list(historical_state[0:4].numpy())
+                heat = historical_state[4].item()
+                target_setting = historical_state[5].item()
+                t = historical_state[6].item()
                 for i, m in enumerate([self.m1, self.m2, self.m3, self.m4]):
                     m.append(sensor_vals[i])
                 self.totals.append(sum(sensor_vals))
@@ -75,6 +77,7 @@ class HistoricalTrainer(Trainer):
                 self.settings.append(setting)
                 self.setting_diffs.append(target_setting - setting)
                 self.ts.append(t)
+                state = sensor_vals + [heat, setting, t]
                 if len(sequence_buffer) < self.sequence_size:
                     sequence_buffer.append(state)
                 else:

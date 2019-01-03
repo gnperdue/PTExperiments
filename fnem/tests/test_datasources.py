@@ -11,8 +11,10 @@ import torch
 import numpy as np
 
 from datasources.live import LiveData
+from datasources.historical import HistoricalData
 from utils.common_defs import DATASET_MACHINE_LOG_TEMPLATE
 from utils.common_defs import DATASET_MACHINE_REFERENCE_LOG
+from utils.common_defs import MACHINE_WITH_RULE_REFERNECE_LOG
 
 
 class TestLiveData(unittest.TestCase):
@@ -38,6 +40,29 @@ class TestLiveData(unittest.TestCase):
 
     def test_dataset_len(self):
         self.assertEqual(self.maxsteps, len(self.dataset))
+
+
+class TestHistoricalData(unittest.TestCase):
+
+    def setUp(self):
+        self.epochs = 2
+        self.dataset = HistoricalData(
+            source_file=MACHINE_WITH_RULE_REFERNECE_LOG
+        )
+
+    def tearDown(self):
+        pass
+
+    def test_data_read(self):
+        print('\n')
+        for ep in range(self.epochs):
+            for i, data in enumerate(self.dataset):
+                # if i == 10:
+                #     print(i, data[0], data[1])
+                self.assertEqual(data[0].shape, torch.Size([7]))
+                self.assertEqual(data[1].shape, torch.Size([4]))
+            self.assertEqual(i, 1999)
+        self.assertEqual(ep, self.epochs - 1)
 
 
 if __name__ == '__main__':

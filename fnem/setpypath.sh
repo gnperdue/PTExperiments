@@ -5,3 +5,4 @@ export PYTHONPATH=`pwd`/sim/:${PYTHONPATH}
 export PYTHONPATH=`pwd`/tests/:${PYTHONPATH}
 export PYTHONPATH=`pwd`/trainers/:${PYTHONPATH}
 export PYTHONPATH=`pwd`/utils/:${PYTHONPATH}
+export PYTHONPATH=`pwd`/datasources/:${PYTHONPATH}

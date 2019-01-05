@@ -86,11 +86,6 @@ class HistoricalTrainer(Trainer):
                     sequence_buffer.pop(0)
                     sequence_buffer.append(state)
                     self.policy.set_state(sequence_buffer)
-                    #     ## train should:
-                    #     ## * zero gradiaents
-                    #     ## * compute loss, add loss to a monitoring log
-                    #     ## * call `backward()`
-                    #     ## * call `optimizer.step()`
                     if train:
                         self.policy.train()
                     command = self.policy.compute_action()

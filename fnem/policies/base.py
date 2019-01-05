@@ -44,7 +44,7 @@ class BasePolicy(object):
     def build_or_restore_model_and_optimizer(self):
         raise NotImplementedError
 
-    def discount_rewards(rewards, gamma=0.99):
+    def discount_rewards(self, rewards, gamma=0.99):
         '''
         rewards should be a `torch.Tensor`
         '''
@@ -53,5 +53,5 @@ class BasePolicy(object):
         d_rewards = (d_rewards - d_rewards.mean()) / (d_rewards.std() + 1e-07)
         return d_rewards
 
-    def loss_fn(preds, r):
+    def loss_fn(self, preds, r):
         raise NotImplementedError

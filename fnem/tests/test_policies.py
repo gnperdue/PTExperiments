@@ -5,6 +5,8 @@ Usage:
 '''
 import unittest
 
+import torch
+
 from utils.common_defs import DEFAULT_COMMANDS
 from policies.base import BasePolicy
 from policies.rule_based import SimpleRuleBased
@@ -26,10 +28,20 @@ class TestBasePolicy(unittest.TestCase):
             self.policy.train()
         with self.assertRaises(NotImplementedError):
             self.policy.build_or_restore_model_and_optimizer()
+        with self.assertRaises(NotImplementedError):
+            self.policy.loss_fn(preds=None, r=None)
 
     def test_get_adjustments(self):
         for i, command in enumerate(DEFAULT_COMMANDS):
             self.assertEqual(self.policy.get_adjustment_value(i), command)
+
+    def test_discount_rewards(self):
+        rewards = torch.Tensor([1.0, 1.0, 10.0])
+        answer = torch.Tensor([-0.5764, -0.5783,  1.1547])
+        d_rewards = self.policy.discount_rewards(rewards)
+        for i in range(len(rewards)):
+            self.assertAlmostEqual(d_rewards[i].item(), answer[i].item(),
+                                   places=4)
 
 
 class TestSimpleMLP(unittest.TestCase):

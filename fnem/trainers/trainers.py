@@ -53,7 +53,6 @@ class HistoricalTrainer(Trainer):
         self.num_epochs = arguments_dict['num_epochs']
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']
-        self.replay_buffer_size = arguments_dict['replay_buffer_size']
         # policy operates on numpy here
         self.policy.pytorch = False
 
@@ -124,7 +123,6 @@ class LiveTrainer(Trainer):
         self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']
-        self.replay_buffer_size = arguments_dict['replay_buffer_size']
 
     def train_or_run_model(self, train):
         # no concept of epochs with live data, run over machine steps as long

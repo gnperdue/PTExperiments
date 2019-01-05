@@ -34,8 +34,6 @@ parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
 parser.add_argument('--data-source-path',
                     default=MACHINE_WITH_RULE_REFERNECE_LOG, type=str,
                     help='absolute path for source data')
-parser.add_argument('--exp-replay-buffer', default=500, type=int,
-                    help='replay buffer')
 parser.add_argument('--log-level', default='INFO', type=str,
                     help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
 parser.add_argument('--make-plot', default=False, action='store_true',
@@ -53,8 +51,8 @@ parser.add_argument('--sequence-size', default=10, type=int,
 
 
 def main(
-    ckpt_path, data_source_path, exp_replay_buffer, log_level,
-    make_plot, mode, num_epochs, num_steps, policy, sequence_size
+    ckpt_path, data_source_path, log_level, make_plot, mode, num_epochs,
+    num_steps, policy, sequence_size
 ):
     mode = mode.upper()
     if mode not in RUN_MODES:

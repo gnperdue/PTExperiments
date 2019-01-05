@@ -17,8 +17,7 @@ from utils.common_defs import DATASET_MACHINE_REFERENCE_LOG
 
 
 TEST_TRAIN_ARGS_DICT = {
-    'num_epochs': 1, 'num_steps': 100, 'replay_buffer_size': 100,
-    'sequence_size': 20
+    'num_epochs': 1, 'num_steps': 100, 'sequence_size': 20
 }
 
 
@@ -47,15 +46,26 @@ class TestBaseTrainers(unittest.TestCase):
 class TestHistoricalTrainers(unittest.TestCase):
 
     def setUp(self):
-        policy = SimpleRuleBased(
-            time=0.0, amplitude=10.0, period=2.0,
-            commands_array=DEFAULT_COMMANDS
+        # policy = SimpleRuleBased(
+        #     time=0.0, amplitude=10.0, period=2.0,
+        #     commands_array=DEFAULT_COMMANDS
+        # )
+        # # TODO - need to make a DataLoader to hold the csv data accessor
+        # self.trainer = trainers.HistoricalTrainer(
+        #     policy=policy, data_source=MACHINE_WITH_RULE_REFERNECE_LOG,
+        #     arguments_dict=TEST_TRAIN_ARGS_DICT
+        # )
+        self.run_time = int(time.time())
+        arguments_dict = create_default_arguments_dict('SimpleRuleBased',
+                                                       'TRAIN-HISTORICAL')
+        policy_class = create_policy('SimpleRuleBased', arguments_dict)
+        data_source = create_data_source(
+            'TRAIN-HISTORICAL', source_path=MACHINE_WITH_RULE_REFERNECE_LOG,
+            maxsteps=100, run_time=self.run_time
         )
-        # TODO - need to make a DataLoader to hold the csv data accessor
-        self.trainer = trainers.HistoricalTrainer(
-            policy=policy, data_source=MACHINE_WITH_RULE_REFERNECE_LOG,
-            arguments_dict=TEST_TRAIN_ARGS_DICT
-        )
+        self.trainer = create_trainer(data_source, policy_class,
+                                      'TRAIN-HISTORICAL', num_epochs=1,
+                                      num_steps=None, sequence_size=1)
 
     def tearDown(self):
         pass
@@ -63,13 +73,15 @@ class TestHistoricalTrainers(unittest.TestCase):
     def test_configuration(self):
         self.assertIsNotNone(self.trainer.device)
         self.assertIsNotNone(self.trainer.data_source)
-        self.assertIsNotNone(self.trainer.num_steps)
         self.assertIsNotNone(self.trainer.num_epochs)
         self.assertIsNotNone(self.trainer.sequence_size)
-        self.assertIsNotNone(self.trainer.replay_buffer_size)
+        self.assertIsNone(self.trainer.num_steps)
 
     def test_build_model_and_optimizer(self):
         self.assertIsNotNone(self.trainer.policy)
+
+    def test_train_or_run_model(self):
+        pass
 
 
 class TestLiveTrainers(unittest.TestCase):
@@ -79,7 +91,7 @@ class TestLiveTrainers(unittest.TestCase):
         arguments_dict = create_default_arguments_dict('SimpleRuleBased',
                                                        'TRAIN-LIVE')
         policy_class = create_policy('SimpleRuleBased', arguments_dict)
-        data_source = create_data_source('TRAIN-LIVE', 10, maxsteps=100,
+        data_source = create_data_source('TRAIN-LIVE', maxsteps=100,
                                          run_time=self.run_time)
         self.trainer = create_trainer(data_source, policy_class, 'TRAIN-LIVE',
                                       num_epochs=None, num_steps=1000,
@@ -93,7 +105,6 @@ class TestLiveTrainers(unittest.TestCase):
         self.assertIsNotNone(self.trainer.data_source)
         self.assertIsNotNone(self.trainer.num_steps)
         self.assertIsNotNone(self.trainer.sequence_size)
-        self.assertIsNotNone(self.trainer.replay_buffer_size)
         self.assertIsNone(self.trainer.num_epochs)
 
     def test_build_model_and_optimizer(self):

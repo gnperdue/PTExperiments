@@ -43,7 +43,7 @@ def create_policy(policy, arguments_dict):
 
 
 def create_trainer(data_source, policy, mode, num_epochs, num_steps,
-                   sequence_size=20, replay_buffer_size=100):
+                   sequence_size=20):
     '''
     * data_source: either a file (for historical training) or a
     simulation engine (for live training)
@@ -56,7 +56,6 @@ def create_trainer(data_source, policy, mode, num_epochs, num_steps,
     arguments_dict['num_epochs'] = num_epochs
     arguments_dict['num_steps'] = num_steps
     arguments_dict['sequence_size'] = sequence_size
-    arguments_dict['replay_buffer_size'] = replay_buffer_size
     if 'HISTORICAL' in mode:
         trainer = HistoricalTrainer(policy, data_source, arguments_dict)
     elif 'LIVE' in mode:

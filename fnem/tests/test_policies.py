@@ -13,13 +13,7 @@ from policies.rule_based import SimpleRuleBased
 class TestBasePolicy(unittest.TestCase):
 
     def setUp(self):
-        start = 0.0
-        amplitude = 10.0
-        period = 2.0
-        self.policy = BasePolicy(
-            time=start, amplitude=amplitude, period=period,
-            commands_array=DEFAULT_COMMANDS
-        )
+        self.policy = BasePolicy(commands_array=DEFAULT_COMMANDS)
 
     def test_api_methods(self):
         with self.assertRaises(NotImplementedError):

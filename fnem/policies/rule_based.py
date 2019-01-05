@@ -7,9 +7,10 @@ class SimpleRuleBased(BasePolicy):
     def __init__(
         self, time, amplitude, period, commands_array, pytorch=True
     ):
-        super(SimpleRuleBased, self).__init__(
-            time, amplitude, period, commands_array
-        )
+        super(SimpleRuleBased, self).__init__(commands_array)
+        self._time = time
+        self._amplitude = amplitude
+        self._period = period
         self.pytorch = pytorch
 
     def set_state(self, sensor_array_sequence):

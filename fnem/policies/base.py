@@ -9,16 +9,11 @@ class BasePolicy(object):
     2. compute a new setting value and apply it to the machine
     '''
 
-    def __init__(
-        self, time, amplitude, period, commands_array
-    ):
+    def __init__(self, commands_array):
         '''
         amplitude = max value, period = max -> min -> max t
         '''
-        self._time = time
         self._setting = None
-        self._amplitude = amplitude
-        self._period = period
         self._state = None
         self._commands = np.asarray(commands_array, dtype=DTYPE)
 

@@ -54,3 +54,7 @@ class SimpleRuleBased(BasePolicy):
     def build_or_restore_model_and_optimizer(self):
         '''function for API compatability only'''
         pass
+
+    def loss_fn(preds, r):
+        '''function for API compatability only'''
+        pass

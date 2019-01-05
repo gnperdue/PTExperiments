@@ -1,6 +1,10 @@
 import unittest
-import trainers.trainers as trainers
+import os
+import time
 
+import numpy as np
+
+import trainers.trainers as trainers
 from policies.rule_based import SimpleRuleBased
 from utils.util_funcs import create_data_source
 from utils.util_funcs import create_default_arguments_dict
@@ -8,6 +12,9 @@ from utils.util_funcs import create_policy
 from utils.util_funcs import create_trainer
 from utils.common_defs import DEFAULT_COMMANDS
 from utils.common_defs import MACHINE_WITH_RULE_REFERNECE_LOG
+from utils.common_defs import DATASET_MACHINE_LOG_TEMPLATE
+from utils.common_defs import DATASET_MACHINE_REFERENCE_LOG
+
 
 TEST_TRAIN_ARGS_DICT = {
     'num_epochs': 1, 'num_steps': 100, 'replay_buffer_size': 100,
@@ -68,10 +75,12 @@ class TestHistoricalTrainers(unittest.TestCase):
 class TestLiveTrainers(unittest.TestCase):
 
     def setUp(self):
+        self.run_time = int(time.time())
         arguments_dict = create_default_arguments_dict('SimpleRuleBased',
                                                        'TRAIN-LIVE')
         policy_class = create_policy('SimpleRuleBased', arguments_dict)
-        data_source = create_data_source('TRAIN-LIVE', 10, maxsteps=1000)
+        data_source = create_data_source('TRAIN-LIVE', 10, maxsteps=100,
+                                         run_time=self.run_time)
         self.trainer = create_trainer(data_source, policy_class, 'TRAIN-LIVE',
                                       num_epochs=None, num_steps=1000,
                                       sequence_size=1)
@@ -91,11 +100,17 @@ class TestLiveTrainers(unittest.TestCase):
         self.assertIsNotNone(self.trainer.policy)
 
     def test_train_or_run_model(self):
-        # self.trainer.train_or_run_model(True)
-        pass
-
-    def test_save_performance_plots(self):
-        pass
+        self.trainer.build_or_restore_model_and_optimizer()
+        self.trainer.train_or_run_model(train=True)
+        self.trainer.save_performance_plots()
+        reference_log_size = os.stat(DATASET_MACHINE_REFERENCE_LOG).st_size
+        new_log_size = os.stat(
+            (DATASET_MACHINE_LOG_TEMPLATE % self.run_time) + '.csv.gz'
+        ).st_size
+        relative_size = 100.0 * \
+            np.abs(reference_log_size - new_log_size) / \
+            reference_log_size
+        self.assertTrue(relative_size < 5.0)
 
 
 if __name__ == '__main__':

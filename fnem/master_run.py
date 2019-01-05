@@ -60,9 +60,10 @@ def main(
     if mode not in RUN_MODES:
         print(__doc__)
         sys.exit(1)
+    run_time = int(time.time())
 
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
-        + str(int(time.time())) + '.txt'
+        + str(run_time) + '.txt'
     logging.basicConfig(
         filename=logfilename, level=get_logging_level(log_level),
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -75,7 +76,7 @@ def main(
     # TODO - add code to allow arg dict override...
     policy_class = create_policy(policy, arguments_dict)
     data_source = create_data_source(mode, source_path=data_source_path,
-                                     maxsteps=num_steps)
+                                     maxsteps=num_steps, run_time=run_time)
     trainer = create_trainer(data_source, policy_class, mode, num_epochs,
                              num_steps, sequence_size)
     trainer.build_or_restore_model_and_optimizer()

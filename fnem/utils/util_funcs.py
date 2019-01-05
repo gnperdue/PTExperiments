@@ -67,9 +67,10 @@ def create_trainer(data_source, policy, mode, num_epochs, num_steps,
 
 
 def create_data_source(
-    mode, source_path=None, maxsteps=None
+    mode, source_path=None, maxsteps=None, run_time=None
 ):
     # TODO - need to pass in starting setting
+    log_time = run_time or time.time()
     data_source = None
     if 'HISTORICAL' in mode:
         if source_path is not None:
@@ -77,7 +78,7 @@ def create_data_source(
         else:
             raise ValueError('Source paths required for historical training.')
     elif 'LIVE' in mode:
-        logname = './' + DATASET_MACHINE_LOG_TEMPLATE % time.time()
+        logname = './' + DATASET_MACHINE_LOG_TEMPLATE % log_time
         data_source = LiveData(maxsteps=maxsteps, logname=logname)
     else:
         raise ValueError('Unknown mode ({}).'.format(mode))

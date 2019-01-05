@@ -27,6 +27,10 @@ class TestBasePolicy(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.policy.build_or_restore_model_and_optimizer()
 
+    def test_get_adjustments(self):
+        for i, command in enumerate(DEFAULT_COMMANDS):
+            self.assertEqual(self.policy.get_adjustment_value(i), command)
+
 
 class TestSimpleMLP(unittest.TestCase):
 

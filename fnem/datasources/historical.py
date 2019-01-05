@@ -9,10 +9,7 @@ class HistoricalData(object):
         self._file = source_file
         self._is_zipped = str(self._file)[-3:] == '.gz'
         self._pytorch = pytorch
-        if self._is_zipped:
-            self._open_fn = gzip.open
-        else:
-            self._open_fn = open
+        self._open_fn = gzip.open if self._is_zipped else open
 
     def _parse_line(self, line):
         fields = line.decode('utf8').strip().split(',')

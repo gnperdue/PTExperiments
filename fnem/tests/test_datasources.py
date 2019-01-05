@@ -15,6 +15,7 @@ from datasources.historical import HistoricalData
 from utils.common_defs import DATASET_MACHINE_LOG_TEMPLATE
 from utils.common_defs import DATASET_MACHINE_REFERENCE_LOG
 from utils.common_defs import MACHINE_WITH_RULE_REFERNECE_LOG
+from utils.common_defs import DEFAULT_COMMANDS
 
 
 class TestLiveData(unittest.TestCase):
@@ -24,7 +25,10 @@ class TestLiveData(unittest.TestCase):
         self.test_time = time.time()
         self.maxsteps = 100
         self.logname = './' + DATASET_MACHINE_LOG_TEMPLATE % self.test_time
-        self.dataset = LiveData(maxsteps=self.maxsteps, logname=self.logname)
+        self.setting = 10.0
+        self.dataset = LiveData(
+            setting=self.setting, maxsteps=self.maxsteps, logname=self.logname
+        )
 
     def tearDown(self):
         pass
@@ -40,6 +44,11 @@ class TestLiveData(unittest.TestCase):
 
     def test_dataset_len(self):
         self.assertEqual(self.maxsteps, len(self.dataset))
+
+    def test_update_settings(self):
+        self.dataset.update_setting(0)
+        self.assertEqual(self.setting + DEFAULT_COMMANDS[0],
+                         self.dataset.get_setting())
 
 
 class TestHistoricalData(unittest.TestCase):

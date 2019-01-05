@@ -8,6 +8,7 @@ import unittest
 from utils.common_defs import DEFAULT_COMMANDS
 from policies.base import BasePolicy
 from policies.rule_based import SimpleRuleBased
+from policies.simple_mlp import SimpleMLP
 
 
 class TestBasePolicy(unittest.TestCase):
@@ -25,6 +26,18 @@ class TestBasePolicy(unittest.TestCase):
             self.policy.train()
         with self.assertRaises(NotImplementedError):
             self.policy.build_or_restore_model_and_optimizer()
+
+
+class TestSimpleMLP(unittest.TestCase):
+
+    def setUp(self):
+        self.policy = SimpleMLP(commands_array=DEFAULT_COMMANDS)
+
+    def tearDown(self):
+        pass
+
+    def test_set_state(self):
+        pass
 
 
 class TestSimpleRuleBased(unittest.TestCase):

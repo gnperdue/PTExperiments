@@ -1,11 +1,6 @@
 import logging
 import time
 
-# import torchvision.transforms as transforms
-# from torch.utils.data import DataLoader
-# from datasets.live_data import LiveDataset
-# from datasets.live_data import LiveToTensor
-
 from trainers.trainers import HistoricalTrainer, LiveTrainer
 from datasources.live import LiveData
 from datasources.historical import HistoricalData

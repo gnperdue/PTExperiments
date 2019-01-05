@@ -5,6 +5,9 @@ from collections import deque
 import torch
 import matplotlib.pyplot as plt
 
+from utils.common_defs import DATASET_HISTORY_PLT_TEMPLATE
+from utils.common_defs import DATASET_MACHINE_PLT_TEMPLATE
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +52,7 @@ class HistoricalTrainer(Trainer):
     def __init__(self, policy, data_source, arguments_dict):
         super(HistoricalTrainer, self).__init__(policy=policy,
                                                 data_source=data_source)
-        self.figname = 'historical_trainer_%d.pdf' % self.tstamp
+        self.figname = (DATASET_HISTORY_PLT_TEMPLATE % self.tstamp) + '.pdf'
         self.num_epochs = arguments_dict['num_epochs']
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']
@@ -119,7 +122,7 @@ class LiveTrainer(Trainer):
     def __init__(self, policy, data_source, arguments_dict):
         super(LiveTrainer, self).__init__(policy=policy,
                                           data_source=data_source)
-        self.figname = 'live_trainer_%d.pdf' % self.tstamp
+        self.figname = (DATASET_MACHINE_PLT_TEMPLATE % self.tstamp) + '.pdf'
         self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']

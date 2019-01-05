@@ -14,6 +14,8 @@ from utils.common_defs import DEFAULT_COMMANDS
 from utils.common_defs import MACHINE_WITH_RULE_REFERNECE_LOG
 from utils.common_defs import DATASET_MACHINE_LOG_TEMPLATE
 from utils.common_defs import DATASET_MACHINE_REFERENCE_LOG
+from utils.common_defs import DATASET_HISTORY_PLT_TEMPLATE
+from utils.common_defs import DATASET_HISTORY_REFERENCE_PLT
 
 
 TEST_TRAIN_ARGS_DICT = {
@@ -46,15 +48,6 @@ class TestBaseTrainers(unittest.TestCase):
 class TestHistoricalTrainers(unittest.TestCase):
 
     def setUp(self):
-        # policy = SimpleRuleBased(
-        #     time=0.0, amplitude=10.0, period=2.0,
-        #     commands_array=DEFAULT_COMMANDS
-        # )
-        # # TODO - need to make a DataLoader to hold the csv data accessor
-        # self.trainer = trainers.HistoricalTrainer(
-        #     policy=policy, data_source=MACHINE_WITH_RULE_REFERNECE_LOG,
-        #     arguments_dict=TEST_TRAIN_ARGS_DICT
-        # )
         self.run_time = int(time.time())
         arguments_dict = create_default_arguments_dict('SimpleRuleBased',
                                                        'TRAIN-HISTORICAL')
@@ -81,7 +74,17 @@ class TestHistoricalTrainers(unittest.TestCase):
         self.assertIsNotNone(self.trainer.policy)
 
     def test_train_or_run_model(self):
-        pass
+        self.trainer.build_or_restore_model_and_optimizer()
+        self.trainer.train_or_run_model(train=True)
+        self.trainer.save_performance_plots()
+        reference_plot_size = os.stat(DATASET_HISTORY_REFERENCE_PLT).st_size
+        new_plot_size = os.stat(
+            (DATASET_HISTORY_PLT_TEMPLATE % self.run_time) + '.pdf'
+        ).st_size
+        relative_size = 100.0 * \
+            np.abs(reference_plot_size - new_plot_size) / \
+            reference_plot_size
+        self.assertTrue(relative_size < 5.0)
 
 
 class TestLiveTrainers(unittest.TestCase):

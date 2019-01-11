@@ -5,6 +5,7 @@ from trainers.trainers import HistoricalTrainer, LiveTrainer
 from datasources.live import LiveData
 from datasources.historical import HistoricalData
 import policies.rule_based as rule_based
+import policies.simple_mlp as simple_mlp
 from utils.common_defs import DEFAULT_COMMANDS
 from utils.common_defs import DATASET_MACHINE_LOG_TEMPLATE
 
@@ -12,17 +13,23 @@ LOGGER = logging.getLogger(__name__)
 
 
 def create_default_arguments_dict(policy, mode):
+    d = {}
     if policy == 'SimpleRuleBased':
-        d = {}
         d['start'] = 0.0
         d['amplitude'] = 10.0
         d['period'] = 2.0
         d['commands_array'] = DEFAULT_COMMANDS
-        return d
-    return None
+    elif policy == 'SimpleMLP':
+        d['commands_array'] = DEFAULT_COMMANDS
+        d['learning_rate'] = 1e-4
+        d['ckpt_path'] = '/tmp/simple_mlp/ckpt.tar'
+    else:
+        raise ValueError('Unknown policy ({}).'.format(policy))
+    return d
 
 
 def create_policy(policy, arguments_dict):
+    policy_class = None
     if policy == 'SimpleRuleBased':
         start = arguments_dict.get('start', 0.0)
         amplitude = arguments_dict.get('amplitude', 10.0)
@@ -32,9 +39,18 @@ def create_policy(policy, arguments_dict):
             time=start, amplitude=amplitude, period=period,
             commands_array=commands_array
         )
-        return policy_class
+    elif policy == 'SimpleMLP':
+        learning_rate = arguments_dict.get('learning_rate', 1e-4)
+        ckpt_path = arguments_dict.get('ckpt_path',
+                                        '/tmp/simple_mlp/ckpt.tar')
+        commands_array = arguments_dict.get('commands_array', DEFAULT_COMMANDS)
+        policy_class = simple_mlp.SimpleMLP(
+            commands_array=commands_array, learning_rate=learning_rate,
+            ckpt_path=ckpt_path
+        )
     else:
         raise ValueError('Unknown policy ({}).'.format(policy))
+    return policy_class
 
 
 def create_trainer(data_source, policy, mode, num_epochs, num_steps,
@@ -77,31 +93,6 @@ def create_data_source(
     else:
         raise ValueError('Unknown mode ({}).'.format(mode))
     return data_source
-
-
-# def create_dataloader(
-#     mode, batch_size, source_path=None, maxsteps=None
-# ):
-#     data_source = None
-#     if 'HISTORICAL' in mode:
-#         if source_path is not None:
-#             # TODO - need to make a proper data loader and wrap it to unpack,
-#             # etc.
-#             return source_path
-#         else:
-#             raise ValueError('Source paths required for historical training.')
-#     elif 'LIVE' in mode:
-#         logname = './' + DATASET_MACHINE_LOG_TEMPLATE % time.time()
-#         trnsfrms = transforms.Compose([LiveToTensor()])
-#         dataset = LiveDataset(
-#             maxsteps=maxsteps, logname=logname, transform=trnsfrms
-#         )
-#         data_source = DataLoader(
-#             dataset, batch_size=batch_size, shuffle=False, num_workers=1
-#         )
-#     else:
-#         raise ValueError('Unknown mode ({}).'.format(mode))
-#     return data_source
 
 
 def get_logging_level(log_level):

@@ -5,7 +5,7 @@ from .base import BasePolicy
 
 class SimpleMLP(BasePolicy):
 
-    def __init__(self, commands_array, learning_rate=None, model_path=None):
+    def __init__(self, commands_array, learning_rate=None, ckpt_path=None):
         super(SimpleMLP, self).__init__(commands_array)
         self.pytorch = True
         l1 = 4

@@ -18,6 +18,10 @@ TEST_RULEBASED_ARG_DICT = {
     'start': 0.0, 'amplitude': 10.0, 'period': 2.0,
     'commands_array': DEFAULT_COMMANDS
 }
+TEST_MLP_ARG_DICT = {
+    'ckpt_path': '/tmp/simple_mlp/ckpt.tar', 'learning_rate': 1e-4,
+    'commands_array': DEFAULT_COMMANDS
+}
 
 
 class TestUtils(unittest.TestCase):
@@ -47,21 +51,25 @@ class TestUtils(unittest.TestCase):
                          utils.get_logging_level('NoSuchLevel'))
 
     def test_create_default_arguments_dict(self):
-        def test_d(d):
-            for k in ['start', 'amplitude', 'period', 'commands_array']:
-                self.assertIsNotNone(d[k])
-
-        for i in range(len(RUN_MODES)):
-            d = utils.create_default_arguments_dict(
-                'NoSuchPolicy', RUN_MODES[i]
-            )
-            self.assertIsNone(d)
+        with self.assertRaises(ValueError):
+            for i in range(len(RUN_MODES)):
+                d = utils.create_default_arguments_dict(
+                    'NoSuchPolicy', RUN_MODES[i]
+                )
 
         for i in range(len(RUN_MODES)):
             d = utils.create_default_arguments_dict(
                 'SimpleRuleBased', RUN_MODES[i]
             )
-            test_d(d)
+            for k in ['start', 'amplitude', 'period', 'commands_array']:
+                self.assertIsNotNone(d[k])
+
+        for i in range(len(RUN_MODES)):
+            d = utils.create_default_arguments_dict(
+                'SimpleMLP', RUN_MODES[i]
+            )
+            for k in ['learning_rate', 'ckpt_path', 'commands_array']:
+                self.assertIsNotNone(d[k])
 
     def test_create_policy(self):
         policy = utils.create_policy(
@@ -73,6 +81,11 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(policy._state, state[0][0:4])
         self.assertEqual(policy._setting, state[0][-2])
         self.assertEqual(policy._time, state[0][-1])
+
+        policy = utils.create_policy(
+            'SimpleMLP', TEST_MLP_ARG_DICT
+        )
+        self.assertIsNotNone(policy)
 
         with self.assertRaises(ValueError):
             policy = utils.create_policy(

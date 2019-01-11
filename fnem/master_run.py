@@ -10,6 +10,7 @@ Running modes (`--mode`):
 Polcies (`--policy`):
 
 * SimpleRuleBased
+* SimpleMLP
 '''
 import argparse
 import logging
@@ -29,8 +30,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
-                    help='checkpoint path')
+parser.add_argument('--ckpt-path', default=None, type=str,
+                    help='checkpoint path (full .tar)')
 parser.add_argument('--data-source-path',
                     default=MACHINE_WITH_RULE_REFERNECE_LOG, type=str,
                     help='absolute path for source data')
@@ -72,6 +73,8 @@ def main(
 
     arguments_dict = create_default_arguments_dict(policy, mode)
     # TODO - add code to allow arg dict override...
+    if ckpt_path:
+        arguments_dict['ckpt_path'] = ckpt_path
     policy_class = create_policy(policy, arguments_dict)
     data_source = create_data_source(mode, source_path=data_source_path,
                                      maxsteps=num_steps, run_time=run_time)

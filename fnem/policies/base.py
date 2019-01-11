@@ -1,6 +1,11 @@
+import logging
+
 import torch
 import numpy as np
 from utils.common_defs import DTYPE
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class BasePolicy(object):
@@ -14,6 +19,11 @@ class BasePolicy(object):
         '''
         amplitude = max value, period = max -> min -> max t
         '''
+        self.device = torch.device(
+            'cuda:0' if torch.cuda.is_available() else 'cpu'
+        )
+        LOGGER.info('Device = {}'.format(self.device))
+
         self._setting = None
         self._state = None
         self._commands = np.asarray(commands_array, dtype=DTYPE)

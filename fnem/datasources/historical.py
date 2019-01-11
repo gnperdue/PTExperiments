@@ -4,11 +4,10 @@ import torch
 
 class HistoricalData(object):
 
-    def __init__(self, setting, source_file, pytorch=True):
+    def __init__(self, setting, source_file):
         self._setting = setting
         self._file = source_file
         self._is_zipped = str(self._file)[-3:] == '.gz'
-        self._pytorch = pytorch
         self._open_fn = gzip.open if self._is_zipped else open
 
     def _parse_line(self, line):
@@ -20,9 +19,8 @@ class HistoricalData(object):
         true_total = sum(true_sensors)
         heat = true_total - setting
         state = measured_sensors + [heat, setting, t]
-        if self._pytorch:
-            state = torch.Tensor(state)
-            true_sensors = torch.Tensor(true_sensors)
+        state = torch.Tensor(state)
+        true_sensors = torch.Tensor(true_sensors)
         return (state, true_sensors)
 
     def __iter__(self):

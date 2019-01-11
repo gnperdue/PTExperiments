@@ -5,13 +5,12 @@ from .base import BasePolicy
 class SimpleRuleBased(BasePolicy):
 
     def __init__(
-        self, time, amplitude, period, commands_array, pytorch=True
+        self, time, amplitude, period, commands_array
     ):
         super(SimpleRuleBased, self).__init__(commands_array)
         self._time = time
         self._amplitude = amplitude
         self._period = period
-        self.pytorch = pytorch
 
     def set_state(self, sensor_array_sequence):
         '''
@@ -19,7 +18,7 @@ class SimpleRuleBased(BasePolicy):
         in the sequence. the `sensor_array_sequence` is expected to be a
         batch. we want to take the last entry of the last batch.
         '''
-        sensor_array = sensor_array_sequence[-1]
+        sensor_array = sensor_array_sequence[-1].numpy()
         self._state = sensor_array[0:4]
         self._setting = sensor_array[-2]
         self._time = sensor_array[-1]
@@ -45,8 +44,6 @@ class SimpleRuleBased(BasePolicy):
             intercept = -3.0 * self._amplitude
         target = slope * t + intercept
         delta = target - self._setting
-        if self.pytorch:
-            delta = delta.numpy()
         diffs = np.abs(self._commands - delta)
         command = np.argmin(diffs)
         return command

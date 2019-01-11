@@ -33,7 +33,6 @@ class TestBaseTrainers(unittest.TestCase):
         self.trainer = trainers.Trainer(policy, data_source=None)
 
     def test_configuration(self):
-        self.assertIsNotNone(self.trainer.device)
         self.assertIsNone(self.trainer.machine)
         self.assertIsNone(self.trainer.training_data_file)
 
@@ -64,7 +63,6 @@ class TestHistoricalTrainers(unittest.TestCase):
         pass
 
     def test_configuration(self):
-        self.assertIsNotNone(self.trainer.device)
         self.assertIsNotNone(self.trainer.data_source)
         self.assertIsNotNone(self.trainer.num_epochs)
         self.assertIsNotNone(self.trainer.sequence_size)
@@ -104,7 +102,6 @@ class TestLiveTrainers(unittest.TestCase):
         pass
 
     def test_configuration(self):
-        self.assertIsNotNone(self.trainer.device)
         self.assertIsNotNone(self.trainer.data_source)
         self.assertIsNotNone(self.trainer.num_steps)
         self.assertIsNotNone(self.trainer.sequence_size)

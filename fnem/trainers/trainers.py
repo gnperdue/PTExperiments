@@ -16,10 +16,6 @@ class Trainer(object):
     '''base class - defines the API'''
 
     def __init__(self, policy, data_source, performance_memory_maxlen=5000):
-        self.device = torch.device(
-            'cuda:0' if torch.cuda.is_available() else 'cpu'
-        )
-        LOGGER.info('Device = {}'.format(self.device))
         self.data_source = data_source
         self.tstamp = int(time.time())
         self.policy = policy
@@ -56,8 +52,6 @@ class HistoricalTrainer(Trainer):
         self.num_epochs = arguments_dict['num_epochs']
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']
-        # policy operates on numpy here
-        self.policy.pytorch = False
 
     def train_or_run_model(self, train):
         # loop over epochs, where an epoch is 1 pass over the historical data.
@@ -79,7 +73,7 @@ class HistoricalTrainer(Trainer):
                 self.settings.append(setting)
                 self.setting_diffs.append(target_setting - setting)
                 self.ts.append(t)
-                state = sensor_vals + [heat, setting, t]
+                state = torch.Tensor(sensor_vals + [heat, setting, t])
                 if len(sequence_buffer) < self.sequence_size:
                     sequence_buffer.append(state)
                 else:
@@ -126,7 +120,6 @@ class LiveTrainer(Trainer):
         # no concept of epochs with live data, run over machine steps as long
         # as they are available or until we reach a max step value.
         # here, loss is defined as minimizing the heat from the machine.
-
         sequence_buffer = []
         for i, state in enumerate(self.data_source):
             sensor_vals = state[0:4].numpy()

@@ -1,6 +1,11 @@
+import logging
 import torch
 import numpy as np
 from .base import BasePolicy
+import utils.util_funcs as utils
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class SimpleMLP(BasePolicy):
@@ -17,6 +22,7 @@ class SimpleMLP(BasePolicy):
             torch.nn.Linear(l2, l3),
             torch.nn.Softmax(dim=0)
         )
+        self._ckpt_path = ckpt_path or '/tmp/simple_mlp/ckpt.tar'
         self._learning_rate = learning_rate or 0.0009
         self.optimizer = torch.optim.Adam(self.model.parameters(),
                                           lr=self._learning_rate)
@@ -26,7 +32,8 @@ class SimpleMLP(BasePolicy):
         1. flatten the array sequence
         2. convert to Tensor
         '''
-        pass
+        state = torch.stack(sensor_array_sequence)
+        return state
 
     def train(self):
         '''
@@ -47,7 +54,28 @@ class SimpleMLP(BasePolicy):
     def build_or_restore_model_and_optimizer(self):
         '''
         '''
-        pass
+        LOGGER.info('model has {} parameters'.format(
+            utils.count_parameters(self.model)
+        ))
+        try:
+            checkpoint = torch.load(self._ckpt_path)
+            self.model.load_state_dict(checkpoint['model_state_dict'])
+            self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            LOGGER.info('Loaded checkpoint from {}'.format(self._ckpt_path))
+        except FileNotFoundError:
+            LOGGER.info('No checkpoint found...')
+
+        LOGGER.debug('Model state dict:')
+        for param_tensor in self.model.state_dict():
+            LOGGER.debug(str(param_tensor) + '\t'
+                         + str(self.model.state_dict()[param_tensor].size()))
+        LOGGER.debug('Optimizer state dict:')
+        for var_name in self.optimizer.state_dict():
+            LOGGER.debug(str(var_name) + '\t'
+                         + str(self.optimizer.state_dict()[var_name]))
+
+        self.model.to(self.device)
+
 
     def loss_fn(preds, r):
         return -1 * torch.sum(r * torch.log(preds))

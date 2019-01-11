@@ -9,11 +9,9 @@ from sim.engines import SimulationMachine
 
 class LiveData(object):
 
-    def __init__(self, setting=10.0, maxsteps=2000, logname='tmplog',
-                 pytorch=True):
+    def __init__(self, setting=10.0, maxsteps=2000, logname='tmplog'):
         self._maxsteps = maxsteps
         self._machine_log = logname
-        self._pytorch = pytorch
         dgen = Generator()
         nosgen = Noise()
         recorder = Recorder(self._machine_log)
@@ -42,6 +40,5 @@ class LiveData(object):
             heat = self.machine.get_heat()
             # TODO - can we go straight from list to tensor?
             state = np.array(sensor_vals + [heat, setting, t])
-            if self._pytorch:
-                state = torch.from_numpy(state).float()
+            state = torch.from_numpy(state).float()
             yield state

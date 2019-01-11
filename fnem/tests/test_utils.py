@@ -6,8 +6,8 @@ Usage:
 import logging
 import unittest
 
+import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 import utils.util_funcs as utils
 from utils.common_defs import DEFAULT_COMMANDS
@@ -76,11 +76,12 @@ class TestUtils(unittest.TestCase):
             'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
         )
         # `state` is a batch of size N of lists of sensor and settings data.
-        state = [[10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1]]
+        state = [torch.Tensor([10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1])]
         policy.set_state(state)
-        self.assertEqual(policy._state, state[0][0:4])
-        self.assertEqual(policy._setting, state[0][-2])
-        self.assertEqual(policy._time, state[0][-1])
+        for a, b in zip(policy._state, state[0].numpy()[0:4]):
+            self.assertEqual(a, b)
+        self.assertEqual(policy._setting, state[0].numpy()[-2])
+        self.assertEqual(policy._time, state[0].numpy()[-1])
 
         policy = utils.create_policy(
             'SimpleMLP', TEST_MLP_ARG_DICT

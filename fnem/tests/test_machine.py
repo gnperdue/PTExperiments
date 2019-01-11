@@ -7,6 +7,7 @@ import unittest
 import time
 import os
 
+import torch
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -43,7 +44,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
         # Test with NumPy - so `pytorch=False`
         self.policy = SimpleRuleBased(
             time=0.0, amplitude=10.0, period=2.0,
-            commands_array=DEFAULT_COMMANDS, pytorch=False
+            commands_array=DEFAULT_COMMANDS
         )
 
     def tearDown(self):
@@ -76,7 +77,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
                 setting = self.machine.get_setting()
                 heat = self.machine.get_heat()
                 # Create a synthetic batch of size 1.
-                state = sensor_vals + [heat, setting, t]
+                state = torch.Tensor(sensor_vals + [heat, setting, t])
                 ts.append(t)
                 totals.append(total)
                 settings.append(setting)

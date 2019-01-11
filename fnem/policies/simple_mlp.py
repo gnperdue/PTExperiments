@@ -26,14 +26,12 @@ class SimpleMLP(BasePolicy):
         self._learning_rate = learning_rate or 0.0009
         self.optimizer = torch.optim.Adam(self.model.parameters(),
                                           lr=self._learning_rate)
+        self.lossfn = torch.nn.MSELoss()
 
     def set_state(self, sensor_array_sequence):
-        '''
-        1. flatten the array sequence
-        2. convert to Tensor
-        '''
+        '''flatten the array sequence'''
         state = torch.stack(sensor_array_sequence)
-        return state
+        return state.view(-1)
 
     def train(self):
         '''
@@ -49,7 +47,7 @@ class SimpleMLP(BasePolicy):
         '''
         call forward pass on the NN model
         '''
-        pass
+        return 0
 
     def build_or_restore_model_and_optimizer(self):
         '''
@@ -76,6 +74,7 @@ class SimpleMLP(BasePolicy):
 
         self.model.to(self.device)
 
-
-    def loss_fn(preds, r):
-        return -1 * torch.sum(r * torch.log(preds))
+    def loss_fn(self, heats):
+        target = torch.zeros(heats.shape)
+        output = self.lossfn(heats, target)
+        return output

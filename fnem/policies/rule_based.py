@@ -52,6 +52,6 @@ class SimpleRuleBased(BasePolicy):
         '''function for API compatability only'''
         pass
 
-    def loss_fn(preds, r):
+    def loss_fn(heats):
         '''function for API compatability only'''
         pass

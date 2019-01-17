@@ -29,7 +29,9 @@ MACHINE_WITH_RULE_LOG_TEMPLATE = 'log_machinewithrule_%d'
 MACHINE_WITH_RULE_PLT_TEMPLATE = 'plt_machinewithrule_%d'
 DATASET_MACHINE_LOG_TEMPLATE = 'log_dataset_machine_%d'
 DATASET_MACHINE_PLT_TEMPLATE = 'live_trainer_%d'
+DATASET_MACHINE_PLT_LOSS_TEMPLATE = 'live_trainer_loss_%d'
 DATASET_HISTORY_PLT_TEMPLATE = 'historical_trainer_%d'
+DATASET_HISTORY_PLT_LOSS_TEMPLATE = 'historical_trainer_loss_%d'
 
 REFERENCE_TSTAMP1 = 1545976343
 MACHINE_WITH_RULE_REFERNECE_LOG = \

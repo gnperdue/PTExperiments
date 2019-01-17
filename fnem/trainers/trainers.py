@@ -7,7 +7,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from utils.common_defs import DATASET_HISTORY_PLT_TEMPLATE
+from utils.common_defs import DATASET_HISTORY_PLT_LOSS_TEMPLATE
 from utils.common_defs import DATASET_MACHINE_PLT_TEMPLATE
+from utils.common_defs import DATASET_MACHINE_PLT_LOSS_TEMPLATE
 
 
 LOGGER = logging.getLogger(__name__)
@@ -28,6 +30,7 @@ class Trainer(object):
         self.m3 = deque([], maxlen=self.performance_memory_maxlen)
         self.m4 = deque([], maxlen=self.performance_memory_maxlen)
         self.ts = deque([], maxlen=self.performance_memory_maxlen)
+        self.losses = deque([], maxlen=self.performance_memory_maxlen)
         self.totals = deque([], maxlen=self.performance_memory_maxlen)
         self.heats = deque([], maxlen=self.performance_memory_maxlen)
         self.settings = deque([], maxlen=self.performance_memory_maxlen)
@@ -50,6 +53,8 @@ class HistoricalTrainer(Trainer):
         super(HistoricalTrainer, self).__init__(policy=policy,
                                                 data_source=data_source)
         self.figname = (DATASET_HISTORY_PLT_TEMPLATE % self.tstamp) + '.pdf'
+        self.loss_figname = (DATASET_HISTORY_PLT_LOSS_TEMPLATE % self.tstamp) \
+            + '.pdf'
         self.num_epochs = arguments_dict['num_epochs']
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']
@@ -86,7 +91,8 @@ class HistoricalTrainer(Trainer):
                     heats_buffer.append(heat)
                     self.policy.set_state(sequence_buffer, heats_buffer)
                     if train:
-                        self.policy.train()
+                        loss = self.policy.train()
+                        self.losses.append(loss)
                     command = self.policy.compute_action()
                     adjustment = self.policy.get_adjustment_value(command)
                     self.data_source.adjust_setting(adjustment)
@@ -109,6 +115,15 @@ class HistoricalTrainer(Trainer):
         fig.tight_layout()
         plt.savefig(self.figname, bbox_inches='tight')
 
+        fig = plt.Figure(figsize=(10, 6))
+        gs = plt.GridSpec(1, 1)
+        ax1 = plt.subplot(gs[0])
+        ll = len(self.losses)
+        ax1.scatter(list(self.ts)[-ll:], self.losses, c='r')
+
+        fig.tight_layout()
+        plt.savefig(self.loss_figname, bbox_inches='tight')
+
 
 class LiveTrainer(Trainer):
     '''data source is a sim machine we interrogate for steps and values'''
@@ -117,6 +132,8 @@ class LiveTrainer(Trainer):
         super(LiveTrainer, self).__init__(policy=policy,
                                           data_source=data_source)
         self.figname = (DATASET_MACHINE_PLT_TEMPLATE % self.tstamp) + '.pdf'
+        self.loss_figname = (DATASET_MACHINE_PLT_LOSS_TEMPLATE % self.tstamp) \
+            + '.pdf'
         self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
         self.sequence_size = arguments_dict['sequence_size']
@@ -149,7 +166,8 @@ class LiveTrainer(Trainer):
                 heats_buffer.append(heat)
                 self.policy.set_state(sequence_buffer, heats_buffer)
                 if train:
-                    self.policy.train()
+                    loss = self.policy.train()
+                    self.losses.append(loss)
                 command = self.policy.compute_action()
                 self.data_source.update_setting(command)
 
@@ -172,3 +190,12 @@ class LiveTrainer(Trainer):
 
         fig.tight_layout()
         plt.savefig(self.figname, bbox_inches='tight')
+
+        fig = plt.Figure(figsize=(10, 6))
+        gs = plt.GridSpec(1, 1)
+        ax1 = plt.subplot(gs[0])
+        ll = len(self.losses)
+        ax1.scatter(list(self.ts)[-ll:], self.losses, c='r')
+
+        fig.tight_layout()
+        plt.savefig(self.loss_figname, bbox_inches='tight')

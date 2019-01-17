@@ -48,6 +48,9 @@ class SimpleMLP(BasePolicy):
         targets = torch.zeros(self._heats.shape)
         loss = self.lossfn(self._heats, targets)
         self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+        return loss.item()
 
     def compute_action(self):
         '''

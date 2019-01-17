@@ -31,7 +31,7 @@ class SimpleRuleBased(BasePolicy):
         this policy does not train and only uses the most recent t to predict
         a setting
         '''
-        pass
+        return -1.0
 
     def compute_action(self):
         '''

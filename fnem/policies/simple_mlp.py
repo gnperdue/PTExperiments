@@ -15,7 +15,7 @@ class SimpleMLP(BasePolicy):
         self.pytorch = True
         l1 = 4
         l2 = 150
-        l3 = 2
+        l3 = len(commands_array)
         self.model = torch.nn.Sequential(
             torch.nn.Linear(l1, l2),
             torch.nn.LeakyReLU(),
@@ -56,7 +56,9 @@ class SimpleMLP(BasePolicy):
         '''
         call forward pass on the NN model
         '''
-        return 0
+        preds = self.model(self._state)
+        action = np.random.choice(self._command_idcs, p=preds.data.numpy())
+        return action
 
     def build_or_restore_model_and_optimizer(self):
         '''

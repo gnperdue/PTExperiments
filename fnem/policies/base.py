@@ -28,6 +28,7 @@ class BasePolicy(object):
         self._state = None
         self._heats = None
         self._commands = np.asarray(commands_array, dtype=DTYPE)
+        self._command_idcs = list(range(len(self._commands)))
 
     def get_adjustment_value(self, command):
         return self._commands[command]

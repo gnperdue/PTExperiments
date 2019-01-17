@@ -168,8 +168,8 @@ class LiveTrainer(Trainer):
                 if train:
                     loss = self.policy.train()
                     self.losses.append(loss)
-                command = self.policy.compute_action()
-                self.data_source.update_setting(command)
+                command_idx = self.policy.compute_action()
+                self.data_source.update_setting(command_idx)
 
         self.data_source.close_dataset_logger()
 

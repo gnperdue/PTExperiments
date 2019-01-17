@@ -3,6 +3,7 @@ import time
 from collections import deque
 
 import torch
+import numpy as np
 import matplotlib.pyplot as plt
 
 from utils.common_defs import DATASET_HISTORY_PLT_TEMPLATE
@@ -59,27 +60,31 @@ class HistoricalTrainer(Trainer):
         # historical setting and the predicted setting.
         for ep in range(self.num_epochs):
             sequence_buffer = []
+            heats_buffer = []
             for i, data in enumerate(self.data_source):
                 setting = self.data_source.get_setting()
                 historical_state = data[0]
                 sensor_vals = list(historical_state[0:4].numpy())
-                heat = historical_state[4].item()
-                target_setting = historical_state[5].item()
-                t = historical_state[6].item()
+                target_setting = historical_state[4].item()
+                t = historical_state[5].item()
+                heat = data[1]
                 for i, m in enumerate([self.m1, self.m2, self.m3, self.m4]):
                     m.append(sensor_vals[i])
                 self.totals.append(sum(sensor_vals))
-                self.heats.append(heat)
+                self.heats.append(heat.item())
                 self.settings.append(setting)
                 self.setting_diffs.append(target_setting - setting)
                 self.ts.append(t)
-                state = torch.Tensor(sensor_vals + [heat, setting, t])
+                state = torch.Tensor(np.append(sensor_vals, [setting, t]))
                 if len(sequence_buffer) < self.sequence_size:
                     sequence_buffer.append(state)
+                    heats_buffer.append(heat)
                 else:
                     sequence_buffer.pop(0)
                     sequence_buffer.append(state)
-                    self.policy.set_state(sequence_buffer)
+                    heats_buffer.pop(0)
+                    heats_buffer.append(heat)
+                    self.policy.set_state(sequence_buffer, heats_buffer)
                     if train:
                         self.policy.train()
                     command = self.policy.compute_action()
@@ -121,28 +126,28 @@ class LiveTrainer(Trainer):
         # as they are available or until we reach a max step value.
         # here, loss is defined as minimizing the heat from the machine.
         sequence_buffer = []
-        for i, state in enumerate(self.data_source):
-            sensor_vals = state[0:4].numpy()
-            heat = state[4].numpy()
-            setting = state[5].numpy()
-            t = state[6].numpy()
+        heats_buffer = []
+        for i, data in enumerate(self.data_source):
+            sensor_vals = data[0][0:4].numpy()
+            setting = data[0][4].numpy()
+            t = data[0][5].numpy()
+            heat = data[1]
             for i, m in enumerate([self.m1, self.m2, self.m3, self.m4]):
                 m.append(sensor_vals[i])
             self.totals.append(sum(sensor_vals))
-            self.heats.append(heat)
+            self.heats.append(heat.item())
             self.settings.append(setting)
             self.ts.append(t)
+            state = torch.Tensor(np.append(sensor_vals, [setting, t]))
             if len(sequence_buffer) < self.sequence_size:
                 sequence_buffer.append(state)
+                heats_buffer.append(heat)
             else:
                 sequence_buffer.pop(0)
                 sequence_buffer.append(state)
-                self.policy.set_state(sequence_buffer)
-                #     ## train should:
-                #     ## * zero gradiaents
-                #     ## * compute loss, add loss to a monitoring log
-                #     ## * call `backward()`
-                #     ## * call `optimizer.step()`
+                heats_buffer.pop(0)
+                heats_buffer.append(heat)
+                self.policy.set_state(sequence_buffer, heats_buffer)
                 if train:
                     self.policy.train()
                 command = self.policy.compute_action()

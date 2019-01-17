@@ -35,7 +35,8 @@ class TestLiveData(unittest.TestCase):
 
     def test_data_gen(self):
         for i, sample in enumerate(self.dataset):
-            self.assertEqual(sample.shape, torch.Size([7]))
+            self.assertEqual(sample[0].shape, torch.Size([6]))
+            self.assertEqual(sample[1].shape, torch.Size([1]))
         self.assertEqual(i, self.maxsteps - 1)
         self.dataset.close_dataset_logger()
         reference_log_size = os.stat(DATASET_MACHINE_REFERENCE_LOG).st_size
@@ -68,8 +69,9 @@ class TestHistoricalData(unittest.TestCase):
             for i, data in enumerate(self.dataset):
                 # if i == 10:
                 #     print(i, data[0], data[1])
-                self.assertEqual(data[0].shape, torch.Size([7]))
-                self.assertEqual(data[1].shape, torch.Size([4]))
+                self.assertEqual(data[0].shape, torch.Size([6]))
+                self.assertEqual(data[1].shape, torch.Size([1]))
+                self.assertEqual(data[2].shape, torch.Size([4]))
             self.assertEqual(i, 1999)
         self.assertEqual(ep, self.epochs - 1)
 

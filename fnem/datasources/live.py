@@ -37,8 +37,8 @@ class LiveData(object):
             t = self.machine.get_time()
             sensor_vals = self.machine.get_sensor_values()
             setting = self.machine.get_setting()
-            heat = self.machine.get_heat()
-            # TODO - can we go straight from list to tensor?
-            state = np.array(sensor_vals + [heat, setting, t])
+            heat = [self.machine.get_heat()]
+            state = np.array(sensor_vals + [setting, t])
             state = torch.from_numpy(state).float()
-            yield state
+            heat = torch.Tensor(heat)
+            yield state, heat

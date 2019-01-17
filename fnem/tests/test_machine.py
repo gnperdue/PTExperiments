@@ -69,6 +69,7 @@ class TestMachineWithRuleBased(unittest.TestCase):
         settings = []
         ts = []
         sequence_buffer = []
+        heats_buffer = []
         for i in range(5000):
             if self.machine.step():
                 t = self.machine.get_time()
@@ -86,10 +87,13 @@ class TestMachineWithRuleBased(unittest.TestCase):
                     m.append(sensor_vals[i])
                 if len(sequence_buffer) < sequence_size:
                     sequence_buffer.append(state)
+                    heats_buffer.append(heat)
                 else:
                     sequence_buffer.pop(0)
                     sequence_buffer.append(state)
-                    self.policy.set_state(sequence_buffer)
+                    heats_buffer.pop(0)
+                    heats_buffer.append(heat)
+                    self.policy.set_state(sequence_buffer, heats_buffer)
                     self.policy.train()
                     command = self.policy.compute_action()
                     self.machine.update_machine(command)

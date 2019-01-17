@@ -3,6 +3,7 @@ import torch
 
 
 class HistoricalData(object):
+    '''parse and serve information from a simulator with true sensor data'''
 
     def __init__(self, setting, source_file):
         self._setting = setting
@@ -17,11 +18,12 @@ class HistoricalData(object):
         measured_sensors = [float(x) for x in fields[2:6]]
         true_sensors = [float(x) for x in fields[6:]]
         true_total = sum(true_sensors)
-        heat = true_total - setting
-        state = measured_sensors + [heat, setting, t]
+        heat = [true_total - setting]
+        state = measured_sensors + [setting, t]
         state = torch.Tensor(state)
+        heat = torch.Tensor(heat)
         true_sensors = torch.Tensor(true_sensors)
-        return (state, true_sensors)
+        return (state, heat, true_sensors)
 
     def __iter__(self):
         # for i in range(self.nepochs):?

@@ -26,12 +26,16 @@ class SimpleMLP(BasePolicy):
         self._learning_rate = learning_rate or 0.0009
         self.optimizer = torch.optim.Adam(self.model.parameters(),
                                           lr=self._learning_rate)
+        # TODO - just sum squares by hand and avoid making a vector of zeros?
         self.lossfn = torch.nn.MSELoss()
 
-    def set_state(self, sensor_array_sequence):
+    def set_state(self, sensor_array_sequence, heats_sequence):
         '''flatten the array sequence'''
         state = torch.stack(sensor_array_sequence)
-        return state.view(-1)
+        state = state[0:5]  # remove time from the state - not meaningful here
+        self._state = state.view(-1)
+        heats = torch.stack(heats_sequence).view(-1)
+        self._heats = heats
 
     def train(self):
         '''
@@ -41,7 +45,9 @@ class SimpleMLP(BasePolicy):
         * call `backward()`
         * call `optimizer.step()`
         '''
-        pass
+        targets = torch.zeros(self._heats.shape)
+        loss = self.lossfn(self._heats, targets)
+        self.optimizer.zero_grad()
 
     def compute_action(self):
         '''

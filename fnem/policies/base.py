@@ -26,15 +26,18 @@ class BasePolicy(object):
 
         self._setting = None
         self._state = None
+        self._heats = None
         self._commands = np.asarray(commands_array, dtype=DTYPE)
 
     def get_adjustment_value(self, command):
         return self._commands[command]
 
-    def set_state(self, sensor_array_sequence):
+    def set_state(self, sensor_array_sequence, heats_sequence):
         '''
-        sensor_array should be a sequence compoesed of 7 element arrays - one
-        for each sensor, the heat, the setting, and t.
+        sensor_array should be a sequence compoesed of 6 element arrays - one
+        for each sensor, the setting, and t.
+
+        the length of the heats_sequence should match the model output size.
         '''
         raise NotImplementedError
 

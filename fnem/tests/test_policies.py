@@ -24,8 +24,9 @@ class TestBasePolicy(unittest.TestCase):
 
     def test_api_methods(self):
         with self.assertRaises(NotImplementedError):
-            state = [torch.Tensor([10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1])]
-            self.policy.set_state(state)
+            state = [torch.Tensor([10.0, 1.0, 0.5, 0.1, 5.0, 0.1])]
+            heat = [torch.Tensor([5.0])]
+            self.policy.set_state(state, heat)
         with self.assertRaises(NotImplementedError):
             self.policy.compute_action()
         with self.assertRaises(NotImplementedError):
@@ -81,8 +82,9 @@ class TestSimpleRuleBased(unittest.TestCase):
 
     def test_set_state(self):
         # `state` is a batche of size N of lists of sensor and settings data.
-        state = [torch.Tensor([10.0, 1.0, 0.5, 0.1, 5.0, 10.0, 0.1])]
-        self.policy.set_state(state)
+        state = [torch.Tensor([10.0, 1.0, 0.5, 0.1, 10.0, 0.1])]
+        heat = [torch.Tensor([5.0])]
+        self.policy.set_state(state, heat)
         for a, b in zip(self.policy._state, state[0].numpy()[0:4]):
             self.assertEqual(a, b)
         self.assertEqual(self.policy._setting, state[0].numpy()[-2])

@@ -1,5 +1,6 @@
 # TODO
 
-* Change state structure and remove heats. Heats should be the train target,
-not part of the state.
+* Need to tie sequence and heat buffer lengths to NN output size - no, this
+is not right. Output size is set by the number of actions. Sequence length
+impacts network inputs.
 * Implement `train` in `SimpleMLP`.

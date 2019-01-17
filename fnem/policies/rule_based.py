@@ -12,11 +12,14 @@ class SimpleRuleBased(BasePolicy):
         self._amplitude = amplitude
         self._period = period
 
-    def set_state(self, sensor_array_sequence):
+    def set_state(self, sensor_array_sequence, heats_sequence):
         '''
         this policy ignores the full state and only uses the most recent t
         in the sequence. the `sensor_array_sequence` is expected to be a
         batch. we want to take the last entry of the last batch.
+
+        this model ignores the heats_sequence (it is not trying to minimize
+        the heat - it is computing settings based on timing only)
         '''
         sensor_array = sensor_array_sequence[-1].numpy()
         self._state = sensor_array[0:4]

@@ -14,15 +14,15 @@ HISTORYFILE="./reference_files/log_machinewithrule_1545976343.csv.gz"
 ARGS+=" --num-epochs $NUMEPOCHS"
 ARGS+=" --data-source-path $HISTORYFILE"
 
-# POLICY="SimpleRuleBased"
-# SEQSIZE=1
-# ARGS+=" --policy $POLICY"
-# ARGS+=" --sequence-size $SEQSIZE"
-
-POLICY="SimpleMLP"
-SEQSIZE=20
+POLICY="SimpleRuleBased"
+SEQSIZE=1
 ARGS+=" --policy $POLICY"
 ARGS+=" --sequence-size $SEQSIZE"
+
+# POLICY="SimpleMLP"
+# SEQSIZE=20
+# ARGS+=" --policy $POLICY"
+# ARGS+=" --sequence-size $SEQSIZE"
 
 
 ARGS+=" --mode $MODE"

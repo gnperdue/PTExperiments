@@ -76,8 +76,9 @@ class TestUtils(unittest.TestCase):
             'SimpleRuleBased', TEST_RULEBASED_ARG_DICT
         )
         # `state` is a batch of size N of lists of sensor and settings data.
-        state = [torch.Tensor([10.0, 1.0, 0.5, 0.1, 5.0, 5.0, 0.1])]
-        policy.set_state(state)
+        state = [torch.Tensor([10.0, 1.0, 0.5, 0.1, 5.0, 0.1])]
+        heat = [torch.Tensor([5.0])]
+        policy.set_state(state, heat)
         for a, b in zip(policy._state, state[0].numpy()[0:4]):
             self.assertEqual(a, b)
         self.assertEqual(policy._setting, state[0].numpy()[-2])

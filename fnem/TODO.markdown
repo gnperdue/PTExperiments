@@ -9,6 +9,9 @@ or something like that... at issue is the setting can be negative, and may
 need to be "large" (close to 10)... by driving the setting to zero, the loss
 could be made small w/o making the heat small. Maybe the loss should be
 something like `(setting * heat^2)^2 + heat^4`?
+* Could also try something more like Q-learning. In this case, we compute an
+action, and the reward for the state comes from the heat. This might make
+sense because it is difficult to make the heat available to the loss function.
 * Need to tie sequence and heat buffer lengths to NN output size - no, this
 is not right. Output size is set by the number of actions. Sequence length
 impacts network inputs.

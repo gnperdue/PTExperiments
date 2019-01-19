@@ -68,7 +68,7 @@ class HistoricalTrainer(Trainer):
             heats_buffer = []
             for i, data in enumerate(self.data_source):
                 setting = self.data_source.get_setting()
-                historical_state = data[0] # true sensor vals in data[2]
+                historical_state = data[0]  # true sensor vals in data[2]
                 sensor_vals = list(historical_state[0:4].numpy())
                 target_setting = historical_state[4].item()
                 t = historical_state[5].item()
@@ -80,7 +80,7 @@ class HistoricalTrainer(Trainer):
                 self.settings.append(setting)
                 self.setting_diffs.append(target_setting - setting)
                 self.ts.append(t)
-                state = data[0] # historical_state
+                state = data[0]  # historical_state
                 if len(sequence_buffer) < self.sequence_size:
                     sequence_buffer.append(state)
                     heats_buffer.append(heat)

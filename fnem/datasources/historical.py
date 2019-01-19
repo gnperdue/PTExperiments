@@ -20,9 +20,9 @@ class HistoricalData(object):
         true_total = sum(true_sensors)
         heat = [true_total - setting]
         state = measured_sensors + [setting, t]
-        state = torch.Tensor(state)
-        heat = torch.Tensor(heat)
-        true_sensors = torch.Tensor(true_sensors)
+        state = torch.Tensor(state).float()
+        heat = torch.Tensor(heat).float()
+        true_sensors = torch.Tensor(true_sensors).float()
         return (state, heat, true_sensors)
 
     def __iter__(self):

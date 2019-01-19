@@ -40,5 +40,5 @@ class LiveData(object):
             heat = [self.machine.get_heat()]
             state = np.array(sensor_vals + [setting, t])
             state = torch.from_numpy(state).float()
-            heat = torch.Tensor(heat)
+            heat = torch.Tensor(heat).float()
             yield state, heat

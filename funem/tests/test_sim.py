@@ -20,6 +20,10 @@ from utils.common_defs import MACHINE_LOG_TEMPLATE
 from utils.common_defs import MACHINE_LOG_REFERNECE
 
 
+TEST_LOG = 'test_tmplog.csv'
+TEST_LOG_GZ = TEST_LOG + '.gz'
+
+
 class TestEngine(unittest.TestCase):
 
     def setUp(self):
@@ -53,13 +57,21 @@ class TestEngine(unittest.TestCase):
 class TestRecorders(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self.recorder = Recorder(log_name=TEST_LOG)
 
     def tearDown(self):
-        pass
+        if os.path.isfile(TEST_LOG_GZ):
+            os.remove(TEST_LOG_GZ)
 
     def test_recorder(self):
-        pass
+        data = [[10, 11, 12], [13, 14, 15]]
+        for d in data:
+            self.recorder.write_data(d)
+        self.recorder.close()
+        read = self.recorder.read_data()
+        for i, r in enumerate(read):
+            parts = list(map(int, r.split(',')))
+            self.assertEqual(data[i], parts)
 
 
 if __name__ == '__main__':

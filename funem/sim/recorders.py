@@ -8,8 +8,8 @@ class MachineStateTextRecorder(object):
     record observation values to a .csv file and gzip after calling `close()`.
     '''
 
-    def __init__(self, log_base_name):
-        self.log_name = log_base_name
+    def __init__(self, log_name):
+        self.log_name = log_name
         self.gzfile = self.log_name + '.gz'
         self._cleanup_files()
 

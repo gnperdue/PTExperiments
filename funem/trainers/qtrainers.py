@@ -26,7 +26,7 @@ class QTrainer(object):
         self.heats = deque([], maxlen=self.performance_memory_maxlen)
         self.settings = deque([], maxlen=self.performance_memory_maxlen)
         self.setting_diffs = deque([], maxlen=self.performance_memory_maxlen)
-        self._replay_buffer_length = 20
+        self._replay_buffer_length = 100
 
     def build_or_restore_model_and_optimizer(self):
         self.qlearner.build_or_restore_model_and_optimizer()
@@ -101,26 +101,36 @@ class LiveQTrainer(QTrainer):
         # TODO - add epsilon greedy strategy parts
         replay_buffer = []
         data_iter = iter(self.data_source)
-        observation = next(data_iter)
+        observation, _, _, heat = next(data_iter)
         for step in range(self.num_steps):
             # TODO - if step > x, do target network update, etc.
-            qvalue = self.qlearner.model(observation)
-            action, action_ = self.qlearner.compute_action(qvalue)
-            self.data_source.update_setting(action)
-            heat = self.data_source.get_heat()
-            new_observation = next(data_iter)
+            qvalue = self.qlearner.compute_qvalues(observation)
+            action_ = self.qlearner.compute_action(qvalue)
+            self.data_source.update_setting(action_)
+            new_observation, _, _, heat = next(data_iter)
 
-            buffer_size = len(replay_buffer)
-            if buffer_size < self._replay_buffer_length:
-                replay_buffer.append(
-                    (observation, action_, heat, new_observation)
-                )
-            else:
-                if buffer_size > self._replay_buffer_length:
-                    replay_buffer.pop(0)
-                replay_buffer.append(
-                    (observation, action_, heat, new_observation)
-                )
+            if train:
+                buffer_size = len(replay_buffer)
+                if buffer_size < self._replay_buffer_length:
+                    replay_buffer.append(
+                        (observation, action_, heat, new_observation)
+                    )
+                else:
+                    if buffer_size > self._replay_buffer_length:
+                        replay_buffer.pop(0)
+                    replay_buffer.append(
+                        (observation, action_, heat, new_observation)
+                    )
+                    X_train, y_train = self.qlearner.build_trainbatch(
+                        replay_buffer
+                    )
+                    loss_value = self.qlearner.train(X_train, y_train)
+                    LOGGER.debug('  step={:08d}, loss={:04.8f}'.format(
+                        step, loss_value
+                    ))
+
+            observation = new_observation
+            self.qlearner.anneal_epsilon()
 
     def save_performance_plots(self):
         pass

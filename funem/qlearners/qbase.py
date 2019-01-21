@@ -21,7 +21,9 @@ class BaseQ(object):
             'cuda:0' if torch.cuda.is_available() else 'cpu'
         )
         LOGGER.info('Device = {}'.format(self.device))
+        self.noutputs = len(commands_array)
 
+        self._batch_size = 20  # should be smaller than trainer replay buffer
         self._setting = None
         self._state = None
         self._heats = None
@@ -31,16 +33,19 @@ class BaseQ(object):
     def get_adjustment_value(self, command):
         return self._commands[command]
 
-    def set_state(self, sensor_array_sequence, heats_sequence):
-        '''
-        sensor_array should be a sequence compoesed of 6 element arrays - one
-        for each sensor, the setting, and t.
-
-        the length of the heats_sequence should match the model output size.
-        '''
+    def compute_qvalues(self):
+        '''return an array of q-values for each action in the commands_array'''
         raise NotImplementedError
 
-    def train(self):
+    def compute_action(self, qvalues):
+        '''compute the action index'''
+        raise NotImplementedError
+
+    def build_trainbatch(self, replay_buffer):
+        '''build a training batch and targets from the replay buffer'''
+        raise NotImplementedError
+
+    def train(self, X_train, y_train):
         '''
         train should:
         * zero gradiaents
@@ -50,15 +55,5 @@ class BaseQ(object):
         '''
         raise NotImplementedError
 
-    def compute_qvalues(self):
-        '''return an array of q-values for each action in the commands_array'''
-        raise NotImplementedError
-
     def build_or_restore_model_and_optimizer(self):
-        raise NotImplementedError
-
-    def loss_fn(self, X_train, y_train):
-        '''
-        y_train is the old Q-value with the action index replaced by the heat
-        '''
         raise NotImplementedError

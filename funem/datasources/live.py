@@ -35,4 +35,3 @@ class LiveData(object):
             time = torch.Tensor([data[-2]])
             heat = torch.Tensor([data[-1]])
             yield observation, setting, time, heat
-        raise StopIteration()

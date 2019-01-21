@@ -1,6 +1,10 @@
 import logging
-import torch
+import random
+
 import numpy as np
+import torch
+from torch.autograd import Variable
+
 from .qbase import BaseQ
 import utils.util_funcs as utils
 
@@ -13,9 +17,11 @@ class SimpleMLP(BaseQ):
     def __init__(self, commands_array, learning_rate=None, ckpt_path=None):
         super(SimpleMLP, self).__init__(commands_array)
         self.pytorch = True
+        self.epsilon = 0.5
+        self.gamma = 0.99
         l1 = 4
         l2 = 150
-        l3 = len(commands_array)
+        l3 = self.noutputs
         self.model = torch.nn.Sequential(
             torch.nn.Linear(l1, l2),
             torch.nn.LeakyReLU(),
@@ -29,23 +35,57 @@ class SimpleMLP(BaseQ):
         # TODO - just sum squares by hand and avoid making a vector of zeros?
         self.lossfn = torch.nn.MSELoss()
 
-    def set_state(self, sensor_array_sequence, heats_sequence):
-        '''the sequences are batches of observations'''
-        # state = torch.stack(sensor_array_sequence)
-        # state = state[0:5]  # remove time from the state - not meaningful here
-        # self._state = state.view(-1)
-        # heats = torch.stack(heats_sequence).view(-1)
-        # self._heats = heats
-        pass
+    def compute_qvalues(self, observation):
+        '''return an array of q-values for each action in the commands_array'''
+        return self.model(observation)
 
-    def train(self):
-        '''
-        train should:
-        * zero gradiaents
-        * compute loss, add loss to a monitoring log
-        * call `backward()`
-        * call `optimizer.step()`
-        '''
+    def compute_action(self, qvalues):
+        '''compute the action index'''
+        qvalues_ = qvalues.cpu().data.numpy()
+        if np.random.rand() < self.epsilon:
+            action_ = np.random.randint(0, self.noutputs)
+        else:
+            action_ = np.argmax(qvalues_)
+        return action_
+
+    def build_trainbatch(self, replay_buffer):
+        '''build a training batch and targets from the replay buffer'''
+        X_train, y_train = None, None
+        minibatch = random.sample(replay_buffer, self._batch_size)
+        X_train = Variable(torch.empty(
+            self._batch_size, self.noutputs, dtype=torch.float
+        ))
+        y_train = Variable(torch.empty(
+            self._batch_size, self.noutputs, dtype=torch.float
+        ))
+        # Fill X_train and y_train minibatch tensors by index `h` by
+        # looping through memory and computing the Q-values before (X)
+        # and after (y) each move
+        h = 0
+        for memory in minibatch:
+            # reward is heat, and we want head to be small, but here we need
+            # a large "reward", so use max_heat - heat instead of the raw heat
+            # value.
+            old_state, action_m, reward_m, new_state_m = memory
+            old_qval = self.model(old_state)
+            # TODO - use a target model...
+            # new_qval = self.target_model(new_state_m).cpu().data.numpy()
+            new_qval = self.model(new_state_m).cpu().data.numpy()
+            max_qval = np.max(new_qval)
+            y = torch.zeros((1, self.noutputs))
+            y[:] = old_qval[:]
+            update = (reward_m + (self.gamma * max_qval))
+            y[0][action_m] = update
+            X_train[h] = old_qval
+            y_train[h] = Variable(y)
+            h += 1
+        X_train, y_train = X_train.to(self.device), y_train.to(self.device)
+        return X_train, y_train
+
+
+        return X_train, y_train
+
+    def train(self, X_train, y_train):
         # targets = torch.zeros(self._heats.shape)
         # loss = self.lossfn(self._heats, targets)
         # self.optimizer.zero_grad()
@@ -54,17 +94,10 @@ class SimpleMLP(BaseQ):
         # return loss.item()
         pass
 
-    def compute_action(self):
-        '''
-        call forward pass on the NN model
-        '''
-        preds = self.model(self._state)
-        action = np.random.choice(self._command_idcs, p=preds.data.numpy())
-        return action
-
     def build_or_restore_model_and_optimizer(self):
         '''
         '''
+        # TODO - need to track epsilon in the checkpoint
         LOGGER.info('model has {} parameters'.format(
             utils.count_parameters(self.model)
         ))
@@ -86,8 +119,3 @@ class SimpleMLP(BaseQ):
                          + str(self.optimizer.state_dict()[var_name]))
 
         self.model.to(self.device)
-
-    def loss_fn(self, heats):
-        target = torch.zeros(heats.shape)
-        output = self.lossfn(heats, target)
-        return output

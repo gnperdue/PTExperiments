@@ -2,6 +2,8 @@ import logging
 import time
 from collections import deque
 
+from tqdm import tqdm
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,6 +17,7 @@ class QTrainer(object):
         self.qlearner = qlearner
         self.machine = None
         self.training_data_file = None
+        self.start_step = 0
         self.performance_memory_maxlen = performance_memory_maxlen
         self.m1 = deque([], maxlen=self.performance_memory_maxlen)
         self.m2 = deque([], maxlen=self.performance_memory_maxlen)
@@ -29,7 +32,7 @@ class QTrainer(object):
         self._replay_buffer_length = 100
 
     def build_or_restore_model_and_optimizer(self):
-        self.qlearner.build_or_restore_model_and_optimizer()
+        self.start_step = self.qlearner.build_or_restore_model_and_optimizer()
 
     def train_or_run_model(self, train):
         raise NotImplementedError
@@ -47,50 +50,9 @@ class LiveQTrainer(QTrainer):
         # self.figname = (DATASET_MACHINE_PLT_TEMPLATE % self.tstamp) + '.pdf'
         # self.loss_figname = (DATASET_MACHINE_PLT_LOSS_TEMPLATE % self.tstamp) \
         #     + '.pdf'
-        self.num_epochs = None
         self.num_steps = arguments_dict['num_steps']
-        self.sequence_size = arguments_dict['sequence_size']
-
-    # def train_or_run_model(self, train):
-    #     # train or run model only on full buffers
-    #     sequence_buffer = []
-    #     heats_buffer = []
-    #     # no concept of epochs with live data, run over machine steps as long
-    #     # as they are available or until we reach a max step value.
-    #     #
-    #     # TODO - need to rethink the datasource and not enumerate over it,
-    #     # and instead step manually?
-    #     for i, data in enumerate(self.data_source):
-    #         state = data[0]
-    #         heat = data[1]
-    #         if len(sequence_buffer) < self.sequence_size:
-    #             sequence_buffer.append(state)
-    #             heats_buffer.append(heat)
-    #         else:
-    #             if len(sequence_buffer) > self.sequence_size:
-    #                 sequence_buffer.pop(0)
-    #                 heats_buffer.pop(0)
-    #             sequence_buffer.append(state)
-    #             heats_buffer.append(heat)
-    #             qval = self.qlearner.compute_qvalues(sequence_buffer)
-    #             action, action_ = self.qlearner.compute_action(qval)
-    #             # TODO - data_source should return a new heat when the setting
-    #             # is updated.
-    #             reward = self.data_source.update_setting(action)
-    #             new_state = self.data_source.get_state()
-    #             if train:
-    #                 loss = self.qlearner.train(
-    #                     state, action_, reward, new_state
-    #                 )
-    #                 self.losses.append(loss)
-    #             # self.policy.set_state(sequence_buffer, heats_buffer)
-    #             # if train:
-    #             #     loss = self.policy.train()
-    #             #     self.losses.append(loss)
-    #             # command_idx = self.policy.compute_action()
-    #             # self.data_source.update_setting(command_idx)
-    #
-    #     self.data_source.close_dataset_logger()
+        self.show_progress = arguments_dict.get('show_progress', False)
+        self._f = tqdm if self.show_progress else (lambda x: x)
 
     def train_or_run_model(self, train):
         if train:
@@ -102,7 +64,9 @@ class LiveQTrainer(QTrainer):
         replay_buffer = []
         data_iter = iter(self.data_source)
         observation, _, _, heat = next(data_iter)
-        for step in range(self.num_steps):
+        for step in self._f(
+            range(self.start_step, self.start_step + self.num_steps)
+        ):
             # TODO - if step > x, do target network update, etc.
             qvalue = self.qlearner.compute_qvalues(observation)
             action_ = self.qlearner.compute_action(qvalue)
@@ -113,13 +77,13 @@ class LiveQTrainer(QTrainer):
                 buffer_size = len(replay_buffer)
                 if buffer_size < self._replay_buffer_length:
                     replay_buffer.append(
-                        (observation, action_, heat, new_observation)
+                        (observation, action_, heat.item(), new_observation)
                     )
                 else:
                     if buffer_size > self._replay_buffer_length:
                         replay_buffer.pop(0)
                     replay_buffer.append(
-                        (observation, action_, heat, new_observation)
+                        (observation, action_, heat.item(), new_observation)
                     )
                     X_train, y_train = self.qlearner.build_trainbatch(
                         replay_buffer
@@ -130,7 +94,7 @@ class LiveQTrainer(QTrainer):
                     ))
 
             observation = new_observation
-            self.qlearner.anneal_epsilon()
+            self.qlearner.anneal_epsilon(step)
 
     def save_performance_plots(self):
         pass

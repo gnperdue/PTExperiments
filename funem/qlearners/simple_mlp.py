@@ -7,6 +7,7 @@ from torch.autograd import Variable
 
 from .qbase import BaseQ
 import utils.util_funcs as utils
+from utils.common_defs import MAX_HEAT
 
 
 LOGGER = logging.getLogger(__name__)
@@ -14,11 +15,13 @@ LOGGER = logging.getLogger(__name__)
 
 class SimpleMLP(BaseQ):
 
-    def __init__(self, commands_array, learning_rate=None, ckpt_path=None):
+    def __init__(self, commands_array, train_pars_dict):
         super(SimpleMLP, self).__init__(commands_array)
         self.pytorch = True
-        self.epsilon = 0.5
+        self.epsilon = 0.99
+        self._min_epsilon = 0.05
         self.gamma = 0.99
+
         l1 = 4
         l2 = 150
         l3 = self.noutputs
@@ -28,12 +31,12 @@ class SimpleMLP(BaseQ):
             torch.nn.Linear(l2, l3),
             torch.nn.Softmax(dim=0)
         )
-        self._ckpt_path = ckpt_path or '/tmp/simple_mlp/ckpt.tar'
-        self._learning_rate = learning_rate or 0.0009
+        self._ckpt_path = train_pars_dict.get('ckpt_path',
+                                              '/tmp/simple_mlp/ckpt.tar')
+        self._learning_rate = train_pars_dict.get('learning_rate', 0.0009)
         self.optimizer = torch.optim.Adam(self.model.parameters(),
                                           lr=self._learning_rate)
-        # TODO - just sum squares by hand and avoid making a vector of zeros?
-        self.lossfn = torch.nn.MSELoss()
+        self.loss_fn = torch.nn.MSELoss(reduction='elementwise_mean')
 
     def compute_qvalues(self, observation):
         '''return an array of q-values for each action in the commands_array'''
@@ -74,7 +77,7 @@ class SimpleMLP(BaseQ):
             max_qval = np.max(new_qval)
             y = torch.zeros((1, self.noutputs))
             y[:] = old_qval[:]
-            update = (reward_m + (self.gamma * max_qval))
+            update = (MAX_HEAT - reward_m + (self.gamma * max_qval))
             y[0][action_m] = update
             X_train[h] = old_qval
             y_train[h] = Variable(y)
@@ -82,17 +85,12 @@ class SimpleMLP(BaseQ):
         X_train, y_train = X_train.to(self.device), y_train.to(self.device)
         return X_train, y_train
 
-
-        return X_train, y_train
-
     def train(self, X_train, y_train):
-        # targets = torch.zeros(self._heats.shape)
-        # loss = self.lossfn(self._heats, targets)
-        # self.optimizer.zero_grad()
-        # loss.backward()
-        # self.optimizer.step()
-        # return loss.item()
-        pass
+        loss = self.loss_fn(X_train, y_train)
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+        return loss.item()
 
     def build_or_restore_model_and_optimizer(self):
         '''
@@ -119,3 +117,11 @@ class SimpleMLP(BaseQ):
                          + str(self.optimizer.state_dict()[var_name]))
 
         self.model.to(self.device)
+
+        # TODO - get the start step out of the checkpoint and return it
+        # TODO - return other stuff also to the learning loop controller?
+        return 0
+
+    def anneal_epsilon(self, step):
+        if self.epsilon > self._min_epsilon:
+            self.epsilon -= (1. / (step / 100.0))

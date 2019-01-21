@@ -20,6 +20,8 @@ RUN_MODES = [
     'TRAIN-LIVE'
 ]
 
+MAX_HEAT = 10.0
+
 # source_path = pathlib.Path(os.environ['HOME'])
 # source_path = source_path/'Dropbox/ArtificialIntelligence/InterestingPyTorch'
 # source_path = source_path/'PTExperiments/funem/reference_files'

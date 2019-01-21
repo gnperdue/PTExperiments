@@ -3,6 +3,7 @@ from collections import deque
 
 # from utils.common_defs import DTYPE
 from utils.common_defs import DEFAULT_COMMANDS
+from utils.common_defs import MAX_HEAT
 
 
 class SimulationMachine(object):
@@ -22,7 +23,6 @@ class SimulationMachine(object):
         self._logger = logger
         self._true_instantaneous_sensor_vals = None
         self._observation = deque([], maxlen=80)
-        self._max_heat = 10.0
         self._initialize()
 
     def _initialize(self):
@@ -59,7 +59,7 @@ class SimulationMachine(object):
         return return_value
 
     def get_heat(self):
-        return max((self._true_state() - self._setting) ** 2, self._max_heat)
+        return max((self._true_state() - self._setting) ** 2, MAX_HEAT)
 
     def get_time(self):
         return self._data_generator.t

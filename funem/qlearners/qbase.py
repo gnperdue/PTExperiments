@@ -48,12 +48,15 @@ class BaseQ(object):
     def train(self, X_train, y_train):
         '''
         train should:
+        * compute loss
         * zero gradiaents
-        * compute loss, add loss to a monitoring log
         * call `backward()`
         * call `optimizer.step()`
         '''
         raise NotImplementedError
 
     def build_or_restore_model_and_optimizer(self):
+        raise NotImplementedError
+
+    def anneal_epsilon(self):
         raise NotImplementedError

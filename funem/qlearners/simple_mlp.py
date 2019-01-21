@@ -15,12 +15,12 @@ LOGGER = logging.getLogger(__name__)
 
 class SimpleMLP(BaseQ):
 
-    def __init__(self, commands_array, train_pars_dict):
-        super(SimpleMLP, self).__init__(commands_array)
+    def __init__(self, train_pars_dict):
+        super(SimpleMLP, self).__init__(train_pars_dict['commands_array'])
         self.pytorch = True
         self.epsilon = 0.99
-        self._min_epsilon = 0.05
-        self.gamma = 0.99
+        self._min_epsilon = train_pars_dict.get('min_epsilon', 0.05)
+        self.gamma = train_pars_dict.get('gamma', 0.99)
 
         l1 = 4
         l2 = 150

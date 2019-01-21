@@ -1,98 +1,98 @@
 import logging
-# import time
+import time
 
-# from trainers.trainers import HistoricalTrainer, LiveTrainer
-# from datasources.live import LiveData
+# from trainers.qtrainers import HistoricalQTrainer
+from trainers.qtrainers import LiveQTrainer
+from datasources.live import LiveData
 # from datasources.historical import HistoricalData
 # import policies.rule_based as rule_based
-# import policies.simple_mlp as simple_mlp
-# from utils.common_defs import DEFAULT_COMMANDS
-# from utils.common_defs import DATASET_MACHINE_LOG_TEMPLATE
+import qlearners.simple_mlp as simple_mlp
+from utils.common_defs import DEFAULT_COMMANDS
+from utils.common_defs import DATASOURCE_LIVE_LOG_TEMPLATE
 
 LOGGER = logging.getLogger(__name__)
 
 
-# def create_default_arguments_dict(policy, mode):
-#     d = {}
-#     if policy == 'SimpleRuleBased':
-#         d['start'] = 0.0
-#         d['amplitude'] = 10.0
-#         d['period'] = 2.0
-#         d['commands_array'] = DEFAULT_COMMANDS
-#     elif policy == 'SimpleMLP':
-#         d['commands_array'] = DEFAULT_COMMANDS
-#         d['learning_rate'] = 1e-4
-#         d['ckpt_path'] = '/tmp/simple_mlp/ckpt.tar'
-#     else:
-#         raise ValueError('Unknown policy ({}).'.format(policy))
-#     return d
-#
-#
-# def create_policy(policy, arguments_dict):
-#     policy_class = None
-#     if policy == 'SimpleRuleBased':
-#         start = arguments_dict.get('start', 0.0)
-#         amplitude = arguments_dict.get('amplitude', 10.0)
-#         period = arguments_dict.get('period', 2.0)
-#         commands_array = arguments_dict.get('commands_array', DEFAULT_COMMANDS)
-#         policy_class = rule_based.SimpleRuleBased(
-#             time=start, amplitude=amplitude, period=period,
-#             commands_array=commands_array
-#         )
-#     elif policy == 'SimpleMLP':
-#         learning_rate = arguments_dict.get('learning_rate', 1e-4)
-#         ckpt_path = arguments_dict.get('ckpt_path',
-#                                         '/tmp/simple_mlp/ckpt.tar')
-#         commands_array = arguments_dict.get('commands_array', DEFAULT_COMMANDS)
-#         policy_class = simple_mlp.SimpleMLP(
-#             commands_array=commands_array, learning_rate=learning_rate,
-#             ckpt_path=ckpt_path
-#         )
-#     else:
-#         raise ValueError('Unknown policy ({}).'.format(policy))
-#     return policy_class
-#
-#
-# def create_trainer(data_source, policy, mode, num_epochs, num_steps,
-#                    sequence_size=20):
-#     '''
-#     * data_source: either a file (for historical training) or a
-#     simulation engine (for live training)
-#     * policy: what learning algorithm is deployed (may be a static learner)
-#     * mode: set whether we are running based on a historical policy (no
-#     learning updates applied), training based on historical data, or
-#     training based on "live" data
-#     '''
-#     arguments_dict = {}
-#     arguments_dict['num_epochs'] = num_epochs
-#     arguments_dict['num_steps'] = num_steps
-#     arguments_dict['sequence_size'] = sequence_size
-#     if 'HISTORICAL' in mode:
-#         trainer = HistoricalTrainer(policy, data_source, arguments_dict)
-#     elif 'LIVE' in mode:
-#         trainer = LiveTrainer(policy, data_source, arguments_dict)
-#     else:
-#         raise ValueError('Unknown mode ({}).'.format(mode))
-#     return trainer
-#
-#
-# def create_data_source(
-#     mode, source_path=None, maxsteps=None, run_time=None
-# ):
-#     # TODO - need to pass in starting setting
-#     log_time = run_time or time.time()
-#     data_source = None
-#     if 'HISTORICAL' in mode:
-#         if source_path is not None:
-#             data_source = HistoricalData(setting=10.0, source_file=source_path)
-#         else:
-#             raise ValueError('Source paths required for historical training.')
-#     elif 'LIVE' in mode:
-#         logname = './' + DATASET_MACHINE_LOG_TEMPLATE % log_time
-#         data_source = LiveData(maxsteps=maxsteps, logname=logname)
-#     else:
-#         raise ValueError('Unknown mode ({}).'.format(mode))
-#     return data_source
+def create_default_learner_arguments_dict(learner, mode):
+    d = {}
+    d['commands_array'] = DEFAULT_COMMANDS
+    if learner == 'SimpleRuleBased' or learner == 'SimpleRandom':
+        # d['start'] = 0.0
+        # d['amplitude'] = 10.0
+        # d['period'] = 2.0
+        raise ValueError('Not reader for learner: ({}).'.format(learner))
+    elif learner == 'SimpleMLP':
+        d['learning_rate'] = 1e-4
+        d['min_epsilon'] = 0.05
+        d['gamma'] = 0.99
+    else:
+        raise ValueError('Unknown learner: ({}).'.format(learner))
+    return d
+
+
+def create_learner(learner, arguments_dict):
+    learner_class = None
+    if learner == 'SimpleRuleBased' or learner == 'SimpleRandom':
+        # start = arguments_dict['start']
+        # amplitude = arguments_dict['amplitude']
+        # period = arguments_dict['period']
+        # commands_array = arguments_dict['commands_array']
+        # learner_class = rule_based.SimpleRuleBased(
+        #     time=start, amplitude=amplitude, period=period,
+        #     commands_array=commands_array
+        # )
+        raise ValueError('Not ready for learner ({}).'.format(learner))
+    elif learner == 'SimpleMLP':
+        learner_class = simple_mlp.SimpleMLP(train_pars_dict=arguments_dict)
+    else:
+        raise ValueError('Unknown learner ({}).'.format(learner))
+    return learner_class
+
+
+def create_data_source(
+    mode, source_path=None, maxsteps=None, run_time=None
+):
+    # TODO - need to pass in starting setting
+    log_time = run_time or time.time()
+    data_source = None
+    if 'HISTORICAL' in mode:
+        raise ValueError('Not ready for mode ({}).'.format(mode))
+        # if source_path is not None:
+        #     data_source = HistoricalData(setting=10.0,
+        #                                  source_file=source_path)
+        # else:
+        #     raise ValueError('Sources required for historical training.')
+    elif 'LIVE' in mode:
+        logname = './' + DATASOURCE_LIVE_LOG_TEMPLATE % log_time
+        # TODO - pass in the setting also
+        data_source = LiveData(logname=logname)
+    else:
+        raise ValueError('Unknown mode ({}).'.format(mode))
+    return data_source
+
+
+def create_trainer(data_source, learner_instance, mode, num_epochs, num_steps,
+                   show_progress=False):
+    '''
+    * data_source: either a file (for historical training) or a
+    simulation engine (for live training)
+    * policy: what learning algorithm is deployed (may be a static learner)
+    * mode: set whether we are running based on a historical policy (no
+    learning updates applied), training based on historical data, or
+    training based on "live" data
+    '''
+    arguments_dict = {}
+    arguments_dict['num_epochs'] = num_epochs
+    arguments_dict['num_steps'] = num_steps
+    arguments_dict['show_progress'] = show_progress
+    if 'HISTORICAL' in mode:
+        raise ValueError('Not ready for mode ({}).'.format(mode))
+        # trainer = HistoricalTrainer(policy, data_source, arguments_dict)
+    elif 'LIVE' in mode:
+        trainer = LiveQTrainer(learner_instance, data_source, arguments_dict)
+    else:
+        raise ValueError('Unknown mode ({}).'.format(mode))
+    return trainer
 
 
 def get_logging_level(log_level):

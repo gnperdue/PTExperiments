@@ -29,7 +29,7 @@ MAX_HEAT = 10.0
 
 MACHINE_LOG_TEMPLATE = 'log_engine_%d.csv'
 MACHINE_PLT_TEMPLATE = 'plt_engine_%d'
-DATASOURCE__LIVE_LOG_TEMPLATE = 'log_live_datasource_%d'
+DATASOURCE_LIVE_LOG_TEMPLATE = 'log_live_datasource_%d'
 
 # DATASET_MACHINE_PLT_TEMPLATE = 'plt_live_trainer_%d'
 # DATASET_MACHINE_PLT_LOSS_TEMPLATE = 'plt_live_trainer_loss_%d'

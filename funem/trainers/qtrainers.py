@@ -74,12 +74,12 @@ class LiveQTrainer(QTrainer):
 
             if train:
                 buffer_size = len(replay_buffer)
-                if buffer_size < self._replay_buffer_length:
+                if buffer_size < (self._replay_buffer_length - 1):
                     replay_buffer.append(
                         (observation, action_, heat.item(), new_observation)
                     )
                 else:
-                    if buffer_size > self._replay_buffer_length:
+                    if buffer_size == self._replay_buffer_length:
                         replay_buffer.pop(0)
                     replay_buffer.append(
                         (observation, action_, heat.item(), new_observation)
@@ -88,7 +88,7 @@ class LiveQTrainer(QTrainer):
                         replay_buffer
                     )
                     loss_value = self.qlearner.train(X_train, y_train)
-                    LOGGER.debug('  step={:08d}, loss={:04.8f}'.format(
+                    LOGGER.info('  step={:08d}, loss={:04.8f}'.format(
                         step, loss_value
                     ))
 

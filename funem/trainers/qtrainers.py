@@ -30,7 +30,7 @@ class QTrainer(object):
         self._replay_buffer_length = 100
 
     def build_or_restore_model_and_optimizer(self):
-        self.start_step = self.qlearner.build_or_restore_model_and_optimizer()
+        self.qlearner.build_or_restore_model_and_optimizer()
 
     def train_or_run_model(self, train):
         raise NotImplementedError

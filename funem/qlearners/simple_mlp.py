@@ -125,4 +125,4 @@ class SimpleMLP(BaseQ):
 
     def anneal_epsilon(self, step):
         if self.epsilon > self._min_epsilon:
-            self.epsilon -= (1. / (step / 100.0))
+            self.epsilon -= (1. / ((step + 1) / 100.0))

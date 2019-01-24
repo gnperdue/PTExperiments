@@ -20,7 +20,7 @@ def create_default_learner_arguments_dict(learner, mode):
         # d['start'] = 0.0
         # d['amplitude'] = 10.0
         # d['period'] = 2.0
-        raise ValueError('Not reader for learner: ({}).'.format(learner))
+        raise ValueError('Not ready for learner: ({}).'.format(learner))
     elif learner == 'SimpleMLP':
         d['learning_rate'] = 1e-4
         d['min_epsilon'] = 0.05
@@ -53,7 +53,7 @@ def create_data_source(
     mode, source_path=None, maxsteps=None, run_time=None
 ):
     # TODO - need to pass in starting setting
-    log_time = run_time or time.time()
+    log_time = run_time or int(time.time())
     data_source = None
     if 'HISTORICAL' in mode:
         raise ValueError('Not ready for mode ({}).'.format(mode))

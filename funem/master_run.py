@@ -80,8 +80,7 @@ def main(
         learner_arguments_dict['ckpt_path'] = ckpt_path
     learner_instance = create_learner(learner, learner_arguments_dict)
     data_source = create_data_source(mode, source_path=data_source_path,
-                                     maxsteps=num_steps, run_time=run_time,
-                                     show_progress=show_progress)
+                                     maxsteps=num_steps, run_time=run_time)
     trainer = create_trainer(data_source, learner_instance, mode, num_epochs,
                              num_steps, show_progress)
     trainer.build_or_restore_model_and_optimizer()

@@ -12,12 +12,10 @@ class QTrainer(object):
     '''base class - defines the API'''
 
     def __init__(self, qlearner, data_source, performance_memory_maxlen=5000):
+        # TODO - pass in time stamp
         self.data_source = data_source
         self.tstamp = int(time.time())
         self.qlearner = qlearner
-        self.machine = None
-        self.training_data_file = None
-        self.start_step = 0
         self.performance_memory_maxlen = performance_memory_maxlen
         self.m1 = deque([], maxlen=self.performance_memory_maxlen)
         self.m2 = deque([], maxlen=self.performance_memory_maxlen)
@@ -65,7 +63,8 @@ class LiveQTrainer(QTrainer):
         data_iter = iter(self.data_source)
         observation, _, _, heat = next(data_iter)
         for step in self._f(
-            range(self.start_step, self.start_step + self.num_steps)
+            range(self.qlearner.start_step,
+                  self.qlearner.start_step + self.num_steps)
         ):
             # TODO - if step > x, do target network update, etc.
             qvalue = self.qlearner.compute_qvalues(observation)

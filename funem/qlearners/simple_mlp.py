@@ -19,10 +19,12 @@ class SimpleMLP(BaseQ):
         super(SimpleMLP, self).__init__(train_pars_dict['commands_array'])
         self.pytorch = True
         self.epsilon = 0.99
+        self.start_step = 0
+        self.start_epoch = 0
         self._min_epsilon = train_pars_dict.get('min_epsilon', 0.05)
         self.gamma = train_pars_dict.get('gamma', 0.99)
 
-        l1 = 4
+        l1 = 80  # observation length = 4 * 20 timesteps
         l2 = 150
         l3 = self.noutputs
         self.model = torch.nn.Sequential(
@@ -102,6 +104,9 @@ class SimpleMLP(BaseQ):
         try:
             checkpoint = torch.load(self._ckpt_path)
             self.model.load_state_dict(checkpoint['model_state_dict'])
+            self.start_epoch = checkpoint['epoch'] + 1
+            self.start_step = checkpoint['step'] + 1
+            self.epsilon = checkpoint['epsilon']
             self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
             LOGGER.info('Loaded checkpoint from {}'.format(self._ckpt_path))
         except FileNotFoundError:
@@ -117,10 +122,6 @@ class SimpleMLP(BaseQ):
                          + str(self.optimizer.state_dict()[var_name]))
 
         self.model.to(self.device)
-
-        # TODO - get the start step out of the checkpoint and return it
-        # TODO - return other stuff also to the learning loop controller?
-        return 0
 
     def anneal_epsilon(self, step):
         if self.epsilon > self._min_epsilon:

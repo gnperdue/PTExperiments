@@ -31,7 +31,7 @@ class SimpleMLP(BaseQ):
             torch.nn.Linear(l1, l2),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(l2, l3),
-            torch.nn.Softmax(dim=0)
+            torch.nn.Softmax(dim=1)  # TODO - dim 0 is batch dim, no?
         )
         self._ckpt_path = train_pars_dict.get('ckpt_path',
                                               '/tmp/simple_mlp/ckpt.tar')
@@ -79,7 +79,7 @@ class SimpleMLP(BaseQ):
             max_qval = np.max(new_qval)
             y = torch.zeros((1, self.noutputs))
             y[:] = old_qval[:]
-            update = (MAX_HEAT - reward_m + (self.gamma * max_qval))
+            update = (MAX_HEAT - reward_m) + (self.gamma * max_qval)
             y[0][action_m] = update
             X_train[h] = old_qval
             y_train[h] = Variable(y)
@@ -124,5 +124,10 @@ class SimpleMLP(BaseQ):
         self.model.to(self.device)
 
     def anneal_epsilon(self, step):
+        '''
+        x = np.arange(10000) + 1
+        np.sum(1 / x / 10.)
+        -> 0.9787606036044383
+        '''
         if self.epsilon > self._min_epsilon:
-            self.epsilon -= (1. / ((step + 1) / 100.0))
+            self.epsilon -= 1. / ((step + 1)) / 10.0

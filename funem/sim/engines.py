@@ -59,7 +59,7 @@ class SimulationMachine(object):
         return return_value
 
     def get_heat(self):
-        return max((self._true_state() - self._setting) ** 2, MAX_HEAT)
+        return min((self._true_state() - self._setting) ** 2, MAX_HEAT)
 
     def get_time(self):
         return self._data_generator.t

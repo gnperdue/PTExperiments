@@ -31,7 +31,7 @@ class SimpleMLP(BaseQ):
             torch.nn.Linear(l1, l2),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(l2, l3),
-            torch.nn.Softmax(dim=1)  # TODO - dim 0 is batch dim, no?
+            torch.nn.Softmax(dim=0)
         )
         self._ckpt_path = train_pars_dict.get('ckpt_path',
                                               '/tmp/simple_mlp/ckpt.tar')
@@ -46,10 +46,10 @@ class SimpleMLP(BaseQ):
 
     def compute_action(self, qvalues):
         '''compute the action index'''
-        qvalues_ = qvalues.cpu().data.numpy()
         if np.random.rand() < self.epsilon:
             action_ = np.random.randint(0, self.noutputs)
         else:
+            qvalues_ = qvalues.cpu().data.numpy()
             action_ = np.argmax(qvalues_)
         return action_
 

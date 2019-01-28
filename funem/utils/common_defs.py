@@ -20,7 +20,9 @@ RUN_MODES = [
     'TRAIN-LIVE'
 ]
 
-MAX_HEAT = 10.0
+MAX_HEAT = 20.0
+MAX_SETTING = 15.0
+MIN_SETTING = -15.0
 
 # source_path = pathlib.Path(os.environ['HOME'])
 # source_path = source_path/'Dropbox/ArtificialIntelligence/InterestingPyTorch'
@@ -31,8 +33,8 @@ MACHINE_LOG_TEMPLATE = 'log_engine_%d.csv'
 MACHINE_PLT_TEMPLATE = 'plt_engine_%d'
 DATASOURCE_LIVE_LOG_TEMPLATE = 'log_live_datasource_%d.csv'
 
-# DATASET_MACHINE_PLT_TEMPLATE = 'plt_live_trainer_%d'
-# DATASET_MACHINE_PLT_LOSS_TEMPLATE = 'plt_live_trainer_loss_%d'
+DATASET_MACHINE_PLT_TEMPLATE = 'plt_live_trainer_%d'
+DATASET_MACHINE_PLT_LOSS_TEMPLATE = 'plt_live_trainer_loss_%d'
 # DATASET_HISTORY_PLT_TEMPLATE = 'plt_historical_trainer_%d'
 # DATASET_HISTORY_PLT_LOSS_TEMPLATE = 'plt_historical_trainer_loss_%d'
 

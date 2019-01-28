@@ -91,9 +91,9 @@ class LiveQTrainer(QTrainer):
                     LOGGER.info('  step={:08d}, loss={:04.8f}'.format(
                         step, loss_value
                     ))
+                    self.qlearner.anneal_epsilon(step)
 
             observation = new_observation
-            self.qlearner.anneal_epsilon(step)
 
     def save_performance_plots(self):
         pass

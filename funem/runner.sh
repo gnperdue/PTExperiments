@@ -27,4 +27,4 @@ cat << EOF
 python $EXE $ARGS
 EOF
 
-# python $EXE $ARGS
+python $EXE $ARGS

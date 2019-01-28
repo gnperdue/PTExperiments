@@ -4,6 +4,8 @@ from collections import deque
 # from utils.common_defs import DTYPE
 from utils.common_defs import DEFAULT_COMMANDS
 from utils.common_defs import MAX_HEAT
+from utils.common_defs import MAX_SETTING
+from utils.common_defs import MIN_SETTING
 
 
 class SimulationMachine(object):
@@ -40,6 +42,8 @@ class SimulationMachine(object):
     def update_machine(self, command):
         '''command is the index of the step change'''
         self._setting = self._setting + self._commands[command]
+        self._setting = min(self._setting, MAX_SETTING)
+        self._setting = max(self._setting, MIN_SETTING)
 
     def step(self):
         data = self._data_generator.step()

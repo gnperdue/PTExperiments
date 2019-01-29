@@ -31,7 +31,8 @@ class SimpleMLP(BaseQ):
             torch.nn.Linear(l1, l2),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(l2, l3),
-            torch.nn.Softmax(dim=0)
+            torch.nn.LeakyReLU()
+            # torch.nn.Softmax(dim=0)
         )
         self._ckpt_path = train_pars_dict.get('ckpt_path',
                                               '/tmp/simple_mlp/ckpt.tar')
@@ -131,3 +132,12 @@ class SimpleMLP(BaseQ):
         '''
         if self.epsilon > self._min_epsilon:
             self.epsilon -= 1. / ((step + 1)) / 10.0
+
+    def save_model(self, epoch, step):
+        torch.save({
+            'epoch': epoch,
+            'step': step,
+            'model_state_dict': self.model.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict(),
+            'epsilon': self.epsilon,
+        }, self._ckpt_path)

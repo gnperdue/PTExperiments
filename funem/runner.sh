@@ -5,7 +5,7 @@ CKPT="ckpt.tar"
 ARGS="--ckpt-path $CKPT"
 
 MODE="TRAIN-LIVE"
-NUMSTEPS=1000
+NUMSTEPS=20000
 ARGS+=" --num-steps $NUMSTEPS"
 
 # MODE="TRAIN-HISTORICAL"

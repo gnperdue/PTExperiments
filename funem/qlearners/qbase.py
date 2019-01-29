@@ -60,3 +60,6 @@ class BaseQ(object):
 
     def anneal_epsilon(self):
         raise NotImplementedError
+
+    def save_model(self, epoch, step):
+        raise NotImplementedError

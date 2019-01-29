@@ -1,11 +1,17 @@
 #!/bin/bash
+
+NUMGO=1000
+if [[ $# == 1 ]]; then
+  NUMGO=$1
+fi
+
 EXE="master_run.py"
 
 CKPT="ckpt.tar"
 ARGS="--ckpt-path $CKPT"
 
 MODE="TRAIN-LIVE"
-NUMSTEPS=20000
+NUMSTEPS=$NUMGO
 ARGS+=" --num-steps $NUMSTEPS"
 
 # MODE="TRAIN-HISTORICAL"

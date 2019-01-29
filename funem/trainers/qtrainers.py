@@ -5,8 +5,9 @@ from collections import deque
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-from utils.common_defs import DATASET_MACHINE_PLT_TEMPLATE
+from utils.common_defs import DATASET_MACHINE_PLT_HEATS_TEMPLATE
 from utils.common_defs import DATASET_MACHINE_PLT_LOSS_TEMPLATE
+from utils.common_defs import DATASET_MACHINE_PLT_SENSORS_TEMPLATE
 
 
 LOGGER = logging.getLogger(__name__)
@@ -33,6 +34,9 @@ class QTrainer(object):
         self.settings = deque([], maxlen=self.performance_memory_maxlen)
         self.setting_diffs = deque([], maxlen=self.performance_memory_maxlen)
         self._replay_buffer_length = 100
+        self.heats_figname = 'heats.pdf'
+        self.loss_figname = 'loss.pdf'
+        self.sensors_figname = 'sensors.pdf'
 
     def build_or_restore_model_and_optimizer(self):
         self.qlearner.build_or_restore_model_and_optimizer()
@@ -42,7 +46,7 @@ class QTrainer(object):
 
     def save_performance_plots(self):
         fig = plt.Figure(figsize=(10, 6))
-        gs = plt.GridSpec(1, 4)
+        gs = plt.GridSpec(1, 2)
         ax1 = plt.subplot(gs[0])
         ax1.scatter(self.ts, self.m1, c='r')
         ax1.scatter(self.ts, self.m2, c='g')
@@ -52,15 +56,20 @@ class QTrainer(object):
         ax2 = plt.subplot(gs[1])
         ax2.scatter(self.ts, self.totals, c='k')
         ax2.set_title('totals')
-        ax3 = plt.subplot(gs[2])
-        ax3.scatter(self.ts, self.heats, c='k')
-        ax3.set_title('heats')
-        ax4 = plt.subplot(gs[3])
-        ax4.scatter(self.ts, self.settings, c='k')
-        ax4.set_title('settings')
+        fig.tight_layout()
+        plt.savefig(self.sensors_figname, bbox_inches='tight')
+
+        fig = plt.Figure(figsize=(10, 6))
+        gs = plt.GridSpec(1, 2)
+        ax1 = plt.subplot(gs[0])
+        ax1.scatter(self.ts, self.heats, c='k')
+        ax1.set_title('heats')
+        ax2 = plt.subplot(gs[1])
+        ax2.scatter(self.ts, self.settings, c='k')
+        ax2.set_title('settings')
 
         fig.tight_layout()
-        plt.savefig(self.figname, bbox_inches='tight')
+        plt.savefig(self.heats_figname, bbox_inches='tight')
 
         fig = plt.Figure(figsize=(10, 6))
         gs = plt.GridSpec(1, 1)
@@ -92,9 +101,12 @@ class LiveQTrainer(QTrainer):
     def __init__(self, qlearner, data_source, arguments_dict):
         super(LiveQTrainer, self).__init__(qlearner=qlearner,
                                            data_source=data_source)
-        self.figname = (DATASET_MACHINE_PLT_TEMPLATE % self.tstamp) + '.pdf'
+        self.heats_figname = (DATASET_MACHINE_PLT_HEATS_TEMPLATE %
+                              self.tstamp) + '.pdf'
         self.loss_figname = (DATASET_MACHINE_PLT_LOSS_TEMPLATE % self.tstamp) \
             + '.pdf'
+        self.sensors_figname = (DATASET_MACHINE_PLT_SENSORS_TEMPLATE %
+                                self.tstamp) + '.pdf'
         self.num_steps = arguments_dict['num_steps']
         self.show_progress = arguments_dict.get('show_progress', False)
         self._f = tqdm if self.show_progress else (lambda x: x)
@@ -104,6 +116,8 @@ class LiveQTrainer(QTrainer):
             LOGGER.info('Running training...')
         else:
             LOGGER.info('Running model...')
+        # TODO - specialize log message based on `if train`
+        log_msg = ' step={:08d}, epsilon={:04.4f}, loss={:04.8f}'
 
         # TODO - add epsilon greedy strategy parts
         replay_buffer = []
@@ -119,6 +133,7 @@ class LiveQTrainer(QTrainer):
             self.data_source.update_setting(action_)
             new_observation, setting, time, heat = next(data_iter)
 
+            # TODO - test with train==False
             if train:
                 buffer_size = len(replay_buffer)
                 if buffer_size < (self._replay_buffer_length - 1):
@@ -139,12 +154,15 @@ class LiveQTrainer(QTrainer):
                     self._add_log_data(
                         new_observation, setting, time, heat, loss_value
                     )
-                    LOGGER.info(
-                        ' step={:08d}, epsilon={:04.4f}, loss={:04.8f}'.format(
-                            step, self.qlearner.epsilon, loss_value
-                        ))
+                    if (step + 1) % 100 == 0:
+                        LOGGER.info(
+                            log_msg.format(step, self.qlearner.epsilon,
+                                           loss_value)
+                        )
+                        self.qlearner.save_model(epoch=0, step=step)
 
             observation = new_observation
 
-    # def save_performance_plots(self):
-    #     pass
+        # final save after training
+        if train:
+            self.qlearner.save_model(epoch=0, step=step)

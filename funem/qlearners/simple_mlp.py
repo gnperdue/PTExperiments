@@ -80,7 +80,7 @@ class SimpleMLP(BaseQ):
             max_qval = np.max(new_qval)
             y = torch.zeros((1, self.noutputs))
             y[:] = old_qval[:]
-            update = (MAX_HEAT - reward_m) + (self.gamma * max_qval)
+            update = (MAX_HEAT / 2.0 - reward_m) + (self.gamma * max_qval)
             y[0][action_m] = update
             X_train[h] = old_qval
             y_train[h] = Variable(y)
@@ -131,7 +131,8 @@ class SimpleMLP(BaseQ):
         -> 0.9787606036044383
         '''
         if self.epsilon > self._min_epsilon:
-            self.epsilon -= 1. / ((step + 1)) / 10.0
+            update = max(1. / ((step + 1)) / 10.0, 0.0000001)
+            self.epsilon -= update
 
     def save_model(self, epoch, step):
         torch.save({

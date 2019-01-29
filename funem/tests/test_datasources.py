@@ -48,3 +48,7 @@ class TestLive(unittest.TestCase):
         new_setting += DEFAULT_COMMANDS[8]
         self.assertEqual(new_setting, 42.0)
         self.assertEqual(new_setting, self.live_data.get_setting())
+
+
+if __name__ == '__main__':
+    unittest.main()

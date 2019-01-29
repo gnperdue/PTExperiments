@@ -22,6 +22,7 @@ class BaseQ(object):
         )
         LOGGER.info('Device = {}'.format(self.device))
         self.noutputs = len(commands_array)
+        self.epsilon = -1.0
 
         self._batch_size = 20  # should be smaller than trainer replay buffer
         self._setting = None
@@ -33,7 +34,7 @@ class BaseQ(object):
     def get_adjustment_value(self, command):
         return self._commands[command]
 
-    def compute_qvalues(self):
+    def compute_qvalues(self, observation):
         '''return an array of q-values for each action in the commands_array'''
         raise NotImplementedError
 
@@ -58,7 +59,7 @@ class BaseQ(object):
     def build_or_restore_model_and_optimizer(self):
         raise NotImplementedError
 
-    def anneal_epsilon(self):
+    def anneal_epsilon(self, step):
         raise NotImplementedError
 
     def save_model(self, epoch, step):

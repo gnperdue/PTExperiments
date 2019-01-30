@@ -109,6 +109,21 @@ class TestSimpleMLP(unittest.TestCase):
         self.learner._ckpt_path = './reference_files/ckpt_f155a263ea.tar'
         self.learner.restore_model_and_optimizer()
 
+    def test_anneal_epsilon(self):
+        self.assertEqual(self.learner.epsilon, 0.99)
+        self.learner.anneal_epsilon(1)
+        self.assertEqual(self.learner.epsilon, 0.94)
+        self.learner.anneal_epsilon(1e9)
+        self.assertEqual(self.learner.epsilon, 0.9399999)
+
+    def test_save_model(self):
+        self.learner._ckpt_path = './temp_temp.tar'
+        self.learner.save_model(314, 278)
+        self.learner.restore_model_and_optimizer()
+        self.assertEqual(self.learner.start_epoch, 315)
+        self.assertEqual(self.learner.start_step, 279)
+        os.remove('./temp_temp.tar')
+
 
 class TestSimpleRuleBased(unittest.TestCase):
 

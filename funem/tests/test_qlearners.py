@@ -19,10 +19,27 @@ class TestQBase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_compute_qvalues(self):
+    def test_get_adjustment_value(self):
+        for i in range(len(DEFAULT_COMMANDS)):
+            self.assertEqual(self.learner.get_adjustment_value(i),
+                             DEFAULT_COMMANDS[i])
+
+    def test_notimplementeds(self):
         with self.assertRaises(NotImplementedError):
             observation = None
             self.learner.compute_qvalues(observation)
+        with self.assertRaises(NotImplementedError):
+            self.learner.compute_action(None)
+        with self.assertRaises(NotImplementedError):
+            self.learner.build_trainbatch(None)
+        with self.assertRaises(NotImplementedError):
+            self.learner.train(None, None)
+        with self.assertRaises(NotImplementedError):
+            self.learner.build_or_restore_model_and_optimizer()
+        with self.assertRaises(NotImplementedError):
+            self.learner.anneal_epsilon(None)
+        with self.assertRaises(NotImplementedError):
+            self.learner.save_model(None, None)
 
 
 class TestSimpleMLP(unittest.TestCase):

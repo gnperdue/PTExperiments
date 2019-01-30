@@ -22,8 +22,8 @@ class TestQTrainer(unittest.TestCase):
         pass
 
     def test_train_or_run_model(self):
-        self.fail('Finish the test...')
-
+        with self.assertRaises(NotImplementedError):
+            self.trainer.train_or_run_model(False)
 
 class TestLiveQTrainer(unittest.TestCase):
 

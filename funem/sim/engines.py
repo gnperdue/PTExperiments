@@ -26,6 +26,7 @@ class SimulationMachine(object):
         self._true_instantaneous_sensor_vals = None
         self._observation = deque([], maxlen=80)
         self._initialize()
+        self._enforce_settings_bounds()
 
     def _initialize(self):
         for i in range(20):
@@ -36,14 +37,17 @@ class SimulationMachine(object):
                 self._observation.append(m)
         self._true_instantaneous_sensor_vals = list(data)
 
+    def _enforce_settings_bounds(self):
+        self._setting = min(self._setting, MAX_SETTING)
+        self._setting = max(self._setting, MIN_SETTING)
+
     def _true_state(self):
         return sum(self._true_instantaneous_sensor_vals)
 
     def update_machine(self, command):
         '''command is the index of the step change'''
         self._setting = self._setting + self._commands[command]
-        self._setting = min(self._setting, MAX_SETTING)
-        self._setting = max(self._setting, MIN_SETTING)
+        self._enforce_settings_bounds()
 
     def step(self):
         data = self._data_generator.step()

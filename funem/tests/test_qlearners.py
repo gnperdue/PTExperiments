@@ -53,30 +53,54 @@ class TestQBase(unittest.TestCase):
 class TestSimpleMLP(unittest.TestCase):
 
     def setUp(self):
-        d = {}
-        d['commands_array'] = DEFAULT_COMMANDS
-        self.learner = simple_mlp.SimpleMLP(train_pars_dict=d)
-
-    def tearDown(self):
-        pass
-
-    def test_compute_qvalues(self):
-        self.fail('Finish the test...')
-
-
-class TestSimpleRuleBased(unittest.TestCase):
-
-    def setUp(self):
         np.random.seed(0)
         self.live_data = live.LiveData(setting=10.0, logname=TEST_LOG)
 
         d = {}
         d['commands_array'] = DEFAULT_COMMANDS
-        self.learner = simple_rulebased.SimpleRuleBased(train_pars_dict=d)
+        self.learner = simple_mlp.SimpleMLP(train_pars_dict=d)
 
     def tearDown(self):
         if os.path.isfile(TEST_LOG_GZ):
             os.remove(TEST_LOG_GZ)
+
+    def test_compute_qvalues_and_action(self):
+        it = iter(self.live_data)
+        obs, setting, t, heat = next(it)
+        qvals = self.learner.compute_qvalues(obs)
+        self.assertEqual(qvals.shape, torch.Size([9]))
+        self.learner.epsilon = 1.0
+        action = self.learner.compute_action(qvals)
+        self.assertLess(action, qvals.shape[0])
+        self.learner.epsilon = 0.0
+        action = self.learner.compute_action(qvals)
+        self.assertLess(action, qvals.shape[0])
+
+    def test_make_trainbatch(self):
+        replay_buffer = []
+        data_iter = iter(self.live_data)
+        action_ = 5
+        observation, _, _, heat = next(data_iter)
+        for step in range(30):
+            new_observation, setting, time, heat = next(data_iter)
+            replay_buffer.append(
+                (observation, action_, heat.item(), new_observation)
+            )
+            observation = new_observation
+        X_train, y_train = self.learner.build_trainbatch(replay_buffer)
+        self.assertEqual(X_train.shape, torch.Size([20, 9]))
+        self.assertEqual(y_train.shape, torch.Size([20, 9]))
+
+
+class TestSimpleRuleBased(unittest.TestCase):
+
+    def setUp(self):
+        d = {}
+        d['commands_array'] = DEFAULT_COMMANDS
+        self.learner = simple_rulebased.SimpleRuleBased(train_pars_dict=d)
+
+    def tearDown(self):
+        pass
 
     def test_compute_qvalues_and_action(self):
         observation = torch.Tensor([10.5, 1.0, 1.0, 0.1,

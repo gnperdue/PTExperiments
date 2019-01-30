@@ -39,7 +39,7 @@ class SimpleMLP(BaseQ):
         self._learning_rate = train_pars_dict.get('learning_rate', 0.0009)
         self.optimizer = torch.optim.Adam(self.model.parameters(),
                                           lr=self._learning_rate)
-        self.loss_fn = torch.nn.MSELoss(reduction='elementwise_mean')
+        self.loss_fn = torch.nn.MSELoss(reduction='mean')
 
     def compute_qvalues(self, observation):
         '''return an array of q-values for each action in the commands_array'''
@@ -95,7 +95,7 @@ class SimpleMLP(BaseQ):
         self.optimizer.step()
         return loss.item()
 
-    def build_or_restore_model_and_optimizer(self):
+    def restore_model_and_optimizer(self):
         '''
         '''
         # TODO - need to track epsilon in the checkpoint

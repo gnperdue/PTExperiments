@@ -38,8 +38,8 @@ class QTrainer(object):
         self.loss_figname = 'loss.pdf'
         self.sensors_figname = 'sensors.pdf'
 
-    def build_or_restore_model_and_optimizer(self):
-        self.qlearner.build_or_restore_model_and_optimizer()
+    def restore_model_and_optimizer(self):
+        self.qlearner.restore_model_and_optimizer()
 
     def train_or_run_model(self, train):
         raise NotImplementedError

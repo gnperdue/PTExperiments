@@ -83,7 +83,7 @@ def main(
                                      maxsteps=num_steps, run_time=run_time)
     trainer = create_trainer(data_source, learner_instance, mode, num_epochs,
                              num_steps, show_progress)
-    trainer.build_or_restore_model_and_optimizer()
+    trainer.restore_model_and_optimizer()
     trainer.train_or_run_model(train=('TRAIN' in mode))
     if make_plot:
         trainer.save_performance_plots()

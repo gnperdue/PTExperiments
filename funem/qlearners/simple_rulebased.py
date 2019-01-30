@@ -50,7 +50,7 @@ class SimpleRuleBased(BaseQ):
         '''
         return -1.0
 
-    def build_or_restore_model_and_optimizer(self):
+    def restore_model_and_optimizer(self):
         pass
 
     def anneal_epsilon(self, step):

@@ -56,7 +56,7 @@ class BaseQ(object):
         '''
         raise NotImplementedError
 
-    def build_or_restore_model_and_optimizer(self):
+    def restore_model_and_optimizer(self):
         raise NotImplementedError
 
     def anneal_epsilon(self, step):

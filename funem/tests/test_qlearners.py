@@ -43,7 +43,7 @@ class TestQBase(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.learner.train(None, None)
         with self.assertRaises(NotImplementedError):
-            self.learner.build_or_restore_model_and_optimizer()
+            self.learner.restore_model_and_optimizer()
         with self.assertRaises(NotImplementedError):
             self.learner.anneal_epsilon(None)
         with self.assertRaises(NotImplementedError):
@@ -91,6 +91,19 @@ class TestSimpleMLP(unittest.TestCase):
         self.assertEqual(X_train.shape, torch.Size([20, 9]))
         self.assertEqual(y_train.shape, torch.Size([20, 9]))
 
+    def test_train(self):
+        x = torch.randn(20, 80)
+        y = torch.randn(20, 9)
+        y_pred = self.learner.model(x)
+        loss_val1 = self.learner.train(y_pred, y)
+        y_pred = self.learner.model(x)
+        loss_val2 = self.learner.train(y_pred, y)
+        self.assertLess(loss_val2, loss_val1)
+
+    def test_restore_model_and_optimizer(self):
+        '''just, don't crash...'''
+        self.learner.restore_model_and_optimizer()
+
 
 class TestSimpleRuleBased(unittest.TestCase):
 
@@ -118,7 +131,7 @@ class TestSimpleRuleBased(unittest.TestCase):
         self.assertEqual(self.learner.build_trainbatch(None), (None, None))
 
     def test_do_nothings(self):
-        self.learner.build_or_restore_model_and_optimizer()
+        self.learner.restore_model_and_optimizer()
         self.learner.anneal_epsilon(None)
         self.learner.save_model(None, None)
 

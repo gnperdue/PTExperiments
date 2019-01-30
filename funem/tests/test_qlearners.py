@@ -100,8 +100,13 @@ class TestSimpleMLP(unittest.TestCase):
         loss_val2 = self.learner.train(y_pred, y)
         self.assertLess(loss_val2, loss_val1)
 
-    def test_restore_model_and_optimizer(self):
+    def test_restore_model_and_optimizer_do_nothing(self):
         '''just, don't crash...'''
+        self.learner.restore_model_and_optimizer()
+
+    def test_restore_model_and_optimizer_load_model(self):
+        '''just, don't crash...'''
+        self.learner._ckpt_path = './reference_files/ckpt_f155a263ea.tar'
         self.learner.restore_model_and_optimizer()
 
 

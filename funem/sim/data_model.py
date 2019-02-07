@@ -41,11 +41,13 @@ class NoiseModel(object):
     '''
     default_noise_scale = [N1AMP, N2AMP, N3AMP, N4AMP]
 
-    def __init__(self, drop_probability=0.0, noise_array=None):
+    def __init__(self, random_seed=None, drop_probability=0.0, noise_array=None):
         self.noise = noise_array or np.asarray(
             NoiseModel.default_noise_scale, dtype=DTYPE
         )
         assert len(self.noise) == 4
+        if random_seed is not None:
+            np.random.seed(random_seed)
 
     def gen_noise(self, data):
         assert len(data) == 4

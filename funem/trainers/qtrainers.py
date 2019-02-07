@@ -166,3 +166,4 @@ class LiveQTrainer(QTrainer):
         # final save after training
         if train:
             self.qlearner.save_model(epoch=0, step=step)
+        self.data_source.close_dataset_logger()

@@ -22,9 +22,9 @@ ARGS+=" --np-random-seed $NPRANDSEED"
 # ARGS+=" --num-epochs $NUMEPOCHS"
 # ARGS+=" --data-source-path $HISTORYFILE"
 
-POLICY="SimpleMLP"
 POLICY="SimpleRuleBased"
 POLICY="SimpleRandom"
+POLICY="SimpleMLP"
 
 ARGS+=" --learner $POLICY"
 ARGS+=" --mode $MODE"

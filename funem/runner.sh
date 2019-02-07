@@ -12,7 +12,9 @@ ARGS="--ckpt-path $CKPT"
 
 MODE="TRAIN-LIVE"
 NUMSTEPS=$NUMGO
+NOISESEED=0
 ARGS+=" --num-steps $NUMSTEPS"
+ARGS+=" --noise-rand-seed $NOISESEED"
 
 # MODE="TRAIN-HISTORICAL"
 # NUMEPOCHS=1
@@ -20,9 +22,8 @@ ARGS+=" --num-steps $NUMSTEPS"
 # ARGS+=" --num-epochs $NUMEPOCHS"
 # ARGS+=" --data-source-path $HISTORYFILE"
 
-# POLICY="SimpleRuleBased"
-
 POLICY="SimpleMLP"
+POLICY="SimpleRuleBased"
 
 ARGS+=" --learner $POLICY"
 ARGS+=" --mode $MODE"

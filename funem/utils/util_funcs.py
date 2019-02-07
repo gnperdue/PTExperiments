@@ -1,12 +1,10 @@
 import logging
 import time
 
-# from trainers.qtrainers import HistoricalQTrainer
 from trainers.qtrainers import LiveQTrainer
 from datasources.live import LiveData
-# from datasources.historical import HistoricalData
-# import policies.rule_based as rule_based
 import qlearners.simple_mlp as simple_mlp
+import qlearners.simple_rulebased as simple_rulebased
 from utils.common_defs import DEFAULT_COMMANDS
 from utils.common_defs import DATASOURCE_LIVE_LOG_TEMPLATE
 
@@ -16,10 +14,9 @@ LOGGER = logging.getLogger(__name__)
 def create_default_learner_arguments_dict(learner, mode):
     d = {}
     d['commands_array'] = DEFAULT_COMMANDS
-    if learner == 'SimpleRuleBased' or learner == 'SimpleRandom':
-        # d['start'] = 0.0
-        # d['amplitude'] = 10.0
-        # d['period'] = 2.0
+    if learner == 'SimpleRuleBased':
+        return d
+    elif learner == 'SimpleRandom':
         raise ValueError('Not ready for learner: ({}).'.format(learner))
     elif learner == 'SimpleMLP':
         d['learning_rate'] = 1e-4
@@ -32,15 +29,11 @@ def create_default_learner_arguments_dict(learner, mode):
 
 def create_learner(learner, arguments_dict):
     learner_class = None
-    if learner == 'SimpleRuleBased' or learner == 'SimpleRandom':
-        # start = arguments_dict['start']
-        # amplitude = arguments_dict['amplitude']
-        # period = arguments_dict['period']
-        # commands_array = arguments_dict['commands_array']
-        # learner_class = rule_based.SimpleRuleBased(
-        #     time=start, amplitude=amplitude, period=period,
-        #     commands_array=commands_array
-        # )
+    if learner == 'SimpleRuleBased':
+        learner_class = simple_rulebased.SimpleRuleBased(
+            train_pars_dict=arguments_dict
+        )
+    elif learner == 'SimpleRandom':
         raise ValueError('Not ready for learner ({}).'.format(learner))
     elif learner == 'SimpleMLP':
         learner_class = simple_mlp.SimpleMLP(train_pars_dict=arguments_dict)
@@ -50,7 +43,7 @@ def create_learner(learner, arguments_dict):
 
 
 def create_data_source(
-    mode, source_path=None, maxsteps=None, run_time=None
+    mode, source_path=None, maxsteps=None, run_time=None, random_seed=None
 ):
     # TODO - need to pass in starting setting
     log_time = run_time or int(time.time())
@@ -65,7 +58,7 @@ def create_data_source(
     elif 'LIVE' in mode:
         logname = './' + DATASOURCE_LIVE_LOG_TEMPLATE % log_time
         # TODO - pass in the setting also
-        data_source = LiveData(logname=logname)
+        data_source = LiveData(logname=logname, random_seed=random_seed)
     else:
         raise ValueError('Unknown mode ({}).'.format(mode))
     return data_source

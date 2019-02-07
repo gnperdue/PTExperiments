@@ -44,6 +44,8 @@ parser.add_argument('--make-plot', default=False, action='store_true',
                     help='plot win percentages and losses')
 parser.add_argument('--mode', default='RUN-TRAINED',
                     type=str, help='run mode')
+parser.add_argument('--noise-rand-seed', default=None, type=int,
+                    help='random seed for noise model')
 parser.add_argument('--num-epochs', default=1, type=int,
                     help='number of epochs (train)')
 parser.add_argument('--num-steps', default=100, type=int,
@@ -54,7 +56,7 @@ parser.add_argument('--show-progress', default=False, action='store_true',
 
 def main(
     ckpt_path, data_source_path, learner, log_level, make_plot, mode,
-    num_epochs, num_steps, show_progress
+    noise_rand_seed, num_epochs, num_steps, show_progress
 ):
     mode = mode.upper()
     if mode not in RUN_MODES:
@@ -79,8 +81,10 @@ def main(
     if ckpt_path:
         learner_arguments_dict['ckpt_path'] = ckpt_path
     learner_instance = create_learner(learner, learner_arguments_dict)
-    data_source = create_data_source(mode, source_path=data_source_path,
-                                     maxsteps=num_steps, run_time=run_time)
+    data_source = create_data_source(
+        mode, source_path=data_source_path, maxsteps=num_steps,
+        run_time=run_time, random_seed=noise_rand_seed
+    )
     trainer = create_trainer(data_source, learner_instance, mode, num_epochs,
                              num_steps, show_progress)
     trainer.restore_model_and_optimizer()

@@ -8,11 +8,11 @@ from sim.engines import SimulationMachine
 
 class LiveData(object):
 
-    def __init__(self, setting=10.0, logname='tmplog'):
+    def __init__(self, setting=10.0, logname='tmplog', random_seed=0):
         self._machine_log = logname
         self._continue = True
         dgen = Generator()
-        nosgen = Noise()
+        nosgen = Noise(random_seed=random_seed)
         recorder = Recorder(self._machine_log)
         self.machine = SimulationMachine(setting=setting, data_generator=dgen,
                                          noise_model=nosgen, logger=recorder)

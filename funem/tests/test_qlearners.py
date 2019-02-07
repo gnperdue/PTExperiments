@@ -39,11 +39,7 @@ class TestQBase(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.learner.compute_action(None)
         with self.assertRaises(NotImplementedError):
-            self.learner.build_trainbatch(None)
-        with self.assertRaises(NotImplementedError):
             self.learner.train(None, None)
-        with self.assertRaises(NotImplementedError):
-            self.learner.restore_model_and_optimizer()
         with self.assertRaises(NotImplementedError):
             self.learner.anneal_epsilon(None)
         with self.assertRaises(NotImplementedError):
@@ -147,8 +143,7 @@ class TestSimpleRuleBased(unittest.TestCase):
         self.assertEqual(self.learner.compute_action(qvals), 0)
 
     def test_training(self):
-        self.assertEqual(self.learner.train(None, None), -1.0)
-        self.assertEqual(self.learner.build_trainbatch(None), (None, None))
+        self.fail('Finish the test...')
 
     def test_do_nothings(self):
         self.learner.restore_model_and_optimizer()

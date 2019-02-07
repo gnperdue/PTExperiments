@@ -54,40 +54,6 @@ class SimpleMLP(BaseQ):
             action_ = np.argmax(qvalues_)
         return action_
 
-    def build_trainbatch(self, replay_buffer):
-        '''build a training batch and targets from the replay buffer'''
-        X_train, y_train = None, None
-        minibatch = random.sample(replay_buffer, self._batch_size)
-        X_train = Variable(torch.empty(
-            self._batch_size, self.noutputs, dtype=torch.float
-        ))
-        y_train = Variable(torch.empty(
-            self._batch_size, self.noutputs, dtype=torch.float
-        ))
-        # Fill X_train and y_train minibatch tensors by index `h` by
-        # looping through memory and computing the Q-values before (X)
-        # and after (y) each move
-        h = 0
-        for memory in minibatch:
-            # reward is heat, and we want head to be small, but here we need
-            # a large "reward", so use max_heat - heat instead of the raw heat
-            # value.
-            old_state, action_m, reward_m, new_state_m = memory
-            old_qval = self.model(old_state)
-            # TODO - use a target model...
-            # new_qval = self.target_model(new_state_m).cpu().data.numpy()
-            new_qval = self.model(new_state_m).cpu().data.numpy()
-            max_qval = np.max(new_qval)
-            y = torch.zeros((1, self.noutputs))
-            y[:] = old_qval[:]
-            update = (MAX_HEAT / 2.0 - reward_m) + (self.gamma * max_qval)
-            y[0][action_m] = update
-            X_train[h] = old_qval
-            y_train[h] = Variable(y)
-            h += 1
-        X_train, y_train = X_train.to(self.device), y_train.to(self.device)
-        return X_train, y_train
-
     def train(self, X_train, y_train):
         loss = self.loss_fn(X_train, y_train)
         self.optimizer.zero_grad()

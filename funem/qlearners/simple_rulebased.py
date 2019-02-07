@@ -19,6 +19,8 @@ class SimpleRuleBased(BaseQ):
         self.start_step = 0
         self.start_epoch = 0
 
+        self.loss_fn = torch.nn.MSELoss(reduction='mean')
+
     def compute_qvalues(self, observation):
         '''return an array of q-values for each action in the commands_array'''
         observation_ = observation.cpu().data.numpy()
@@ -36,10 +38,6 @@ class SimpleRuleBased(BaseQ):
         action_ = np.argmax(qvalues_)
         return action_
 
-    def build_trainbatch(self, replay_buffer):
-        '''build a training batch and targets from the replay buffer'''
-        return None, None
-
     def train(self, X_train, y_train):
         '''
         train should:
@@ -48,10 +46,8 @@ class SimpleRuleBased(BaseQ):
         * call `backward()`
         * call `optimizer.step()`
         '''
-        return -1.0
-
-    def restore_model_and_optimizer(self):
-        pass
+        loss = self.loss_fn(X_train, y_train)
+        return loss.item()
 
     def anneal_epsilon(self, step):
         pass

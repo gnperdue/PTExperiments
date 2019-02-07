@@ -25,6 +25,7 @@ class TestQTrainer(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.trainer.train_or_run_model(False)
 
+
 class TestLiveQTrainer(unittest.TestCase):
 
     def setUp(self):

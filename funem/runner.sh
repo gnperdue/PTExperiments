@@ -12,9 +12,9 @@ ARGS="--ckpt-path $CKPT"
 
 MODE="TRAIN-LIVE"
 NUMSTEPS=$NUMGO
-NOISESEED=0
+NPRANDSEED=0
 ARGS+=" --num-steps $NUMSTEPS"
-ARGS+=" --noise-rand-seed $NOISESEED"
+ARGS+=" --np-random-seed $NPRANDSEED"
 
 # MODE="TRAIN-HISTORICAL"
 # NUMEPOCHS=1

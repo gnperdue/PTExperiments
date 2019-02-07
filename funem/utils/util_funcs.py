@@ -44,7 +44,7 @@ def create_learner(learner, arguments_dict):
 
 
 def create_data_source(
-    mode, source_path=None, maxsteps=None, run_time=None, random_seed=None
+    mode, source_path=None, maxsteps=None, run_time=None
 ):
     # TODO - need to pass in starting setting
     log_time = run_time or int(time.time())
@@ -59,7 +59,7 @@ def create_data_source(
     elif 'LIVE' in mode:
         logname = './' + DATASOURCE_LIVE_LOG_TEMPLATE % log_time
         # TODO - pass in the setting also
-        data_source = LiveData(logname=logname, random_seed=random_seed)
+        data_source = LiveData(logname=logname)
     else:
         raise ValueError('Unknown mode ({}).'.format(mode))
     return data_source

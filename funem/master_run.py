@@ -9,9 +9,9 @@ Running modes (`--mode`):
 
 Learners (`--learner`):
 
-* //SimpleRuleBased
-* //SimpleMLP
-* //SimpleRandom
+* SimpleRuleBased
+* SimpleMLP
+* SimpleRandom
 '''
 import argparse
 import sys

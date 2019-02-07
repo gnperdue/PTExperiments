@@ -24,6 +24,7 @@ ARGS+=" --noise-rand-seed $NOISESEED"
 
 POLICY="SimpleMLP"
 POLICY="SimpleRuleBased"
+POLICY="SimpleRandom"
 
 ARGS+=" --learner $POLICY"
 ARGS+=" --mode $MODE"

@@ -5,6 +5,7 @@ from trainers.qtrainers import LiveQTrainer
 from datasources.live import LiveData
 import qlearners.simple_mlp as simple_mlp
 import qlearners.simple_rulebased as simple_rulebased
+import qlearners.simple_random as simple_random
 from utils.common_defs import DEFAULT_COMMANDS
 from utils.common_defs import DATASOURCE_LIVE_LOG_TEMPLATE
 
@@ -14,10 +15,8 @@ LOGGER = logging.getLogger(__name__)
 def create_default_learner_arguments_dict(learner, mode):
     d = {}
     d['commands_array'] = DEFAULT_COMMANDS
-    if learner == 'SimpleRuleBased':
+    if learner == 'SimpleRuleBased' or learner == 'SimpleRandom':
         return d
-    elif learner == 'SimpleRandom':
-        raise ValueError('Not ready for learner: ({}).'.format(learner))
     elif learner == 'SimpleMLP':
         d['learning_rate'] = 1e-4
         d['min_epsilon'] = 0.05
@@ -34,7 +33,9 @@ def create_learner(learner, arguments_dict):
             train_pars_dict=arguments_dict
         )
     elif learner == 'SimpleRandom':
-        raise ValueError('Not ready for learner ({}).'.format(learner))
+        learner_class = simple_random.SimpleRandom(
+            train_pars_dict=arguments_dict
+        )
     elif learner == 'SimpleMLP':
         learner_class = simple_mlp.SimpleMLP(train_pars_dict=arguments_dict)
     else:

@@ -35,6 +35,12 @@ class BaseQ(object):
         self._commands = np.asarray(commands_array, dtype=DTYPE)
         self._command_idcs = list(range(len(self._commands)))
 
+    def _build_target_model(self):
+        pass
+
+    def update_target_model(self):
+        pass
+
     def get_adjustment_value(self, command):
         return self._commands[command]
 

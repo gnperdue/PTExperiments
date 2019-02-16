@@ -162,6 +162,9 @@ class LiveQTrainer(QTrainer):
                             log_msg.format(step, self.qlearner.epsilon,
                                            loss_value)
                         )
+                        LOGGER.info('Sample Q-values: {}'.format(
+                            list(qvalue.cpu().data.numpy())
+                        ))
                         self.qlearner.save_model(epoch=0, step=step)
 
             observation = new_observation

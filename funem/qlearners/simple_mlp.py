@@ -1,13 +1,10 @@
 import logging
-import random
 
 import numpy as np
 import torch
-from torch.autograd import Variable
 
 from .qbase import BaseQ
 import utils.util_funcs as utils
-from utils.common_defs import MAX_HEAT
 
 
 LOGGER = logging.getLogger(__name__)

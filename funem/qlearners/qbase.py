@@ -73,7 +73,7 @@ class BaseQ(object):
             max_qval = np.max(new_qval.cpu().data.numpy())
             y = torch.zeros((1, self.noutputs))
             y[:] = old_qval[:]
-            update = (MAX_HEAT / 2.0 - reward_m) + (self.gamma * max_qval)
+            update = (MAX_HEAT - reward_m) + (self.gamma * max_qval)
             y[0][action_m] = update
             X_train[h] = old_qval
             y_train[h] = Variable(y)

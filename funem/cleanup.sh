@@ -1,10 +1,11 @@
 #!/bin/bash
-rm -f log_engine_*.csv*
-rm -f tmplog.csv*
-rm -f log_live_datasource_*.csv*
-rm -f log_master_run*txt
-rm -f log_try_all_tests*.txt
-rm -f plt_live_trainer_*pdf
+rm -fv log_engine_*.csv*
+rm -fv tmplog.csv*
+rm -fv log_live_datasource_*.csv*
+rm -fv log_master_run*txt
+rm -fv log_try_all_tests*.txt
+rm -fv plt_live_trainer_*pdf
+rm -fv ckpt.tar
 DIRS="datasources qlearners sim tests trainers utils"
 for dir in $DIRS
 do

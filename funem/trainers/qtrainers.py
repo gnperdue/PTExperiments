@@ -119,7 +119,7 @@ class LiveQTrainer(QTrainer):
         # TODO - specialize log message based on `if train`
         log_msg = ' step={:08d}, epsilon={:04.4f}, loss={:04.8f}'
 
-        # TODO - add epsilon greedy strategy parts
+        # TODO - use a deque for the replay buffer since we imported it anyway
         replay_buffer = []
         data_iter = iter(self.data_source)
         observation, _, _, heat = next(data_iter)

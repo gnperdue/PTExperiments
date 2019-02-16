@@ -55,6 +55,7 @@ class TestSimpleMLP(unittest.TestCase):
         d = {}
         d['commands_array'] = DEFAULT_COMMANDS
         self.learner = simple_mlp.SimpleMLP(train_pars_dict=d)
+        self.learner.restore_model_and_optimizer()
 
     def tearDown(self):
         if os.path.isfile(TEST_LOG_GZ):

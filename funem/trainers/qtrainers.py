@@ -34,6 +34,7 @@ class QTrainer(object):
         self.settings = deque([], maxlen=self.performance_memory_maxlen)
         self.setting_diffs = deque([], maxlen=self.performance_memory_maxlen)
         self._replay_buffer_length = 100
+        self._target_network_update_freq = 500  # update every 500 steps
         self.heats_figname = 'heats.pdf'
         self.loss_figname = 'loss.pdf'
         self.sensors_figname = 'sensors.pdf'
@@ -127,7 +128,9 @@ class LiveQTrainer(QTrainer):
             range(self.qlearner.start_step,
                   self.qlearner.start_step + self.num_steps)
         ):
-            # TODO - if step > x, do target network update, etc.
+            if step % self._target_network_update_freq == 0:
+                LOGGER.info('Updating target network on step {}'.format(step))
+                self.qlearner.update_target_model()
             qvalue = self.qlearner.compute_qvalues(observation)
             action_ = self.qlearner.compute_action(qvalue)
             self.data_source.update_setting(action_)

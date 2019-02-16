@@ -21,8 +21,11 @@ class SimpleRandom(BaseQ):
 
         self.loss_fn = torch.nn.MSELoss(reduction='mean')
 
-    def compute_qvalues(self, observation):
-        '''return an array of q-values for each action in the commands_array'''
+    def compute_qvalues(self, observation, use_target=False):
+        '''
+        return an array of q-values for each action in the commands_array.
+        -> no target network, so `use_target` is ignored.
+        '''
         qvalues = torch.zeros(len(self._commands))
         qvalues[np.random.randint(len(self._commands))] = 1.0
         return qvalues

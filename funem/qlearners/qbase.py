@@ -28,7 +28,6 @@ class BaseQ(object):
         self.noutputs = len(commands_array)
         self.epsilon = -1.0
         self.gamma = None
-
         self._batch_size = 20  # should be smaller than trainer replay buffer
         self._setting = None
         self._state = None
@@ -39,7 +38,7 @@ class BaseQ(object):
     def get_adjustment_value(self, command):
         return self._commands[command]
 
-    def compute_qvalues(self, observation):
+    def compute_qvalues(self, observation, use_target=False):
         '''return an array of q-values for each action in the commands_array'''
         raise NotImplementedError
 
@@ -69,7 +68,7 @@ class BaseQ(object):
             old_qval = self.compute_qvalues(old_state)
             # TODO - use a target model...
             # new_qval = self.target_model(new_state_m).cpu().data.numpy()
-            new_qval = self.compute_qvalues(new_state_m)
+            new_qval = self.compute_qvalues(new_state_m, use_target=True)
             max_qval = np.max(new_qval.cpu().data.numpy())
             y = torch.zeros((1, self.noutputs))
             y[:] = old_qval[:]

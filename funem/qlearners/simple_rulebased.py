@@ -21,8 +21,11 @@ class SimpleRuleBased(BaseQ):
 
         self.loss_fn = torch.nn.MSELoss(reduction='mean')
 
-    def compute_qvalues(self, observation):
-        '''return an array of q-values for each action in the commands_array'''
+    def compute_qvalues(self, observation, use_target=False):
+        '''
+        return an array of q-values for each action in the commands_array.
+        -> no target network, so `use_target` is ignored.
+        '''
         observation_ = observation.cpu().data.numpy()
         ob1 = observation_[-4]
         ob2 = observation_[-8]

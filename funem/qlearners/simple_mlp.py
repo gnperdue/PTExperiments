@@ -1,4 +1,5 @@
 import logging
+import copy
 
 import numpy as np
 import torch
@@ -24,6 +25,7 @@ class SimpleMLP(BaseQ):
         l1 = 80  # observation length = 4 * 20 timesteps
         l2 = 150
         l3 = self.noutputs
+        self.target_model = None
         self.model = torch.nn.Sequential(
             torch.nn.Linear(l1, l2),
             torch.nn.LeakyReLU(),
@@ -38,8 +40,17 @@ class SimpleMLP(BaseQ):
                                           lr=self._learning_rate)
         self.loss_fn = torch.nn.MSELoss(reduction='mean')
 
-    def compute_qvalues(self, observation):
+    def _build_target_model(self):
+        self.target_model = copy.deepcopy(self.model)
+        self.target_model.to(self.device)
+
+    def update_target_model(self):
+        self.target_model.load_state_dict(self.model.state_dict())
+
+    def compute_qvalues(self, observation, use_target=False):
         '''return an array of q-values for each action in the commands_array'''
+        if use_target:
+            return self.target_model(observation)
         return self.model(observation)
 
     def compute_action(self, qvalues):
@@ -86,6 +97,7 @@ class SimpleMLP(BaseQ):
                          + str(self.optimizer.state_dict()[var_name]))
 
         self.model.to(self.device)
+        self._build_target_model()
 
     def anneal_epsilon(self, step):
         '''

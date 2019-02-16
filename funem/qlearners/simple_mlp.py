@@ -24,12 +24,15 @@ class SimpleMLP(BaseQ):
 
         l1 = 80  # observation length = 4 * 20 timesteps
         l2 = 150
-        l3 = self.noutputs
+        l3 = 150
+        l4 = self.noutputs
         self.target_model = None
         self.model = torch.nn.Sequential(
             torch.nn.Linear(l1, l2),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(l2, l3),
+            torch.nn.LeakyReLU(),
+            torch.nn.Linear(l3, l4),
             torch.nn.LeakyReLU()
             # torch.nn.Softmax(dim=0)
         )
@@ -106,7 +109,8 @@ class SimpleMLP(BaseQ):
         -> 0.9787606036044383
         '''
         if self.epsilon > self._min_epsilon:
-            update = max(1. / ((step + 1)) / 10.0, 0.0000001)
+            # update = max(1. / ((step + 1)) / 10.0, 0.0000001)
+            update = 1. / 10000
             self.epsilon -= update
 
     def save_model(self, epoch, step):

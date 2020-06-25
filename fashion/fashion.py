@@ -20,6 +20,9 @@ parser.add_argument('--num-epochs', default=1, type=int, help='num. epochs')
 parser.add_argument('--data-dir', default='', type=str, help='data dir')
 parser.add_argument('--model-dir', default='fashion', type=str,
                     help='model dir')
+parser.add_argument('--short-test', default=False, action='store_true',
+                    help='do a short test')
+
 
 
 class Net(nn.Module):
@@ -52,7 +55,7 @@ def count_parameters(model):
 
 
 def main(
-    batch_size, num_epochs, data_dir, model_dir
+    batch_size, num_epochs, data_dir, model_dir, short_test
 ):
     train_dataloader, test_dataloader = make_data_loaders(
         data_dir, batch_size=64
@@ -73,6 +76,8 @@ def main(
 
         running_loss = 0.0
         for i, (inputs, labels) in enumerate(train_dataloader, 0):
+            if short_test and i >= 10:
+                break
             inputs, labels = inputs.to(device), labels.to(device)
 
             # zero the parameter gradients
@@ -91,14 +96,16 @@ def main(
                 ))
                 running_loss = 0.0
 
-    torch.save(net.state_dict(), './myfashionmodel.pth')
+    torch.save(net.state_dict(),
+               './myfashionmodel_short.pth'
+               if short_test else './myfashionmodel.pth')
 
     # test
     correct = 0
     total = 0
     with torch.no_grad():
         for i, (images, labels) in enumerate(test_dataloader, 0):
-            if i > 40:
+            if i >= 10:
                 break
             print('testing batch {}'.format(i))
             images, labels = images.to(device), labels.to(device)

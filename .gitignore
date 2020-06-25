@@ -1,1 +1,8 @@
+# compiled python
 *.pyc
+
+# notebook detritus
+.ipynb_checkpoints
+
+# pytorch models
+*.tar

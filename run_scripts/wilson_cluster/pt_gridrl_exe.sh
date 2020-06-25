@@ -18,7 +18,8 @@ ARGS="--num-epochs ${NUM_EPOCHS}"
 ARGS+=" --conv"
 
 
-SNGLRTY="/data/perdue/singularity/gnperdue-singularity_imgs-master-py3_trch041.simg"
+#SNGLRTY="/data/perdue/singularity/gnperdue-singularity_imgs-master-py3_trch041.simg"
+SNGLRTY="/data/perdue/singularity/gnperdue-singularity_imgs-master-py3_trch.simg"
 
 cat << EOF
 singularity exec --nv $SNGLRTY python3 $EXE $ARGS

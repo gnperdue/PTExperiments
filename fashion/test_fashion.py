@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
-from fashion import FashionMNISTDataset
-from fashion import Standardize, ToTensor
-from fashion import make_file_paths
+from torch_fashion_data import FashionMNISTDataset
+from torch_fashion_data import Standardize, ToTensor
+from torch_fashion_data import make_file_paths
 
 import argparse
 

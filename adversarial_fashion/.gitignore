@@ -1,2 +1,8 @@
 # coverage output
 .coverage
+
+# test detritus
+synth_mean.npy
+synth_std.npy
+synth_test.h5
+synth_train.h5

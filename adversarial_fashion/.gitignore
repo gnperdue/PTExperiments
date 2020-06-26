@@ -6,3 +6,6 @@ synth_mean.npy
 synth_std.npy
 synth_test.h5
 synth_train.h5
+
+# logs
+log_vanilla*txt

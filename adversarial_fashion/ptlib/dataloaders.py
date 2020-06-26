@@ -29,8 +29,9 @@ class WrapFashionDataLoader(object):
 class FashionDataManager(object):
     '''main data access class'''
     def __init__(self, data_dir):
-        self.testfile = os.path.join(data_dir, 'fashion_test.hdf5')
+        self.testfile = None
         self.trainfile = os.path.join(data_dir, 'fashion_train.hdf5')
+        self.validfile = os.path.join(data_dir, 'fashion_test.hdf5')
         self.meanfile = os.path.join(data_dir, 'fashion_mean.npy')
         self.stdfile = os.path.join(data_dir, 'fashion_stddev.npy')
 
@@ -51,20 +52,34 @@ class FashionDataManager(object):
             standardizer, ToTensor()
         ])
 
-        fashion_trainset = FashionMNISTDataset(self.trainfile, trnsfrms)
-        fashion_testset = FashionMNISTDataset(self.testfile, trnsfrms)
+        train_dataloader = None
+        if self.trainfile is not None:
+            fashion_trainset = FashionMNISTDataset(self.trainfile, trnsfrms)
+            train_dataloader = WrapFashionDataLoader(DataLoader(
+                fashion_trainset,
+                batch_size=batch_size,
+                shuffle=True,
+                num_workers=1
+            ))
 
-        train_dataloader = WrapFashionDataLoader(DataLoader(
-            fashion_trainset,
-            batch_size=batch_size,
-            shuffle=True,
-            num_workers=1
-        ))
-        test_dataloader = WrapFashionDataLoader(DataLoader(
-            fashion_testset,
-            batch_size=batch_size,
-            shuffle=False,
-            num_workers=1
-        ))
+        valid_dataloader = None
+        if self.validfile is not None:
+            fashion_validset = FashionMNISTDataset(self.validfile, trnsfrms)
+            valid_dataloader = WrapFashionDataLoader(DataLoader(
+                fashion_validset,
+                batch_size=batch_size,
+                shuffle=False,
+                num_workers=1
+            ))
 
-        return train_dataloader, test_dataloader
+        test_dataloader = None
+        if self.testfile is not None:
+            fashion_testset = FashionMNISTDataset(self.testfile, trnsfrms)
+            test_dataloader = WrapFashionDataLoader(DataLoader(
+                fashion_testset,
+                batch_size=batch_size,
+                shuffle=True,
+                num_workers=1
+            ))
+
+        return train_dataloader, valid_dataloader, test_dataloader

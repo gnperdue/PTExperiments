@@ -8,8 +8,6 @@ class Standardize(object):
     def __init__(self, mean_file, std_file):
         self.mean = np.load(mean_file)
         self.std = np.load(std_file)
-        # print(self.std)
-        # print((self.std == 0).any())
         assert (self.std == 0).any() == False, '0-values in std. dev.'
 
     def __call__(self, sample):

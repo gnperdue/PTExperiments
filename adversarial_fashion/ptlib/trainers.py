@@ -20,13 +20,13 @@ class VanillaTrainer(object):
             self.model.parameters(), lr=0.001, momentum=0.9)
 
     def train(self, num_epochs, batch_size, short_test=False):
-        train_dataloader, _ = self.data_manager.get_data_loaders(
+        train_dl, valid_dl, _ = self.data_manager.get_data_loaders(
             batch_size=batch_size)
         for epoch in range(num_epochs):
             LOGGER.info('epch = {}'.format(epoch))
 
             running_loss = 0.0
-            for i, (inputs, labels) in enumerate(train_dataloader, 0):
+            for i, (inputs, labels) in enumerate(train_dl, 0):
                 if short_test and i >= 10:
                     break
                 inputs, labels = inputs.to(self.device), labels.to(self.device)

@@ -17,7 +17,7 @@ class TestDataManagers(unittest.TestCase):
 
     def test_dataloaders(self):
         batch_size = 100
-        train_loader, test_loader = self.dm.get_data_loaders(
+        train_loader, *_ = self.dm.get_data_loaders(
             batch_size=batch_size)
         for i, (inputs, labels) in enumerate(train_loader):
             inputs_l = list(inputs.shape)

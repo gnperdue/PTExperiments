@@ -1,6 +1,16 @@
 import logging
+import inspect
+import json
 
 LOGGER = logging.getLogger(__name__)
+
+
+def log_function_args(vs):
+    '''log a list of vars in a nice json format'''
+    LOGGER.info('Calling {}'.format(inspect.stack()[1][3]))
+    LOGGER.info(json.dumps(
+        vs, indent=3, skipkeys=True, default=repr, sort_keys=True
+    ))
 
 
 def get_logging_level(log_level):
@@ -18,7 +28,6 @@ def get_logging_level(log_level):
         logging_level = logging.CRITICAL
     else:
         print('Unknown or unset logging level. Using INFO')
-
     return logging_level
 
 

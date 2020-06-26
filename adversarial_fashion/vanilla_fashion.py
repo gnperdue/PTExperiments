@@ -3,12 +3,14 @@ import logging
 import time
 
 from ptlib.utils import get_logging_level
+from ptlib.utils import log_function_args
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', default=32, type=int, help='batch size')
 parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
+parser.add_argument('--data-dir', default='', type=str, help='data dir')
 parser.add_argument('--log-level', default='INFO', type=str,
                     help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
 parser.add_argument('--num-epochs', default=100, type=int,
@@ -18,7 +20,7 @@ parser.add_argument('--show-progress', default=False, action='store_true',
 
 
 def main(
-    batch_size, ckpt_path, log_level, num_epochs, show_progress
+    batch_size, ckpt_path, data_dir, log_level, num_epochs, show_progress
 ):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
         + str(int(time.time())) + '.txt'
@@ -29,6 +31,7 @@ def main(
     LOGGER = logging.getLogger(__name__)
     LOGGER.info("Starting...")
     LOGGER.info(__file__)
+    log_function_args(vars())
 
     # set up a data handler
     # set up a model

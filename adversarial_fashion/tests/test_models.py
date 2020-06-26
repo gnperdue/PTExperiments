@@ -22,7 +22,8 @@ class TestBasicModels(unittest.TestCase):
 
     def test_output_shape(self):
         output = self.model(self.random_image)
-        self.assertEqual(output.shape, (1, 10))
+        self.assertEqual(
+            output.shape, (1, 10), msg="Model output shape is incorrect.")
 
 
 if __name__ == '__main__':

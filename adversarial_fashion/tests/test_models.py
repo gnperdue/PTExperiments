@@ -7,17 +7,14 @@ import unittest
 import numpy as np
 import torch
 from torch.autograd import Variable
-import ptlib.models as models
+
+import tests.utils as utils
 
 
 class TestBasicModels(unittest.TestCase):
 
     def setUp(self):
-        self.device = torch.device(
-            'cuda:0' if torch.cuda.is_available() else 'cpu'
-        )
-        self.model = models.SimpleConvNet()
-        self.model.to(self.device)
+        self.model, self.device = utils.configure_and_get_SimpleConvNet()
         image_ = np.random.rand(1, 1, 28, 28)
         self.random_image = Variable(
             torch.from_numpy(image_).float()

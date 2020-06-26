@@ -1,7 +1,10 @@
 import argparse
 import logging
 import time
+import torch
 
+from ptlib.dataloaders import FashionDataManager as DataManager
+from ptlib.models import SimpleConvNet as Model
 from ptlib.utils import get_logging_level
 from ptlib.utils import log_function_args
 
@@ -33,8 +36,14 @@ def main(
     LOGGER.info(__file__)
     log_function_args(vars())
 
-    # set up a data handler
+    # set up a data manager
+    data_manager = DataManager(data_dir=data_dir)
+
     # set up a model
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    model = Model()
+    model.to(device)
+
     # create a trainer with data handler and model
     # run training
 

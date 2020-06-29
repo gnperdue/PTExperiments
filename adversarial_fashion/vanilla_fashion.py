@@ -5,6 +5,7 @@ import torch
 
 from ptlib.dataloaders import FashionDataManager as DataManager
 from ptlib.models import SimpleConvNet as Model
+from ptlib.trainers import VanillaTrainer as Trainer
 from ptlib.utils import get_logging_level
 from ptlib.utils import log_function_args
 
@@ -14,16 +15,21 @@ parser.add_argument('--batch-size', default=32, type=int, help='batch size')
 parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
 parser.add_argument('--data-dir', default='', type=str, help='data dir')
+parser.add_argument('--log-freq', default=100, type=int,
+                    help='logging frequency')
 parser.add_argument('--log-level', default='INFO', type=str,
                     help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
 parser.add_argument('--num-epochs', default=100, type=int,
                     help='number of epochs')
+parser.add_argument('--short-test', default=False, action='store_true',
+                    help='do a short test of the code')
 parser.add_argument('--show-progress', default=False, action='store_true',
                     help='print tdqm and other output')
 
 
 def main(
-    batch_size, ckpt_path, data_dir, log_level, num_epochs, show_progress
+    batch_size, ckpt_path, data_dir, log_freq, log_level, num_epochs,
+    short_test, show_progress
 ):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
         + str(int(time.time())) + '.txt'
@@ -45,7 +51,10 @@ def main(
     model.to(device)
 
     # create a trainer with data handler and model
+    trainer = Trainer(data_manager, model, ckpt_path, show_progress)
+
     # run training
+    trainer.train(num_epochs, batch_size, short_test)
 
 
 if __name__ == '__main__':

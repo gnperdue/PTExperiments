@@ -14,7 +14,7 @@ rm -fv log_vanilla*.txt
 
 # archive training artifacts
 mkdir -p archive
-FILELIST="ckpt.tar"
+FILELIST="ckpt.tar short_test.tar"
 for file in $FILELIST
 do
   if [[ -e $file ]]; then

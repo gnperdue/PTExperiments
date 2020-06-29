@@ -34,6 +34,7 @@ class FashionDataManager(object):
         self.validfile = os.path.join(data_dir, 'fashion_test.hdf5')
         self.meanfile = os.path.join(data_dir, 'fashion_mean.npy')
         self.stdfile = os.path.join(data_dir, 'fashion_stddev.npy')
+        self.label_names = FashionMNISTDataset.label_names
 
     def make_means(self):
         if os.path.isfile(self.meanfile) and os.path.isfile(self.stdfile):

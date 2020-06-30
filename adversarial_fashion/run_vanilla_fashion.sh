@@ -18,3 +18,5 @@ python $EXE $ARGS
 EOF
 
 python $EXE $ARGS
+
+echo -e "\a"

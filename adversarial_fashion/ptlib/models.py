@@ -1,14 +1,18 @@
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn import init
 
 
 class SimpleConvNet(nn.Module):
     '''sizes for 28x28 image'''
 
-    def __init__(self):
+    def __init__(self, kaiming_normal=True):
         super(SimpleConvNet, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, 3)
         self.conv2 = nn.Conv2d(32, 64, 3)
+        if kaiming_normal:
+            init.kaiming_normal_(self.conv1.weight, a=0)
+            init.kaiming_normal_(self.conv2.weight, a=0)
         self.pool = nn.MaxPool2d(2, 2)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)

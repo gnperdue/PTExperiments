@@ -14,7 +14,8 @@ class TestVanillaTrainer(unittest.TestCase):
     def setUp(self):
         dm = utils.configure_and_get_testing_data_manager()
         model, _ = utils.configure_and_get_SimpleConvNet()
-        self.trainer = trainers.VanillaTrainer(dm, model)
+        ckpt_path = './test_vanilla_trainer.tar'
+        self.trainer = trainers.VanillaTrainer(dm, model, ckpt_path)
 
     def test_stuff(self):
         pass

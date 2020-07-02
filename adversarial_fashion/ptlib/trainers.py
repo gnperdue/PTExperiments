@@ -23,6 +23,8 @@ class VanillaTrainer(object):
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.SGD(
             self.model.parameters(), lr=0.001, momentum=0.9)
+        # TODO - look to see if checkpoints exist and load them if they do.
+        # TODO - also apply loaded checkpoints to optimizer state.
 
     def _write_to_log(self, batch_idx):
         return True if (batch_idx + 1) % self.log_freq == 0 else False

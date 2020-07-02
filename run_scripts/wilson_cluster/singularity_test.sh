@@ -1,5 +1,7 @@
 #!/bin/bash
 
+module load singularity
+
 singularity shell --nv $1 <<EOF
 cat /etc/issue
 python3 <<XEOF

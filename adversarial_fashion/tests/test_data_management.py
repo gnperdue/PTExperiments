@@ -7,7 +7,24 @@ import unittest
 import torch
 import math
 
+import ptlib.datasets as datasets
+import ptlib.transforms as transforms
 import tests.utils as utils
+
+
+class TestFashionMNISTDataset(unittest.TestCase):
+
+    def test_load_dataset_and_getitem(self):
+        utils.make_synth_h5()
+        dset = datasets.FashionMNISTDataset(utils.TRAINH5)
+        self.assertEqual(dset[0]['image'].shape, (1, 28, 28))
+        self.assertEqual(dset[0]['label'].shape, (10,))
+        self.assertEqual(dset[0]['label'].sum(), 1)
+        self.assertEqual(dset[0]['label'].mean(), 0.1)
+        tnsr_dset = datasets.FashionMNISTDataset(
+            utils.TRAINH5, transform=transforms.ToTensor())
+        self.assertEqual(tnsr_dset[0]['image'].shape, torch.Size([1, 28, 28]))
+        self.assertEqual(tnsr_dset[0]['label'].shape, torch.Size([]))
 
 
 class TestDataManagers(unittest.TestCase):

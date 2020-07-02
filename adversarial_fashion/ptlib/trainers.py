@@ -19,22 +19,50 @@ class VanillaTrainer(object):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
         self._f = tqdm if show_progress else (lambda x: x)
+        self.start_epoch = 0
         # TODO - add method to configure these...
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.SGD(
             self.model.parameters(), lr=0.001, momentum=0.9)
-        # TODO - look to see if checkpoints exist and load them if they do.
-        # TODO - also apply loaded checkpoints to optimizer state.
 
     def _write_to_log(self, batch_idx):
         return True if (batch_idx + 1) % self.log_freq == 0 else False
+
+    def _save_state(self, epoch):
+        torch.save({
+            'epoch': epoch,
+            'model_state_dict': self.model.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict(),
+        }, self.ckpt_path)
+
+    def restore_model_and_optimizer(self):
+        try:
+            checkpoint = torch.load(self.ckpt_path)
+            self.model.load_state_dict(checkpoint['model_state_dict'])
+            self.start_epoch = checkpoint['epoch'] + 1
+            self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            LOGGER.info('Loaded checkpoint from {}'.format(self.ckpt_path))
+        except FileNotFoundError:
+            LOGGER.info('No checkpoint found...')
+
+        LOGGER.debug('Model state dict:')
+        for param_tensor in self.model.state_dict():
+            LOGGER.debug(str(param_tensor) + '\t'
+                         + str(self.model.state_dict()[param_tensor].size()))
+        LOGGER.debug('Optimizer state dict:')
+        for var_name in self.optimizer.state_dict():
+            LOGGER.debug(str(var_name) + '\t'
+                         + str(self.optimizer.state_dict()[var_name]))
+
+        self.model.to(self.device)
 
     def train(self, num_epochs, batch_size, short_test=False):
         LOGGER.info('Starting training for {} for {} epochs'.format(
             self.__class__.__name__, num_epochs))
         train_dl, valid_dl, _ = self.dm.get_data_loaders(
             batch_size=batch_size)
-        for epoch in self._f(range(num_epochs)):
+        for epoch in self._f(range(
+                self.start_epoch, self.start_epoch + num_epochs)):
             LOGGER.info('training epoch {}'.format(epoch))
 
             running_loss = 0.0
@@ -61,8 +89,7 @@ class VanillaTrainer(object):
                     running_loss = 0.0
 
             # save the model after each epoch
-            torch.save(self.model.state_dict(),
-                       './short_test.tar' if short_test else self.ckpt_path)
+            self._save_state(epoch)
 
             # validation after each epoch
             LOGGER.info('validating epoch {}'.format(epoch))
@@ -74,6 +101,7 @@ class VanillaTrainer(object):
                         break
                     images, labels = \
                         images.to(self.device), labels.to(self.device)
+                    # self.model.eval()
                     outputs = self.model(images)
                     _, preds = torch.max(outputs.data, 1)
                     total += labels.size(0)

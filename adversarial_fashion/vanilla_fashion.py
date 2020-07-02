@@ -42,16 +42,13 @@ def main(
     LOGGER.info(__file__)
     log_function_args(vars())
 
-    # set up a data manager
+    # set up a data manager and a model
     data_manager = DataManager(data_dir=data_dir)
-
-    # set up a model
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     model = Model()
-    model.to(device)
 
     # create a trainer with data handler and model
     trainer = Trainer(data_manager, model, ckpt_path, show_progress)
+    trainer.restore_model_and_optimizer()
 
     # run training
     trainer.train(num_epochs, batch_size, short_test)

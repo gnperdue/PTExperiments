@@ -37,8 +37,9 @@ class FashionDataManager(object):
         self.label_names = FashionMNISTDataset.label_names
 
     def make_means(self):
-        if os.path.isfile(self.meanfile) and os.path.isfile(self.stdfile):
-            return
+        for filename in [self.meanfile, self.stdfile]:
+            if os.path.isfile(filename):
+                os.remove(filename)
         f = h5py.File(self.trainfile, 'r')
         m = np.mean(f['fashion/images'], axis=0)
         s = np.std(f['fashion/images'], axis=0)

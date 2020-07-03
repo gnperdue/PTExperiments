@@ -6,6 +6,7 @@ import torch
 import ptlib.dataloaders as dataloaders
 import ptlib.models as models
 
+SYNTH_NUM_SAMPLES = 1000
 TRAINH5 = 'synth_train.h5'
 TESTH5 = 'synth_test.h5'
 VALIDH5 = 'synth_valid.h5'
@@ -22,13 +23,13 @@ def cleanup_synth():
 def make_synth_h5():
     cleanup_synth()
     synth_train_images = np.random.randint(
-        0, high=256, size=(1000, 1, 28, 28)).astype('uint8')
+        0, high=256, size=(SYNTH_NUM_SAMPLES, 1, 28, 28)).astype('uint8')
     synth_train_labels = np.random.randint(
-        0, high=10, size=(1000, 1)).astype('uint8')
+        0, high=10, size=(SYNTH_NUM_SAMPLES, 1)).astype('uint8')
     synth_test_images = np.random.randint(
-        0, high=256, size=(1000, 1, 28, 28)).astype('uint8')
+        0, high=256, size=(SYNTH_NUM_SAMPLES, 1, 28, 28)).astype('uint8')
     synth_test_labels = np.random.randint(
-        0, high=10, size=(1000, 1)).astype('uint8')
+        0, high=10, size=(SYNTH_NUM_SAMPLES, 1)).astype('uint8')
     fill_hdf5(TESTH5, synth_test_images, synth_test_labels)
     fill_hdf5(TRAINH5, synth_train_images, synth_train_labels)
     fill_hdf5(VALIDH5, synth_test_images, synth_test_labels)

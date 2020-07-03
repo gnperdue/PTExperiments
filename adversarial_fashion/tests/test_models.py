@@ -50,20 +50,24 @@ class TestBasicModels(unittest.TestCase):
         x = F.relu(self.model.conv1(self.random_image))
         self.assertTrue(math.isclose(
             x.data.mean(), 0.5, rel_tol=0.5, abs_tol=0.5),
-            msg="Layer 1 conv output mean is not close to 0.5")
+            msg="Layer 1 conv output mean = {} is not close to 0.5".format(
+                x.data.mean()))
         self.assertTrue(math.isclose(
             x.data.std(), 1.0, rel_tol=1.0, abs_tol=1.0),
-            msg="Layer 1 conv output std is not close to 1")
+            msg="Layer 1 conv output std = {} is not close to 1".format(
+                x.data.std()))
         if VERBOSE:
             print('conv1(img).mean', x.data.mean())
             print('conv1(img).std', x.data.std())
         x = F.relu(self.model.conv2(x))
         self.assertTrue(math.isclose(
             x.data.mean(), 0.5, rel_tol=0.1, abs_tol=0.1),
-            msg="Layer 2 conv output mean is not close to 0.5")
+            msg="Layer 2 conv output mean = {} is not close to 0.5".format(
+                x.data.mean()))
         self.assertTrue(math.isclose(
             x.data.std(), 1.0, rel_tol=1.0, abs_tol=1.0),
-            msg="Layer 2 conv output std is not close to 1")
+            msg="Layer 2 conv output std = {} is not close to 1".format(
+                x.data.std()))
         if VERBOSE:
             print('conv2(conv1(img)).mean', x.data.mean())
             print('conv2(conv1(img)).std', x.data.std())

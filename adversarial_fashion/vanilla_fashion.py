@@ -1,7 +1,6 @@
 import argparse
 import logging
 import time
-import torch
 
 from ptlib.dataloaders import FashionDataManager as DataManager
 from ptlib.models import SimpleConvNet as Model
@@ -25,11 +24,13 @@ parser.add_argument('--short-test', default=False, action='store_true',
                     help='do a short test of the code')
 parser.add_argument('--show-progress', default=False, action='store_true',
                     help='print tdqm and other output')
+parser.add_argument('--tnsrbrd-out-dir', default='/tmp/fashion/tnsrbrd',
+                    type=str, help='tensorboardX output dir')
 
 
 def main(
     batch_size, ckpt_path, data_dir, log_freq, log_level, num_epochs,
-    short_test, show_progress
+    short_test, show_progress, tnsrbrd_out_dir
 ):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
         + str(int(time.time())) + '.txt'
@@ -47,7 +48,9 @@ def main(
     model = Model()
 
     # create a trainer with data handler and model
-    trainer = Trainer(data_manager, model, ckpt_path, show_progress)
+    trainer = Trainer(
+        data_manager, model, ckpt_path, tnsrbrd_out_dir,
+        log_freq=log_freq, show_progress=show_progress)
     trainer.restore_model_and_optimizer()
 
     # run training

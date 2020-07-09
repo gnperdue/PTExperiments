@@ -45,6 +45,7 @@ def main(
 
     # set up a data manager and a model
     data_manager = DataManager(data_dir=data_dir)
+    data_manager.make_means()
     model = Model()
 
     # create a trainer with data handler and model

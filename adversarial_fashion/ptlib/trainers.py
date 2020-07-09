@@ -129,13 +129,13 @@ class VanillaTrainer(object):
                 'valid_loss', valid_loss / len(valid_dl), epoch)
             self.writer.add_scalar(
                 'valid_accuracy', 100 * correct / total, epoch)
-            LOGGER.info('accuracy of net on 10,000 test images: %d %%' % (
-                100 * correct / total
+            LOGGER.info('accuracy of net on {} test images: {} %%'.format(
+                total, 100 * correct / total
             ))
 
         self.writer.close()
         LOGGER.info('finished training')
 
     def test(self):
-        '''no test set for Fashion MNIST here...'''
+        # TODO - add this...
         pass

@@ -9,7 +9,10 @@ synth_train.h5
 synth_valid.h5
 
 # logs
-log_vanilla*txt
+log_*txt
+
+# plots
+evt_*pdf
 
 # Mac silliness
 .DS_Store

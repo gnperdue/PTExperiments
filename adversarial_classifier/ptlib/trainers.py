@@ -5,20 +5,17 @@ import torch.nn as nn
 import torch.optim as optim
 from tensorboardX import SummaryWriter
 
+from ptlib.model_handlers import ModelHandlerBase
+
 LOGGER = logging.getLogger(__name__)
 
-# TODO - log train and valid progress to tensorboardX
 
-
-class VanillaTrainer(object):
+class VanillaTrainer(ModelHandlerBase):
     def __init__(self, data_manager, model, ckpt_path, tnsrbrd_out_dir,
                  log_freq=100, show_progress=False):
+        super(VanillaTrainer, self).__init__(model, ckpt_path)
         self.dm = data_manager
-        self.model = model
-        self.ckpt_path = ckpt_path
         self.log_freq = log_freq
-        self.device = torch.device(
-            'cuda:0' if torch.cuda.is_available() else 'cpu')
         self._f = tqdm if show_progress else (lambda x: x)
         self.start_epoch = 0
         self.writer = SummaryWriter(tnsrbrd_out_dir)
@@ -29,34 +26,6 @@ class VanillaTrainer(object):
 
     def _write_to_log(self, batch_idx):
         return True if (batch_idx + 1) % self.log_freq == 0 else False
-
-    def _save_state(self, epoch):
-        torch.save({
-            'epoch': epoch,
-            'model_state_dict': self.model.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
-        }, self.ckpt_path)
-
-    def restore_model_and_optimizer(self):
-        try:
-            checkpoint = torch.load(self.ckpt_path)
-            self.model.load_state_dict(checkpoint['model_state_dict'])
-            self.start_epoch = checkpoint['epoch'] + 1
-            self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-            LOGGER.info('Loaded checkpoint from {}'.format(self.ckpt_path))
-        except FileNotFoundError:
-            LOGGER.info('No checkpoint found...')
-
-        LOGGER.debug('Model state dict:')
-        for param_tensor in self.model.state_dict():
-            LOGGER.debug(str(param_tensor) + '\t'
-                         + str(self.model.state_dict()[param_tensor].size()))
-        LOGGER.debug('Optimizer state dict:')
-        for var_name in self.optimizer.state_dict():
-            LOGGER.debug(str(var_name) + '\t'
-                         + str(self.optimizer.state_dict()[var_name]))
-
-        self.model.to(self.device)
 
     def train(self, num_epochs, batch_size, short_test=False):
         LOGGER.info('Starting training for {} for {} epochs'.format(

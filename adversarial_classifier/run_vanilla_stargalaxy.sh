@@ -13,7 +13,6 @@ ARGS+=" --num-epochs 1"
 ARGS+=" --short-test"
 ARGS+=" --show-progress"
 ARGS+=" --tnsrbrd-out-dir /tmp/stargalaxy/tnsrbrd${DAT}"
-# ARGS+=" --tnsrbrd-out-dir /tmp/fashion/tnsrbrd_test"
 
 # show exe and args
 cat << EOF

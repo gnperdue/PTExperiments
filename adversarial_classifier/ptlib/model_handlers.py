@@ -53,12 +53,12 @@ class ModelHandlerBase(object):
         total = 0
         scalar_loss = 0
         with torch.no_grad():
+            self.model.eval()
             for i, (images, labels) in enumerate(dl, 0):
                 if short_test and i >= 20:
                     break
                 images, labels = \
                     images.to(self.device), labels.to(self.device)
-                # TODO - get this right: self.model.eval()
                 outputs = self.model(images)
                 # TODO - block for `if record_results` -> record inferences
                 loss = self.criterion(outputs, labels)

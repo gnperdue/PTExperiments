@@ -37,6 +37,7 @@ class VanillaTrainer(ModelHandlerBase):
 
                 # zero the parameter gradients
                 self.optimizer.zero_grad()
+                self.model.train()
                 # forward + backward + optimize
                 outputs = self.model(inputs)
                 loss = self.criterion(outputs, labels)
@@ -75,6 +76,11 @@ class VanillaTrainer(ModelHandlerBase):
         self.writer.close()
         LOGGER.info('finished training')
 
-    def test(self):
-        # TODO - add this...
-        pass
+    def test(self, batch_size, short_test=False):
+        LOGGER.info('Starting testing for {}'.format(self.__class__.__name__))
+        _, _, test_dl = self.dm.get_data_loaders(batch_size=batch_size)
+        test_loss, correct, total = self.run_inference_on_dataloader(
+            test_dl, short_test=short_test)
+        LOGGER.info('loss: {}, accuracy on {} test images: {} %%'.format(
+            test_loss, total, 100 * correct / total
+        ))

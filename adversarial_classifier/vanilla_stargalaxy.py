@@ -24,13 +24,17 @@ parser.add_argument('--short-test', default=False, action='store_true',
                     help='do a short test of the code')
 parser.add_argument('--show-progress', default=False, action='store_true',
                     help='print tdqm and other output')
+parser.add_argument('--test', default=False, action='store_true',
+                    help='run on the test set')
 parser.add_argument('--tnsrbrd-out-dir', default='/tmp/fashion/tnsrbrd',
                     type=str, help='tensorboardX output dir')
+parser.add_argument('--train', default=False, action='store_true',
+                    help='do training')
 
 
 def main(
     batch_size, ckpt_path, data_dir, log_freq, log_level, num_epochs,
-    short_test, show_progress, tnsrbrd_out_dir
+    short_test, show_progress, test, tnsrbrd_out_dir, train
 ):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
         + str(int(time.time())) + '.txt'
@@ -56,7 +60,11 @@ def main(
     trainer.restore_model_and_optimizer()
 
     # run training
-    trainer.train(num_epochs, batch_size, short_test)
+    if train:
+        trainer.train(num_epochs, batch_size, short_test)
+
+    if test:
+        trainer.test(batch_size, short_test)
 
 
 if __name__ == '__main__':

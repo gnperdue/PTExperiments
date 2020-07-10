@@ -34,6 +34,7 @@ def main(
 ):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
         + str(int(time.time())) + '.txt'
+    print('logging to: {}'.format(logfilename))
     logging.basicConfig(
         filename=logfilename, level=get_logging_level(log_level),
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'

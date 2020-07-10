@@ -1,7 +1,5 @@
 import logging
-import torch
 from tqdm import tqdm
-import torch.nn as nn
 import torch.optim as optim
 from tensorboardX import SummaryWriter
 
@@ -13,19 +11,14 @@ LOGGER = logging.getLogger(__name__)
 class VanillaTrainer(ModelHandlerBase):
     def __init__(self, data_manager, model, ckpt_path, tnsrbrd_out_dir,
                  log_freq=100, show_progress=False):
-        super(VanillaTrainer, self).__init__(model, ckpt_path)
-        self.dm = data_manager
-        self.log_freq = log_freq
+        super(VanillaTrainer, self).__init__(
+            data_manager, model, ckpt_path, log_freq)
         self._f = tqdm if show_progress else (lambda x: x)
         self.start_epoch = 0
         self.writer = SummaryWriter(tnsrbrd_out_dir)
-        # TODO - add method to configure these...
-        self.criterion = nn.CrossEntropyLoss()
+        # TODO - add method to configure
         self.optimizer = optim.SGD(
             self.model.parameters(), lr=0.001, momentum=0.9)
-
-    def _write_to_log(self, batch_idx):
-        return True if (batch_idx + 1) % self.log_freq == 0 else False
 
     def train(self, num_epochs, batch_size, short_test=False):
         LOGGER.info('Starting training for {} for {} epochs'.format(
@@ -68,31 +61,8 @@ class VanillaTrainer(ModelHandlerBase):
 
             # validation after each epoch
             LOGGER.info('validating epoch {}'.format(epoch))
-            correct = 0
-            total = 0
-            valid_loss = 0
-            with torch.no_grad():
-                for i, (images, labels) in enumerate(valid_dl, 0):
-                    if short_test and i >= 20:
-                        break
-                    images, labels = \
-                        images.to(self.device), labels.to(self.device)
-                    # self.model.eval()
-                    outputs = self.model(images)
-                    loss = self.criterion(outputs, labels)
-                    valid_loss += loss.item()
-                    _, preds = torch.max(outputs.data, 1)
-                    total += labels.size(0)
-                    correct += (preds == labels).sum().item()
-                    if self._write_to_log(i):
-                        LOGGER.info(
-                            'batch {} truth: '.format(i)
-                            + ' '.join('%5s' % self.dm.label_names[labels[j]]
-                                       for j in range(4)))
-                        LOGGER.info(
-                            '         preds: '
-                            + ' '.join('%5s' % self.dm.label_names[preds[j]]
-                                       for j in range(4)))
+            valid_loss, correct, total = self.run_inference_on_dataloader(
+                valid_dl, short_test=short_test)
 
             self.writer.add_scalar(
                 'valid_loss', valid_loss / len(valid_dl), epoch)

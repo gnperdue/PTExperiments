@@ -1,15 +1,23 @@
 import logging
 import torch
+import torch.nn as nn
 
 LOGGER = logging.getLogger(__name__)
 
 
 class ModelHandlerBase(object):
-    def __init__(self, model, ckpt_path):
+    def __init__(self, data_manager, model, ckpt_path, log_freq):
+        self.dm = data_manager
         self.model = model
         self.ckpt_path = ckpt_path
+        self.log_freq = log_freq
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
+        # TODO - add method to configure
+        self.criterion = nn.CrossEntropyLoss()
+
+    def _write_to_log(self, batch_idx):
+        return True if (batch_idx + 1) % self.log_freq == 0 else False
 
     def _save_state(self, epoch):
         torch.save({
@@ -38,3 +46,34 @@ class ModelHandlerBase(object):
                          + str(self.optimizer.state_dict()[var_name]))
 
         self.model.to(self.device)
+
+    def run_inference_on_dataloader(
+            self, dl, record_results=False, short_test=False):
+        correct = 0
+        total = 0
+        scalar_loss = 0
+        with torch.no_grad():
+            for i, (images, labels) in enumerate(dl, 0):
+                if short_test and i >= 20:
+                    break
+                images, labels = \
+                    images.to(self.device), labels.to(self.device)
+                # TODO - get this right: self.model.eval()
+                outputs = self.model(images)
+                # TODO - block for `if record_results` -> record inferences
+                loss = self.criterion(outputs, labels)
+                scalar_loss += loss.item()
+                _, preds = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (preds == labels).sum().item()
+                if self._write_to_log(i):
+                    LOGGER.info(
+                        'batch {} truth: '.format(i)
+                        + ' '.join('%5s' % self.dm.label_names[labels[j]]
+                                   for j in range(4)))
+                    LOGGER.info(
+                        '         preds: '
+                        + ' '.join('%5s' % self.dm.label_names[preds[j]]
+                                   for j in range(4)))
+
+        return scalar_loss, correct, total

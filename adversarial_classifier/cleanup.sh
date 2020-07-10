@@ -11,6 +11,7 @@ rm -fv synth_valid.h5
 
 # cleanup all logs -- could choose to save them eventually...
 rm -fv log_vanilla*.txt
+rm -fv log_attack*.txt
 
 # archive training artifacts
 mkdir -p archive

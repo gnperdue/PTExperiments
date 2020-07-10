@@ -44,7 +44,7 @@ class SimpleSGConvNet(nn.Module):
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(32 * 22 * 22, 128)
-        self.fc2 = nn.Linear(128, 10)
+        self.fc2 = nn.Linear(128, 2)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))

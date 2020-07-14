@@ -1,6 +1,5 @@
 import logging
 from tqdm import tqdm
-import torch.optim as optim
 from tensorboardX import SummaryWriter
 
 from ptlib.model_handlers import ModelHandlerBase
@@ -16,9 +15,6 @@ class VanillaTrainer(ModelHandlerBase):
         self._f = tqdm if show_progress else (lambda x: x)
         self.start_epoch = 0
         self.writer = SummaryWriter(tnsrbrd_out_dir)
-        # TODO - add method to configure
-        self.optimizer = optim.SGD(
-            self.model.parameters(), lr=0.001, momentum=0.9)
 
     def train(self, num_epochs, batch_size, short_test=False):
         LOGGER.info('Starting training for {} for {} epochs'.format(

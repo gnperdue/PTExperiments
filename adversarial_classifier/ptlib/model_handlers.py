@@ -1,6 +1,7 @@
 import logging
 import torch
 import torch.nn as nn
+import torch.optim as optim
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,6 +16,8 @@ class ModelHandlerBase(object):
             'cuda:0' if torch.cuda.is_available() else 'cpu')
         # TODO - add method to configure
         self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = optim.SGD(
+            self.model.parameters(), lr=0.001, momentum=0.9)
 
     def _write_to_log(self, batch_idx):
         return True if (batch_idx + 1) % self.log_freq == 0 else False

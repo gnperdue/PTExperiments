@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
 parser.add_argument('--data-dir', default='', type=str, help='data dir')
+parser.add_argument('--git-hash', default='no hash', type=str, help='git hash')
 parser.add_argument('--log-freq', default=100, type=int,
                     help='logging frequency')
 parser.add_argument('--log-level', default='INFO', type=str,
@@ -22,7 +23,7 @@ parser.add_argument('--short-test', default=False, action='store_true',
                     help='do a short test of the code')
 
 
-def main(ckpt_path, data_dir, log_freq, log_level, short_test):
+def main(ckpt_path, data_dir, git_hash, log_freq, log_level, short_test):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \
         + str(int(time.time())) + '.txt'
     print('logging to: {}'.format(logfilename))
@@ -40,11 +41,14 @@ def main(ckpt_path, data_dir, log_freq, log_level, short_test):
     data_manager.make_means()
     model = Model()
 
-    epsilons = [0., 0.05]
-    attacker = Attacker(data_manager, model, ckpt_path, epsilons, log_freq)
+    attacker = Attacker(data_manager, model, ckpt_path, log_freq)
+    attacker.restore_model_and_optimizer()
 
-    attacker.train_attack_for_single_epsilon(
-        epsilons[0], short_test=short_test)
+    # TODO - make list of epsilons a command line arg
+    epsilons = [0., 0.05]
+    for epsilon in epsilons:
+        attacker.train_attack_for_single_epsilon(
+            epsilon, short_test=short_test)
 
 
 if __name__ == '__main__':

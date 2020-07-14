@@ -2,7 +2,10 @@
 FGSM attack code strongly inspired by PyTorch docs example:
     https://pytorch.org/tutorials/beginner/fgsm_tutorial.html
 '''
+import os
 import logging
+import h5py
+import numpy as np
 import torch
 from ptlib.model_handlers import ModelHandlerBase
 
@@ -10,42 +13,69 @@ LOGGER = logging.getLogger(__name__)
 
 
 class FGSMAttacker(ModelHandlerBase):
-    def __init__(self, data_manager, model, ckpt_path, epsilons, log_freq=100):
+    def __init__(self, data_manager, model, ckpt_path, log_freq=100):
         '''
         epsilons - scalar or list (iterable) of scales to apply to attack
         '''
         super(FGSMAttacker, self).__init__(
             data_manager, model, ckpt_path, log_freq)
-        try:
-            self.epsilons = list(epsilons)
-        except TypeError as e:
-            # assume in this case, epsilons is not iterable
-            LOGGER.warning(e)
-            self.epsilons = [epsilons]
         self.hdf5filename_base = 'fgsm_'
 
     def _fgsm_attack(self, image, epsilon, data_grad):
         '''
         perturbed image = image + epsilon * sign(data_grad)
         '''
+        # TODO - need to try de-normalzing the image, adding the ...
+        # perturbation and then re-normalzing
+        # TODO - another possibility: shift the perturbation up / down?
+        # minval = torch.min(image).item()
+        # maxval = torch.max(image).item()
+        mean = torch.FloatTensor(np.load(self.dm.meanfile))
+        std = torch.FloatTensor(np.load(self.dm.stdfile))
+        perturbed_image = image * std + mean
         data_grad_sign = data_grad.sign()
-        perturbed_image = image + epsilon * data_grad_sign
+        perturbed_image = perturbed_image + epsilon * data_grad_sign
+        perturbed_image = torch.clamp(perturbed_image, 0, 255)
+        perturbed_image = (perturbed_image - mean) / std
         # TODO - do we need to re-normalize the image?
+        # perturbed_image = torch.clamp(perturbed_image, minval, maxval)
         return perturbed_image
 
     def _write_adversarial_output(
-            self, labels, init_outputs, perturbed_outputs, adv_examples):
+            self, epsilon, labels,
+            init_outputs, perturbed_outputs, adv_examples):
+        mean = np.load(self.dm.meanfile)
+        std = np.load(self.dm.stdfile)
         labels = torch.stack(labels).numpy()
         init_outputs = torch.stack(init_outputs).numpy()
         perturbed_outputs = torch.stack(perturbed_outputs).numpy()
-        adv_examples = torch.stack(adv_examples).numpy()
-        print(labels.shape, init_outputs.shape, perturbed_outputs.shape,
-              adv_examples.shape)
+        adv_examples = torch.stack(adv_examples).numpy() * std + mean
+        print(np.min(adv_examples), np.max(adv_examples))
+        adv_examples = np.clip(adv_examples, 0, 255)
+        # TODO - need an output path for the hdf5s
+        hdf5filename = self.hdf5filename_base + \
+            '{:4.3f}'.format(epsilon).replace('.', '_') + '.hdf5'
+        if os.path.isfile(hdf5filename):
+            os.remove(hdf5filename)
+        f = h5py.File(hdf5filename, 'w')
+        f.create_dataset('catalog', labels.shape,
+                         dtype=labels.dtype,
+                         compression='gzip')[...] = labels
+        f.create_dataset('init_outputs', init_outputs.shape,
+                         dtype=init_outputs.dtype,
+                         compression='gzip')[...] = init_outputs
+        f.create_dataset('perturbed_outputs', perturbed_outputs.shape,
+                         dtype=perturbed_outputs.dtype,
+                         compression='gzip')[...] = perturbed_outputs
+        f.create_dataset('imageset', adv_examples.shape,
+                         dtype=adv_examples.dtype,
+                         compression='gzip')[...] = adv_examples
+        f.close()
 
     def train_attack_for_single_epsilon(self, epsilon, short_test=False):
         LOGGER.info(
             'train_attack_for_single_epsilon for eps = {}'.format(epsilon))
-        train_dl, _, _ = self.dm.get_data_loaders(batch_size=1)
+        test_dl, _, _ = self.dm.get_data_loaders(batch_size=1)
         seen, correct = 0, 0
         true_labels = []
         initial_outputs = []
@@ -53,8 +83,8 @@ class FGSMAttacker(ModelHandlerBase):
         adv_example_images = []
         self.model.eval()
 
-        for iter_num, (inputs, labels) in enumerate(train_dl, 0):
-            if short_test and iter_num >= 20:
+        for iter_num, (inputs, labels) in enumerate(test_dl, 0):
+            if short_test and iter_num >= 40:
                 break
             seen += 1
             inputs.requires_grad = True
@@ -86,7 +116,7 @@ class FGSMAttacker(ModelHandlerBase):
                 perturbed_inputs.squeeze().detach().cpu())
 
         self._write_adversarial_output(
-            true_labels, initial_outputs, perturbed_outputs,
+            epsilon, true_labels, initial_outputs, perturbed_outputs,
             adv_example_images)
         final_accuracy = correct / float(seen)
         LOGGER.info('epsilon: {}, accuracy = {}/{} = {}'.format(

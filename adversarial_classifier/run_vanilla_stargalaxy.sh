@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DATADIR="/Users/perdue/Dropbox/Data/RandomData/StarGalaxy"
+DATADIR="/Users/perdue/Dropbox/Data/Workspace"
 EXE="vanilla_stargalaxy.py"
 DAT=`date +%s`
 

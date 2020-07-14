@@ -35,6 +35,12 @@ wget https://raw.githubusercontent.com/gnperdue/RandomData/master/StarGalaxy/sta
 wget https://raw.githubusercontent.com/gnperdue/RandomData/master/StarGalaxy/stargalaxy_real_pt_valid.hdf5
 ```
 
+**NOTE** -- the images stored in that Git repo are `uint8`, but the code expects
+floating points. There is a script in the `RandomData/StarGalaxy` package for
+doing the conversion using the [hdf5_manipulator](https://github.com/gnperdue/hdf5_manipulator)
+package of utilities. (Not storing the floats in GitHub because those files are
+too large.)
+
 ### Fashion MNIST
 
 HDF5 data is available here:

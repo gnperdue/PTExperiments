@@ -49,7 +49,7 @@ class StarGalaxyDataset(Dataset):
     def __getitem__(self, idx):
         image = self._f['imageset'][idx]
         label = self._f['catalog'][idx].reshape([-1])
-        oh_label = np.zeros((1, self._nlabels), dtype=np.uint8)
+        oh_label = np.zeros((1, self._nlabels), dtype=np.float64)
         oh_label[0, label] = 1
         oh_label = oh_label.reshape(self._nlabels,)
         sample = {'image': image, 'label': oh_label}

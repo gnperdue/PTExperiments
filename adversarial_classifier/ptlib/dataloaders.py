@@ -111,11 +111,11 @@ class StarGalaxyDataManager(DataManagerBase):
         super(StarGalaxyDataManager, self).__init__(
             data_dir, StarGalaxyDataset)
         self.testfile = os.path.join(
-            data_dir, 'stargalaxy_real_pt_test.hdf5')
+            data_dir, 'stargalaxy_real_ptflt_test.hdf5')
         self.trainfile = os.path.join(
-            data_dir, 'stargalaxy_real_pt_train.hdf5')
+            data_dir, 'stargalaxy_real_ptflt_train.hdf5')
         self.validfile = os.path.join(
-            data_dir, 'stargalaxy_real_pt_valid.hdf5')
+            data_dir, 'stargalaxy_real_ptflt_valid.hdf5')
         self.meanfile = os.path.join(data_dir, 'star_galaxy_mean.npy')
         self.stdfile = os.path.join(data_dir, 'star_galaxy_stddev.npy')
         self.label_names = StarGalaxyDataset.label_names

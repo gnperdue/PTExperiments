@@ -18,11 +18,14 @@ parser.add_argument('--pdf-name', default='evt_all.pdf', type=str,
 
 def main(batch_size, data_dir, num_batches, pdf_name):
     data_manager = DataManager(data_dir=data_dir)
-    data_manager.make_means()
-    train_dl, _, _ = data_manager.get_data_loaders(
+    # TODO - fix hack for file assignment to look at attacked images
+    # data_manager.testfile = './fgsm_0_000.hdf5'
+    data_manager.testfile = './fgsm_0_050.hdf5'
+    print(data_manager.testfile)
+    _, _, test_dl = data_manager.get_data_loaders(
         batch_size=batch_size, standardize=False)
     with PdfPages(pdf_name) as pdf:
-        for iter_num, (inputs, labels) in enumerate(train_dl, 0):
+        for iter_num, (inputs, labels) in enumerate(test_dl, 0):
             if iter_num >= num_batches:
                 break
             n_cols = int(np.sqrt(batch_size))

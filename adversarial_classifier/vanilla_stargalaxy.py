@@ -14,6 +14,7 @@ parser.add_argument('--batch-size', default=32, type=int, help='batch size')
 parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
 parser.add_argument('--data-dir', default='', type=str, help='data dir')
+parser.add_argument('--git-hash', default='no hash', type=str, help='git hash')
 parser.add_argument('--log-freq', default=100, type=int,
                     help='logging frequency')
 parser.add_argument('--log-level', default='INFO', type=str,
@@ -33,7 +34,7 @@ parser.add_argument('--train', default=False, action='store_true',
 
 
 def main(
-    batch_size, ckpt_path, data_dir, log_freq, log_level, num_epochs,
+    batch_size, ckpt_path, data_dir, git_hash, log_freq, log_level, num_epochs,
     short_test, show_progress, test, tnsrbrd_out_dir, train
 ):
     logfilename = 'log_' + __file__.split('/')[-1].split('.')[0] \

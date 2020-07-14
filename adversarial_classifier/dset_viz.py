@@ -10,13 +10,14 @@ from ptlib.dataloaders import StarGalaxyDataManager as DataManager
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', default=6, type=int, help='batch size')
 parser.add_argument('--data-dir', default='', type=str, help='data dir')
+parser.add_argument('--dtype', default='uint8', type=str, help='img data type')
 parser.add_argument('--num-batches', default=1, type=int,
                     help='number of batches')
 parser.add_argument('--pdf-name', default='evt_all.pdf', type=str,
                     help='output pdf name')
 
 
-def main(batch_size, data_dir, num_batches, pdf_name):
+def main(batch_size, data_dir, dtype, num_batches, pdf_name):
     data_manager = DataManager(data_dir=data_dir)
     # TODO - fix hack for file assignment to look at attacked images
     # data_manager.testfile = './fgsm_0_000.hdf5'
@@ -38,7 +39,7 @@ def main(batch_size, data_dir, num_batches, pdf_name):
                 ax.xaxis.set_major_locator(plt.NullLocator())
                 ax.yaxis.set_major_locator(plt.NullLocator())
                 _ = ax.imshow(
-                    np.moveaxis(img_tnsr.numpy().astype('uint8'), 0, -1))
+                    np.moveaxis(img_tnsr.numpy().astype(dtype), 0, -1))
                 plt.title(data_manager.label_names[labels[evt]])
             pdf.savefig()
 

@@ -7,21 +7,34 @@ import ptlib.dataloaders as dataloaders
 import ptlib.models as models
 
 SYNTH_NUM_SAMPLES = 1000
-TRAINH5 = 'synth_train.h5'
-TESTH5 = 'synth_test.h5'
-VALIDH5 = 'synth_valid.h5'
-MEANFILE = 'synth_mean.npy'
-STDFILE = 'synth_std.npy'
+FASH_TRAINH5 = 'fash_synth_train.h5'
+FASH_TESTH5 = 'fash_synth_test.h5'
+FASH_VALIDH5 = 'fash_synth_valid.h5'
+FASH_MEANFILE = 'fash_synth_mean.npy'
+FASH_STDFILE = 'fash_synth_std.npy'
+SG_TRAINH5 = 'sg_synth_train.h5'
+SG_TESTH5 = 'sg_synth_test.h5'
+SG_VALIDH5 = 'sg_synth_valid.h5'
+SG_MEANFILE = 'sg_synth_mean.npy'
+SG_STDFILE = 'sg_synth_std.npy'
 
 
-def cleanup_synth():
-    for filename in [TRAINH5, TESTH5, VALIDH5, MEANFILE, STDFILE]:
+def cleanup_fash_synth():
+    for filename in [FASH_TRAINH5, FASH_TESTH5, FASH_VALIDH5,
+                     FASH_MEANFILE, FASH_STDFILE]:
         if os.path.isfile(filename):
             os.remove(filename)
 
 
-def make_synth_h5():
-    cleanup_synth()
+def cleanup_sg_synth():
+    for filename in [SG_TRAINH5, SG_TESTH5, SG_VALIDH5,
+                     SG_MEANFILE, SG_STDFILE]:
+        if os.path.isfile(filename):
+            os.remove(filename)
+
+
+def make_fash_h5():
+    cleanup_fash_synth()
     synth_train_images = np.random.randint(
         0, high=256, size=(SYNTH_NUM_SAMPLES, 1, 28, 28)).astype('uint8')
     synth_train_labels = np.random.randint(
@@ -30,12 +43,27 @@ def make_synth_h5():
         0, high=256, size=(SYNTH_NUM_SAMPLES, 1, 28, 28)).astype('uint8')
     synth_test_labels = np.random.randint(
         0, high=10, size=(SYNTH_NUM_SAMPLES, 1)).astype('uint8')
-    fill_hdf5(TESTH5, synth_test_images, synth_test_labels)
-    fill_hdf5(TRAINH5, synth_train_images, synth_train_labels)
-    fill_hdf5(VALIDH5, synth_test_images, synth_test_labels)
+    fill_fash_hdf5(FASH_TESTH5, synth_test_images, synth_test_labels)
+    fill_fash_hdf5(FASH_TRAINH5, synth_train_images, synth_train_labels)
+    fill_fash_hdf5(FASH_VALIDH5, synth_test_images, synth_test_labels)
 
 
-def fill_hdf5(file_name, images, labels):
+def make_sg_h5():
+    cleanup_sg_synth()
+    synth_train_images = np.random.randint(
+        0, high=1, size=(SYNTH_NUM_SAMPLES, 3, 48, 48)).astype('double')
+    synth_train_labels = np.random.randint(
+        0, high=2, size=(SYNTH_NUM_SAMPLES, 1)).astype('uint8')
+    synth_test_images = np.random.randint(
+        0, high=1, size=(SYNTH_NUM_SAMPLES, 3, 48, 48)).astype('double')
+    synth_test_labels = np.random.randint(
+        0, high=2, size=(SYNTH_NUM_SAMPLES, 1)).astype('uint8')
+    fill_sg_hdf5(SG_TESTH5, synth_test_images, synth_test_labels)
+    fill_sg_hdf5(SG_TRAINH5, synth_train_images, synth_train_labels)
+    fill_sg_hdf5(SG_VALIDH5, synth_test_images, synth_test_labels)
+
+
+def fill_fash_hdf5(file_name, images, labels):
     f = h5py.File(file_name, 'w')
     grp = f.create_group('fashion')
     images_set = grp.create_dataset(
@@ -49,14 +77,25 @@ def fill_hdf5(file_name, images, labels):
     f.close()
 
 
-def configure_and_get_testing_data_manager():
+def fill_sg_hdf5(file_name, images, labels):
+    f = h5py.File(file_name, 'w')
+    f.create_dataset(
+        'imageset', np.shape(images), dtype='uint8', compression='gzip'
+    )[...] = images
+    f.create_dataset(
+        'catalog', np.shape(labels), dtype='uint8', compression='gzip'
+    )[...] = labels
+    f.close()
+
+
+def configure_and_get_fash_data_manager():
     dm = dataloaders.FashionDataManager(data_dir=".")
-    make_synth_h5()
-    dm.testfile = TESTH5
-    dm.trainfile = TRAINH5
-    dm.validfile = VALIDH5
-    dm.meanfile = MEANFILE
-    dm.stdfile = STDFILE
+    make_fash_h5()
+    dm.testfile = FASH_TESTH5
+    dm.trainfile = FASH_TRAINH5
+    dm.validfile = FASH_VALIDH5
+    dm.meanfile = FASH_MEANFILE
+    dm.stdfile = FASH_STDFILE
     dm.make_means()
     return dm
 

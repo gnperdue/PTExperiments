@@ -3,11 +3,10 @@
 DAT=`date +%s`
 
 # clean up synth data from testing
-rm -fv synth_mean.npy
-rm -fv synth_std.npy
-rm -fv synth_test.h5
-rm -fv synth_train.h5
-rm -fv synth_valid.h5
+rm -fv fash_synth_*.npy
+rm -fv fash_synth_*.h5
+rm -fv sg_synth_*.npy
+rm -fv sg_synth_*.h5
 
 # cleanup all logs -- could choose to save them eventually...
 rm -fv log_vanilla*.txt

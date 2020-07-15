@@ -2,11 +2,10 @@
 .coverage
 
 # test detritus
-synth_mean.npy
-synth_std.npy
-synth_test.h5
-synth_train.h5
-synth_valid.h5
+fash_synth_*.npy
+fash_synth_*.h5
+sg_synth_*.npy
+sg_synth_*.h5
 
 # logs
 log_*txt

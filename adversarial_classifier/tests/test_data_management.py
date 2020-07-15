@@ -15,22 +15,36 @@ import tests.utils as utils
 class TestFashionMNISTDataset(unittest.TestCase):
 
     def test_load_dataset_and_getitem(self):
-        utils.make_synth_h5()
-        dset = datasets.FashionMNISTDataset(utils.TRAINH5)
+        utils.make_fash_h5()
+        dset = datasets.FashionMNISTDataset(utils.FASH_TRAINH5)
         self.assertEqual(dset[0]['image'].shape, (1, 28, 28))
         self.assertEqual(dset[0]['label'].shape, (10,))
         self.assertEqual(dset[0]['label'].sum(), 1)
         self.assertEqual(dset[0]['label'].mean(), 0.1)
         tnsr_dset = datasets.FashionMNISTDataset(
-            utils.TRAINH5, transform=transforms.ToTensor())
+            utils.FASH_TRAINH5, transform=transforms.ToTensor())
         self.assertEqual(tnsr_dset[0]['image'].shape, torch.Size([1, 28, 28]))
         self.assertEqual(tnsr_dset[0]['label'].shape, torch.Size([]))
 
 
-class TestDataManagers(unittest.TestCase):
+class TestStarGalaxyDataset(unittest.TestCase):
+
+    def test_load_dataset_and_getitem(self):
+        utils.make_sg_h5()
+        dset = datasets.StarGalaxyDataset(utils.SG_TRAINH5)
+        self.assertEqual(dset[0]['image'].shape, (3, 48, 48))
+        self.assertEqual(dset[0]['label'].shape, (2,))
+        self.assertEqual(dset[0]['label'].sum(), 1)
+        tnsr_dset = datasets.StarGalaxyDataset(
+            utils.SG_TRAINH5, transform=transforms.ToTensor())
+        self.assertEqual(tnsr_dset[0]['image'].shape, torch.Size([3, 48, 48]))
+        self.assertEqual(tnsr_dset[0]['label'].shape, torch.Size([]))
+
+
+class TestFashionDataManagers(unittest.TestCase):
 
     def setUp(self):
-        self.dm = utils.configure_and_get_testing_data_manager()
+        self.dm = utils.configure_and_get_fash_data_manager()
 
     def test_dataloaders(self):
         batch_size = 100

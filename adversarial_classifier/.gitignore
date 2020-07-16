@@ -11,7 +11,10 @@ sg_synth_*.h5
 log_*txt
 
 # plots
-evt_*pdf
+*pdf
+
+# attacked hdf5s
+*hdf5
 
 # Mac silliness
 .DS_Store

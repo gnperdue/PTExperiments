@@ -1,5 +1,6 @@
 '''
 plot star-galaxy images
+TODO - make a viz library for use in other modules
 '''
 import argparse
 import numpy as np

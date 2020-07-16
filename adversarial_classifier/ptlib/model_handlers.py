@@ -14,7 +14,7 @@ class ModelHandlerBase(object):
         self.log_freq = log_freq
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
-        # TODO - add method to configure
+        # TODO - add method to configure criterion and optimizer.
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.SGD(
             self.model.parameters(), lr=0.001, momentum=0.9)
@@ -52,6 +52,7 @@ class ModelHandlerBase(object):
 
     def run_inference_on_dataloader(
             self, dl, record_results=False, short_test=False):
+        # TODO - configure a mechanism for recording inference data to a file.
         correct = 0
         total = 0
         scalar_loss = 0

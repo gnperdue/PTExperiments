@@ -17,7 +17,7 @@ class TestVanillaTrainer(unittest.TestCase):
         ckpt_path = './test_vanilla_trainer.tar'
         tnsrboard_out = '/tmp/fashion/test_trainers/'
         self.trainer = trainers.VanillaTrainer(
-            dm, model, ckpt_path, tnsrboard_out)
+            dm, model, ckpt_path, tnsrboard_out, log_freq=5)
 
     def test_private_functions(self):
         batch_idx = self.trainer.log_freq - 1

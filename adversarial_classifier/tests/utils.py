@@ -6,7 +6,7 @@ import torch
 import ptlib.dataloaders as dataloaders
 import ptlib.models as models
 
-SYNTH_NUM_SAMPLES = 1000
+SYNTH_NUM_SAMPLES = 100
 FASH_TRAINH5 = 'fash_synth_train.h5'
 FASH_TESTH5 = 'fash_synth_test.h5'
 FASH_VALIDH5 = 'fash_synth_valid.h5'
@@ -50,12 +50,10 @@ def make_fash_h5():
 
 def make_sg_h5():
     cleanup_sg_synth()
-    synth_train_images = np.random.randint(
-        0, high=1, size=(SYNTH_NUM_SAMPLES, 3, 48, 48)).astype('double')
+    synth_train_images = np.random.rand(SYNTH_NUM_SAMPLES, 3, 48, 48)
     synth_train_labels = np.random.randint(
         0, high=2, size=(SYNTH_NUM_SAMPLES, 1)).astype('uint8')
-    synth_test_images = np.random.randint(
-        0, high=1, size=(SYNTH_NUM_SAMPLES, 3, 48, 48)).astype('double')
+    synth_test_images = np.random.rand(SYNTH_NUM_SAMPLES, 3, 48, 48)
     synth_test_labels = np.random.randint(
         0, high=2, size=(SYNTH_NUM_SAMPLES, 1)).astype('uint8')
     fill_sg_hdf5(SG_TESTH5, synth_test_images, synth_test_labels)
@@ -80,7 +78,7 @@ def fill_fash_hdf5(file_name, images, labels):
 def fill_sg_hdf5(file_name, images, labels):
     f = h5py.File(file_name, 'w')
     f.create_dataset(
-        'imageset', np.shape(images), dtype='uint8', compression='gzip'
+        'imageset', np.shape(images), dtype='float64', compression='gzip'
     )[...] = images
     f.create_dataset(
         'catalog', np.shape(labels), dtype='uint8', compression='gzip'
@@ -96,6 +94,18 @@ def configure_and_get_fash_data_manager():
     dm.validfile = FASH_VALIDH5
     dm.meanfile = FASH_MEANFILE
     dm.stdfile = FASH_STDFILE
+    dm.make_means()
+    return dm
+
+
+def configure_and_get_sg_data_manager():
+    dm = dataloaders.StarGalaxyDataManager(data_dir=".")
+    make_sg_h5()
+    dm.testfile = SG_TESTH5
+    dm.trainfile = SG_TRAINH5
+    dm.validfile = SG_VALIDH5
+    dm.meanfile = SG_MEANFILE
+    dm.stdfile = SG_STDFILE
     dm.make_means()
     return dm
 

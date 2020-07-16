@@ -9,28 +9,31 @@ from ptlib.utils import get_logging_level
 from ptlib.utils import log_function_args
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--batch-size', default=32, type=int, help='batch size')
-parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
-                    help='checkpoint path')
-parser.add_argument('--data-dir', default='', type=str, help='data dir')
-parser.add_argument('--git-hash', default='no hash', type=str, help='git hash')
-parser.add_argument('--log-freq', default=100, type=int,
-                    help='logging frequency')
-parser.add_argument('--log-level', default='INFO', type=str,
-                    help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
-parser.add_argument('--num-epochs', default=100, type=int,
-                    help='number of epochs')
-parser.add_argument('--short-test', default=False, action='store_true',
-                    help='do a short test of the code')
-parser.add_argument('--show-progress', default=False, action='store_true',
-                    help='print tdqm and other output')
-parser.add_argument('--test', default=False, action='store_true',
-                    help='run on the test set')
-parser.add_argument('--tnsrbrd-out-dir', default='/tmp/fashion/tnsrbrd',
-                    type=str, help='tensorboardX output dir')
-parser.add_argument('--train', default=False, action='store_true',
-                    help='do training')
+parser = argparse.ArgumentParser(description="Star-Galaxy classifier")
+required = parser.add_argument_group("required arguments")
+optional = parser.add_argument_group("optional arguments")
+optional.add_argument('--batch-size', default=32, type=int, help='batch size')
+optional.add_argument('--ckpt-path', default='ckpt.tar', type=str,
+                      help='checkpoint path')
+required.add_argument('--data-dir', default=None, type=str, help='data dir')
+optional.add_argument('--git-hash', default='no hash', type=str,
+                      help='git hash')
+optional.add_argument('--log-freq', default=100, type=int,
+                      help='logging frequency')
+optional.add_argument('--log-level', default='INFO', type=str,
+                      help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
+optional.add_argument('--num-epochs', default=100, type=int,
+                      help='number of epochs')
+optional.add_argument('--short-test', default=False, action='store_true',
+                      help='do a short test of the code')
+optional.add_argument('--show-progress', default=False, action='store_true',
+                      help='print tdqm and other output')
+optional.add_argument('--test', default=False, action='store_true',
+                      help='run on the test set')
+optional.add_argument('--tnsrbrd-out-dir', default='/tmp/fashion/tnsrbrd',
+                      type=str, help='tensorboardX output dir')
+optional.add_argument('--train', default=False, action='store_true',
+                      help='do training')
 
 
 def main(

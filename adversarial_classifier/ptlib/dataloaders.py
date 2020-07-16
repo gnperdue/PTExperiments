@@ -61,9 +61,9 @@ class DataManagerBase(object):
 
         train_dataloader = None
         if self.trainfile is not None:
-            fashion_trainset = self.data_set_cls(self.trainfile, trnsfrms)
+            trainset = self.data_set_cls(self.trainfile, trnsfrms)
             train_dataloader = WrapDataLoader(DataLoader(
-                fashion_trainset,
+                trainset,
                 batch_size=batch_size,
                 shuffle=True,
                 num_workers=1
@@ -71,9 +71,9 @@ class DataManagerBase(object):
 
         valid_dataloader = None
         if self.validfile is not None:
-            fashion_validset = self.data_set_cls(self.validfile, trnsfrms)
+            validset = self.data_set_cls(self.validfile, trnsfrms)
             valid_dataloader = WrapDataLoader(DataLoader(
-                fashion_validset,
+                validset,
                 batch_size=batch_size,
                 shuffle=False,
                 num_workers=1
@@ -81,11 +81,11 @@ class DataManagerBase(object):
 
         test_dataloader = None
         if self.testfile is not None:
-            fashion_testset = self.data_set_cls(self.testfile, trnsfrms)
+            testset = self.data_set_cls(self.testfile, trnsfrms)
             test_dataloader = WrapDataLoader(DataLoader(
-                fashion_testset,
+                testset,
                 batch_size=batch_size,
-                shuffle=True,
+                shuffle=False,
                 num_workers=1
             ))
 

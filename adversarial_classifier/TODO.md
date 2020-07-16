@@ -1,0 +1,9 @@
+ptlib/attackers.py:        # TODO - need to try de-normalzing the image, adding the ...
+ptlib/attackers.py:        # TODO - another possibility: shift the perturbation up / down?
+ptlib/attackers.py:        # TODO - do we need to re-normalize the image?
+ptlib/attackers.py:        # TODO - need an output path for the hdf5s
+ptlib/attackers.py:            # TODO - not sure about this, want to attack wrong labels also?
+ptlib/model_handlers.py:        # TODO - add method to configure criterion and optimizer.
+ptlib/model_handlers.py:        # TODO - configure a mechanism for recording inference data to a file.
+ptlib/model_handlers.py:                # TODO - block for `if record_results` -> record inferences
+tests/test_models.py:        # TODO -- add some visualization code and save the pdfs; loop over

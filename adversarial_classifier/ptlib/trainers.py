@@ -23,7 +23,7 @@ class VanillaTrainer(ModelHandlerBase):
             batch_size=batch_size)
         for epoch in self._f(range(
                 self.start_epoch, self.start_epoch + num_epochs)):
-            LOGGER.info('training epoch {}'.format(epoch))
+            LOGGER.info('training epoch {}'.format(epoch + 1))
 
             running_loss = 0.0
             for iter_num, (inputs, labels) in enumerate(train_dl, 0):
@@ -42,7 +42,6 @@ class VanillaTrainer(ModelHandlerBase):
 
                 # print statistics
                 running_loss += loss.item()
-                # TODO - configure a logging frequency...
                 if self._write_to_log(iter_num):
                     running_loss = running_loss / self.log_freq
                     self.writer.add_scalar(

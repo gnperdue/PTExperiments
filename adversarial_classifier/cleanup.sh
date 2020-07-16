@@ -11,10 +11,11 @@ rm -fv sg_synth_*.h5
 # cleanup all logs -- could choose to save them eventually...
 rm -fv log_vanilla*.txt
 rm -fv log_attack*.txt
+rm -fv log_run_tests*.txt
 
 # archive training artifacts
 mkdir -p archive
-FILELIST="ckpt.tar short_test.tar"
+FILELIST="sg_ckpt.tar short_test.tar"
 for file in $FILELIST
 do
   if [[ -e $file ]]; then

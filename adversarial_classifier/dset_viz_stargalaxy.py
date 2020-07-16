@@ -10,18 +10,20 @@ from ptlib.dataloaders import StarGalaxyDataManager as DataManager
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch-size', default=6, type=int, help='batch size')
 parser.add_argument('--data-dir', default='', type=str, help='data dir')
-parser.add_argument('--dtype', default='uint8', type=str, help='img data type')
+parser.add_argument('--dtype', default='float64', type=str,
+                    help='img data type')
+parser.add_argument('--file-override', default=None, type=str,
+                    help='overrid for dataset test file full path')
 parser.add_argument('--num-batches', default=1, type=int,
                     help='number of batches')
 parser.add_argument('--pdf-name', default='evt_all.pdf', type=str,
                     help='output pdf name')
 
 
-def main(batch_size, data_dir, dtype, num_batches, pdf_name):
+def main(batch_size, data_dir, dtype, file_override, num_batches, pdf_name):
     data_manager = DataManager(data_dir=data_dir)
-    # TODO - fix hack for file assignment to look at attacked images
-    # data_manager.testfile = './fgsm_0_000.hdf5'
-    data_manager.testfile = './fgsm_0_050.hdf5'
+    if file_override:
+        data_manager.testfile = file_override
     print(data_manager.testfile)
     _, _, test_dl = data_manager.get_data_loaders(
         batch_size=batch_size, standardize=False)

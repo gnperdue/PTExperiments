@@ -1,8 +1,11 @@
 #!/bin/bash
 
-EXE="dset_viz.py"
+DATADIR="/Users/perdue/Dropbox/Data/Workspace"
+
+EXE="dset_viz_stargalaxy.py"
 ARGS="--batch-size 5"
-ARGS+=" --data-dir /Users/perdue/Dropbox/Data/RandomData/StarGalaxy"
+ARGS+=" --data-dir ${DATADIR}"
+# ARGS+=" --file-override ./fgsm.hdf5"
 ARGS+=" --num-batches 8"
 
 # show exe and args

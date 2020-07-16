@@ -20,6 +20,7 @@ class FGSMAttacker(ModelHandlerBase):
         super(FGSMAttacker, self).__init__(
             data_manager, model, ckpt_path, log_freq)
         self.hdf5filename_base = 'fgsm_'
+        self.attack_correct_labels_only = False  # TODO - make an init arg
 
     def _fgsm_attack(self, image, epsilon, data_grad):
         '''
@@ -32,12 +33,12 @@ class FGSMAttacker(ModelHandlerBase):
         # maxval = torch.max(image).item()
         mean = torch.FloatTensor(np.load(self.dm.meanfile))
         std = torch.FloatTensor(np.load(self.dm.stdfile))
+        # TODO - do we need to re-normalize the image?
         perturbed_image = image * std + mean
         data_grad_sign = data_grad.sign()
         perturbed_image = perturbed_image + epsilon * data_grad_sign
-        perturbed_image = torch.clamp(perturbed_image, 0, 255)
+        perturbed_image = torch.clamp(perturbed_image, 0, 1)
         perturbed_image = (perturbed_image - mean) / std
-        # TODO - do we need to re-normalize the image?
         # perturbed_image = torch.clamp(perturbed_image, minval, maxval)
         return perturbed_image
 
@@ -50,8 +51,7 @@ class FGSMAttacker(ModelHandlerBase):
         init_outputs = torch.stack(init_outputs).numpy()
         perturbed_outputs = torch.stack(perturbed_outputs).numpy()
         adv_examples = torch.stack(adv_examples).numpy() * std + mean
-        print(np.min(adv_examples), np.max(adv_examples))
-        adv_examples = np.clip(adv_examples, 0, 255)
+        adv_examples = np.clip(adv_examples, 0, 1)
         # TODO - need an output path for the hdf5s
         hdf5filename = self.hdf5filename_base + \
             '{:4.3f}'.format(epsilon).replace('.', '_') + '.hdf5'
@@ -72,10 +72,10 @@ class FGSMAttacker(ModelHandlerBase):
                          compression='gzip')[...] = adv_examples
         f.close()
 
-    def train_attack_for_single_epsilon(self, epsilon, short_test=False):
+    def attack_for_single_epsilon(self, epsilon, short_test=False):
         LOGGER.info(
-            'train_attack_for_single_epsilon for eps = {}'.format(epsilon))
-        test_dl, _, _ = self.dm.get_data_loaders(batch_size=1)
+            'attack_for_single_epsilon for eps = {}'.format(epsilon))
+        _, _, test_dl = self.dm.get_data_loaders(batch_size=1)
         seen, correct = 0, 0
         true_labels = []
         initial_outputs = []
@@ -93,7 +93,8 @@ class FGSMAttacker(ModelHandlerBase):
             LOGGER.debug('initial pred = {}, label = {}'.format(
                 initial_pred.item(), labels.item()))
             # TODO - not sure about this, want to attack wrong labels also?
-            if initial_pred.item() != labels.item():
+            if self.attack_correct_labels_only and \
+                    (initial_pred.item() != labels.item()):
                 continue
             loss = self.criterion(output, labels)
             LOGGER.debug('loss = {}'.format(loss.item()))

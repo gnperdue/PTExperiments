@@ -50,7 +50,7 @@ def main(ckpt_path, data_dir, epsilons, git_hash, log_freq, log_level,
 
     epsilons = map(float, epsilons.split(','))
     for epsilon in epsilons:
-        attacker.train_attack_for_single_epsilon(
+        attacker.attack_for_single_epsilon(
             epsilon, short_test=short_test)
 
 

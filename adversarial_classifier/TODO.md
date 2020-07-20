@@ -1,3 +1,4 @@
+THIS IS A PROGRMATICALLY GENERATED FILE. DO NOT EDIT BY HAND.
 dset_viz_stargalaxy.py:TODO - make a viz library for use in other modules
 ptlib/attackers.py:        self.attack_correct_labels_only = False  # TODO - make an init arg
 ptlib/attackers.py:        # TODO - need to try de-normalzing the image, adding the ...

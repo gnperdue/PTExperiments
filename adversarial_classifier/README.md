@@ -1,16 +1,27 @@
 # Top-level Contents
 
+* `attack_stargalaxy.py` -- script to run an attacker on the star-galaxy
+  dataset.
 * `check_coverage.sh` -- run `coverage` over test suite (via `run_tests.py`)
   and report unit test coverage.
 * `cleanup.sh` -- remove development detritus, pyc files, etc.
-* `dset_viz.py` -- visualize star-galaxy data.
+* `dset_viz_attacked_stargalaxy.py` -- visualize star-galaxy data attacked by
+  an adversary.
+* `dset_viz_stargalaxy.py` -- visualize star-galaxy data.
 * `ptlib/` -- lib dir for PyTorch code modules.
 * `requirements.txt` -- packages needed to run everything.
+* `run_attack_stargalaxy.sh` -- bash script to wrap `attack_stargalaxy.py` with
+  convenience arguments.
+* `run_dset_viz_atacked_stargalaxy.sh` -- bash script to wrap
+  `dset_viz_attacked_stargalaxy.py` with convenience arguments.
 * `run_tests.py` -- run all tests in `tests/`; generally best to avoid running
   this directly and instead run `check_coverage.sh`.
+* `run_update_todos.sh` -- search code for "TODO" marks and drop them into the
+  `TODO.md` file.
 * `run_vanilla_fashion.sh` -- wrapper script for Fashion MNIST classifier.
 * `run_vanilla_stargalaxy.sh` -- wrapper script for the star-galaxy classifier.
 * `tests/` -- lib dir for `unittest` modules.
+* `TODO.md` -- programatically generated file with list of TODOs.
 * `vanilla_fashion.py` -- script to run a Fashion MNIST classifier.
 * `vanilla_stargalaxy.py` -- script to run a star-galaxy classifier.
 

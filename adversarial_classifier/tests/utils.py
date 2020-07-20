@@ -5,6 +5,7 @@ import torch
 
 import ptlib.dataloaders as dataloaders
 import ptlib.models as models
+from ptlib.datasets import AttackedStarGalaxyDataset
 
 SYNTH_NUM_SAMPLES = 100
 FASH_TRAINH5 = 'fash_synth_train.h5'
@@ -17,6 +18,7 @@ SG_TESTH5 = 'sg_synth_test.h5'
 SG_VALIDH5 = 'sg_synth_valid.h5'
 SG_MEANFILE = 'sg_synth_mean.npy'
 SG_STDFILE = 'sg_synth_std.npy'
+ATK_SG_H5 = 'atk_sg_synth.h5'
 
 
 def cleanup_fash_synth():
@@ -29,6 +31,12 @@ def cleanup_fash_synth():
 def cleanup_sg_synth():
     for filename in [SG_TRAINH5, SG_TESTH5, SG_VALIDH5,
                      SG_MEANFILE, SG_STDFILE]:
+        if os.path.isfile(filename):
+            os.remove(filename)
+
+
+def cleanup_atk_sg_synth():
+    for filename in [ATK_SG_H5]:
         if os.path.isfile(filename):
             os.remove(filename)
 
@@ -61,6 +69,17 @@ def make_sg_h5():
     fill_sg_hdf5(SG_VALIDH5, synth_test_images, synth_test_labels)
 
 
+def make_atk_sg_h5():
+    cleanup_atk_sg_synth()
+    synth_images = np.random.rand(SYNTH_NUM_SAMPLES, 3, 48, 48)
+    synth_labels = np.random.randint(
+        0, high=2, size=(SYNTH_NUM_SAMPLES, 1)).astype('uint8')
+    synth_init_out = np.random.rand(SYNTH_NUM_SAMPLES, 2)
+    synth_pert_out = np.random.rand(SYNTH_NUM_SAMPLES, 2)
+    fill_atk_sg_hdf5(ATK_SG_H5, synth_images, synth_labels,
+                     synth_init_out, synth_pert_out)
+
+
 def fill_fash_hdf5(file_name, images, labels):
     f = h5py.File(file_name, 'w')
     grp = f.create_group('fashion')
@@ -80,6 +99,24 @@ def fill_sg_hdf5(file_name, images, labels):
     f.create_dataset(
         'imageset', np.shape(images), dtype='float64', compression='gzip'
     )[...] = images
+    f.create_dataset(
+        'catalog', np.shape(labels), dtype='uint8', compression='gzip'
+    )[...] = labels
+    f.close()
+
+
+def fill_atk_sg_hdf5(file_name, images, labels, init_out, pert_out):
+    f = h5py.File(file_name, 'w')
+    f.create_dataset(
+        'imageset', np.shape(images), dtype='float64', compression='gzip'
+    )[...] = images
+    f.create_dataset(
+        'init_outputs', np.shape(init_out), dtype='float64', compression='gzip'
+    )[...] = init_out
+    f.create_dataset(
+        'perturbed_outputs', np.shape(pert_out), dtype='float64',
+        compression='gzip'
+    )[...] = pert_out
     f.create_dataset(
         'catalog', np.shape(labels), dtype='uint8', compression='gzip'
     )[...] = labels
@@ -107,6 +144,13 @@ def configure_and_get_sg_data_manager():
     dm.meanfile = SG_MEANFILE
     dm.stdfile = SG_STDFILE
     dm.make_means()
+    return dm
+
+
+def configure_and_get_atk_sg_data_manager():
+    make_sg_h5()
+    dm = dataloaders.AttackedDataManager(
+        data_full_path=ATK_SG_H5, data_set_cls=AttackedStarGalaxyDataset)
     return dm
 
 

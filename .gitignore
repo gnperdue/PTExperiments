@@ -6,3 +6,6 @@
 
 # pytorch models
 *.tar
+
+# mac silliness
+.DS_Store

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DAT=`date +%s`
+mkdir -p archive
 
 # clean up synth data from testing
 rm -fv fash_synth_*.npy
@@ -8,13 +9,14 @@ rm -fv fash_synth_*.h5
 rm -fv sg_synth_*.npy
 rm -fv sg_synth_*.h5
 
-# cleanup all logs -- could choose to save them eventually...
-rm -fv log_vanilla*.txt
-rm -fv log_attack*.txt
+# save meaningful logs
+mv -fv log_vanilla*.txt archive/
+mv -fv log_attack*.txt archive/
+
+# remove testing logs
 rm -fv log_run_tests*.txt
 
 # archive training artifacts
-mkdir -p archive
 FILELIST="sg_ckpt.tar short_test.tar"
 for file in $FILELIST
 do
@@ -22,6 +24,7 @@ do
     mv -v $file archive/t${DAT}_${file}
   fi
 done
+rm -fv test_vanilla_trainer.tar
 
 # clean up compiled python
 DIRS="ptlib tests"

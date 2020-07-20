@@ -10,6 +10,7 @@ from ptlib.datasets import FashionMNISTDataset
 from ptlib.datasets import StarGalaxyDataset
 from ptlib.transforms import Standardize
 from ptlib.transforms import ToTensor
+from ptlib.transforms import AttackedToTensor
 
 
 class WrapDataLoader(object):
@@ -120,3 +121,42 @@ class StarGalaxyDataManager(DataManagerBase):
         self.stdfile = os.path.join(data_dir, 'star_galaxy_stddev.npy')
         self.label_names = StarGalaxyDataset.label_names
         self.img_h5_dset_name = 'imageset'
+
+
+class WrapAttackedDataLoader(object):
+    '''
+    class to manage pulling returned dict apart, following project conventions
+    '''
+
+    def __init__(self, dl):
+        self.dl = dl
+
+    def __len__(self):
+        return len(self.dl)
+
+    def __iter__(self):
+        batches = iter(self.dl)
+        for data in batches:
+            yield data['image'], data['label'], \
+                data['init_outputs'], data['perturbed_outputs']
+
+
+class AttackedDataManager(object):
+    '''data manager class for attacked data'''
+    def __init__(self, data_full_path, data_set_cls):
+        self.data_full_path = data_full_path
+        self.data_set_cls = data_set_cls
+        self.label_names = data_set_cls.label_names
+
+    def get_data_loader(self, batch_size):
+        trnsfrms = AttackedToTensor()
+
+        dataset = self.data_set_cls(self.data_full_path, trnsfrms)
+        dataloader = WrapAttackedDataLoader(DataLoader(
+            dataset,
+            batch_size=batch_size,
+            shuffle=False,
+            num_workers=1
+        ))
+
+        return dataloader

@@ -68,7 +68,7 @@ def main(
         trainer.train(num_epochs, batch_size, short_test)
 
     if test:
-        trainer.test(batch_size, short_test)
+        _, _, _ = trainer.test(batch_size, short_test)
 
 
 if __name__ == '__main__':

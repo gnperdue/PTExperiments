@@ -36,6 +36,14 @@ class TestVanillaTrainer(unittest.TestCase):
         self.assertIsNotNone(correct)
         self.assertIsNotNone(total)
 
+    def test_train_and_test(self):
+        batch_size = utils.SYNTH_NUM_SAMPLES // 10
+        self.trainer.train(num_epochs=1, batch_size=batch_size)
+        test_loss, correct, total = self.trainer.test(batch_size=batch_size)
+        self.assertIsNotNone(test_loss)
+        self.assertIsNotNone(correct)
+        self.assertIsNotNone(total)
+
 
 if __name__ == '__main__':
     unittest.main()

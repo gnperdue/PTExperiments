@@ -6,6 +6,7 @@ fash_synth_*.npy
 fash_synth_*.h5
 sg_synth_*.npy
 sg_synth_*.h5
+atk_sg_synth.h5
 
 # logs
 log_*txt

@@ -8,6 +8,7 @@ rm -fv fash_synth_*.npy
 rm -fv fash_synth_*.h5
 rm -fv sg_synth_*.npy
 rm -fv sg_synth_*.h5
+rm -fv atk_sg_synth.h5
 
 # save meaningful logs
 mv -fv log_vanilla*.txt archive/

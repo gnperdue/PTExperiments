@@ -41,6 +41,26 @@ class TestStarGalaxyDataset(unittest.TestCase):
         self.assertEqual(tnsr_dset[0]['label'].shape, torch.Size([]))
 
 
+class TestAttackedStarGalaxyDataset(unittest.TestCase):
+
+    def test_load_dataset_and_getitem(self):
+        utils.make_atk_sg_h5()
+        dset = datasets.AttackedStarGalaxyDataset(utils.ATK_SG_H5)
+        self.assertEqual(dset[0]['image'].shape, (3, 48, 48))
+        self.assertEqual(dset[0]['label'].shape, (2,))
+        self.assertEqual(dset[0]['init_outputs'].shape, (2,))
+        self.assertEqual(dset[0]['perturbed_outputs'].shape, (2,))
+        self.assertEqual(dset[0]['label'].sum(), 1)
+        tnsr_dset = datasets.AttackedStarGalaxyDataset(
+            utils.ATK_SG_H5, transform=transforms.AttackedToTensor())
+        self.assertEqual(tnsr_dset[0]['image'].shape, torch.Size([3, 48, 48]))
+        self.assertEqual(
+            tnsr_dset[0]['init_outputs'].shape, torch.Size([2]))
+        self.assertEqual(
+            tnsr_dset[0]['perturbed_outputs'].shape, torch.Size([2]))
+        self.assertEqual(tnsr_dset[0]['label'].shape, torch.Size([]))
+
+
 class TestFashionDataManagers(unittest.TestCase):
 
     def setUp(self):

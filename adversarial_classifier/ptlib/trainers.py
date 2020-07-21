@@ -72,6 +72,11 @@ class VanillaTrainer(ModelHandlerBase):
         LOGGER.info('finished training')
 
     def test(self, batch_size, short_test=False):
+        # Note -- not calling restore_model_and_optimizer here because we
+        # either are coming from training with the model still attached to the
+        # trainer or we came straight to test under the assumption that
+        # restore_model_and_optimizer was called during configuration.
+        test_loss, correct, total = None, None, None
         LOGGER.info('Starting testing for {}'.format(self.__class__.__name__))
         _, _, test_dl = self.dm.get_data_loaders(batch_size=batch_size)
         test_loss, correct, total = self.run_inference_on_dataloader(
@@ -79,3 +84,4 @@ class VanillaTrainer(ModelHandlerBase):
         LOGGER.info('loss: {}, accuracy on {} test images: {} %%'.format(
             test_loss, total, 100 * correct / total
         ))
+        return test_loss, correct, total

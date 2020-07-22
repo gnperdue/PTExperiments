@@ -26,14 +26,9 @@ class FGSMAttacker(ModelHandlerBase):
         '''
         perturbed image = image + epsilon * sign(data_grad)
         '''
-        # TODO - need to try de-normalzing the image, adding the ...
-        # perturbation and then re-normalzing
-        # TODO - another possibility: shift the perturbation up / down?
-        # minval = torch.min(image).item()
-        # maxval = torch.max(image).item()
         mean = torch.FloatTensor(np.load(self.dm.meanfile))
         std = torch.FloatTensor(np.load(self.dm.stdfile))
-        # TODO - do we need to re-normalize the image?
+        # TODO - do we need to de-and-re-normalize the image? (we are)
         perturbed_image = image * std + mean
         data_grad_sign = data_grad.sign()
         perturbed_image = perturbed_image + epsilon * data_grad_sign

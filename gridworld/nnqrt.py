@@ -12,8 +12,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch-size', default=100, type=int, help='batch size')
-parser.add_argument('--buffer', default=500, type=int, help='replay buffer')
+parser.add_argument('--batch-size', default=10, type=int, help='batch size')
+parser.add_argument('--buffer', default=20, type=int, help='replay buffer')
 parser.add_argument('--ckpt-path', default='ckpt.tar', type=str,
                     help='checkpoint path')
 parser.add_argument('--conv', default=False, action='store_true',
@@ -24,7 +24,7 @@ parser.add_argument('--gamma', default=0.95, type=float, help='discount')
 parser.add_argument('--game-mode', default='random', type=str,
                     help='initial board configuration')
 parser.add_argument('--game-size', default=4, type=int, help='game size')
-parser.add_argument('--learning_rate', default=1e-3, type=float,
+parser.add_argument('--learning-rate', default=1e-3, type=float,
                     help='learning rate')
 parser.add_argument('--log-level', default='INFO', type=str,
                     help='log level (DEBUG/INFO/WARNING/ERROR/CRITICAL)')
@@ -38,7 +38,7 @@ parser.add_argument('--saved-winpct-path', default='winpct.npy', type=str,
                     help='saved win percentages location')
 parser.add_argument('--show-progress', default=False, action='store_true',
                     help='print tdqm and other output')
-parser.add_argument('--target-network-update', default=500, type=int,
+parser.add_argument('--target-network-update', default=10, type=int,
                     help='target network update period')
 
 

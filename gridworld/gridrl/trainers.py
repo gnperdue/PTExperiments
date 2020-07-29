@@ -241,6 +241,7 @@ class RLTrainer(object):
             while status == 1:
                 move_count, step, c_step = move_count + 1, step + 1, c_step + 1
                 if c_step > self.target_network_update:
+                    LOGGER.info(" ...updating target model")
                     self.target_model.load_state_dict(self.model.state_dict())
                     c_step = 0
                 # Compute Q-value and use to make move decisions
@@ -270,6 +271,9 @@ class RLTrainer(object):
                 move_count, status = self._check_continue(reward, move_count)
 
             # after game/epoch, update epsilon, ...
+            LOGGER.info('replay buffer length at epoch {} end = {}'.format(
+                epoch, len(replay)
+            ))
             self._anneal_epsilon(epochs)
             if epoch % 50 == 0:
                 LOGGER.info(' Playing model at epoch {}'.format(epoch))
